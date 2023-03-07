@@ -131,7 +131,10 @@
 
 		handleSubmit()
 		query = ''
-		gameStarted = true
+
+		if (gameStarted == false) {
+			gameStarted = true
+		}
 	}
 
 	let gameStarted = false
@@ -139,7 +142,7 @@
 	//transition delay logic
 	let delay = 0
 	function getDelayTime() {
-		delay += 200
+		delay += 300
 		return { delay }
 	}
 
@@ -151,16 +154,61 @@
 		}
 		dotty += '.'
 	}, 400)
+
+	const medievalStarter = [
+		'Player enters a tavern and starts to chat with the innkeeper. (game-theme:medieval)',
+		'Player is looking for spellbooks at a library in a town. (game-theme:medieval)',
+		'Player arrives at a small village and meets with the local blacksmith. (game-theme:medieval)',
+		"Player visits a healer's hut to seek treatment for a wound. (game-theme:medieval)",
+		"Player explores the town's market and meets with various vendors. (game-theme:medieval)",
+		'Player meets with a nobleman in his castle to discuss a quest. (game-theme:medieval)',
+		'Player seeks refuge in a church from a storm or danger outside. (game-theme:medieval)',
+		'Player participates in a festival or celebration in a town square. (game-theme:medieval)',
+		'Player visits a wise old sage in his hidden cottage in the woods. (game-theme:medieval)',
+		'Player trains with a knight in a castle courtyard. (game-theme:medieval)',
+		'Player joins a group of travelers on a caravan to a nearby city. (game-theme:medieval)',
+		'Player attends a performance at a theater in a grand city. (game-theme:medieval)',
+		'Player enters a secluded monastery to seek guidance from the monks. (game-theme:medieval)',
+		'Player discovers a hidden cave and meets with a hermit who lives there. (game-theme:medieval)',
+		'Player investigates a mysterious castle in the middle of a forest. (game-theme:medieval)',
+		'Player explores a deserted island and meets with a castaway. (game-theme:medieval)',
+		'Player enters a mystical garden and meets with a fairy queen. (game-theme:medieval)',
+		"Player seeks shelter in a wizard's tower during a dangerous quest. (game-theme:medieval)",
+		'Player participates in a tournament of knights in a grand arena. (game-theme:medieval)',
+		'Player seeks an audience with a powerful king in his throne room. (game-theme:medieval)',
+		'Player visits a grand library in a city to research ancient texts. (game-theme:medieval)',
+		'Player discovers a hidden underground city and meets with its inhabitants. (game-theme:medieval)'
+	]
+
+	function randomize(gameStarter) {
+		const randomIndex = Math.floor(Math.random() * gameStarter.length)
+		const randomlySelectedElement = gameStarter[randomIndex]
+
+		chatMessages = [{ role: 'user', content: randomlySelectedElement }]
+		return randomlySelectedElement
+	}
 </script>
 
 <div>
 	<div class="background-img" />
 	<div class="whole-content">
 		<div class="game-starters">
+			<h3>Start the game</h3>
+			<button on:click={() => giveYourAnswer(randomize(medievalStarter))}
+				>at a random place in Medieval World</button
+			>
+			<button
+				on:click={() => {
+					giveYourAnswer(
+						'Player enters a tavern and starts to chat with the innkeeper. (game-theme:medieval)'
+					)
+				}}>at a tavern in Medieval World</button
+			>
 			<button
 				on:click={() =>
-					giveYourAnswer('player enters a tavern, and starts to chat with the innkeeper')}
-				>Medieval</button
+					giveYourAnswer(
+						'Player visits a grand library in a city to research ancient texts. (game-theme:medieval)'
+					)}>at a grand library in Medieval World</button
 			>
 		</div>
 		{#if gameStarted}
