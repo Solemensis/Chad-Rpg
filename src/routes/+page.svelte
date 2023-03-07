@@ -2,6 +2,7 @@
 	import ChatMessage from '$lib/components/ChatMessage.svelte'
 	import type { ChatCompletionRequestMessage } from 'openai'
 	import { SSE } from 'sse.js'
+	import { fade } from 'svelte/transition'
 
 	let query: string = ''
 	let answer: string = ''
@@ -32,11 +33,10 @@
 		eventSource.addEventListener('message', (e) => {
 			try {
 				loading = false
-
+				// console.log(answer)
+				parseText(answer)
 				if (e.data === '[DONE]') {
 					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
-
-					parseText(answer)
 
 					return
 				}
@@ -63,11 +63,9 @@
 
 	// from here, my code starts
 
-	// getter-setter mantığı
 	let choices2: string[] = []
 	let spells2: string[] = []
 	let inventory2: string[] = []
-	// let stats2: { [key: string]: number } = {}
 	let stats2: string[] = []
 
 	let result = {
@@ -81,14 +79,12 @@
 		text: string,
 		result: {
 			choices?: string[]
-			// stats?: { [key: string]: number }
 			stats?: string[]
 			inventory?: string[]
 			spells?: string[]
 		} = {}
 	): {
 		choices?: string[]
-		// stats?: { [key: string]: number }
 		stats?: string[]
 		inventory?: string[]
 		spells?: string[]
@@ -118,7 +114,6 @@
 		if (spellsMatch) {
 			spells2 = JSON.parse(spellsMatch[1])
 		}
-
 		return result
 	}
 	function extractStory(str: string): string {
@@ -140,6 +135,22 @@
 	}
 
 	let gameStarted = false
+
+	//transition delay logic
+	let delay = 0
+	function getDelayTime() {
+		delay += 200
+		return { delay }
+	}
+
+	//message loading animation logic
+	let dotty = '.'
+	setInterval(() => {
+		if (dotty == '...') {
+			dotty = ''
+		}
+		dotty += '.'
+	}, 400)
 </script>
 
 <div>
@@ -154,48 +165,80 @@
 		</div>
 		{#if gameStarted}
 			<div class="main-game">
-				<div class="game-master">
+				<div in:fade={{ duration: 1000 }} class="game-master">
 					{#if answer}
 						<ChatMessage type="assistant" message={extractStory(answer)} />
 					{/if}
 					{#if loading}
-						<ChatMessage type="assistant" message="Loading.." />
+						<ChatMessage type="assistant" message={dotty} />
 					{/if}
 				</div>
-
-				<div class="choices">
-					{#each choices2 as choice}
-						<button class="choice" on:click={() => giveYourAnswer(choice)}>{choice}</button>
-					{/each}
-					{#if choices2.length}
-						<div class="choice">
+				{#if choices2.length}
+					<div class="choices">
+						{#each choices2 as choice}
+							<button
+								in:fade={{ ...getDelayTime(), duration: 700 }}
+								class="choice"
+								on:click={() => giveYourAnswer(choice)}>{choice}</button
+							>
+						{/each}
+						<div in:fade={{ ...getDelayTime(), duration: 700 }} class="choice">
 							<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-								<input type="text" bind:value={query} />
+								<input
+									placeholder="You can write your own answer too!"
+									type="text"
+									bind:value={query}
+								/>
 								<button type="submit">Answer</button>
 							</form>
 						</div>
-					{/if}
-				</div>
+					</div>
+				{:else}
+					<div class="choices">
+						{#if !loading}
+							<p
+								in:fade={{ duration: 1000 }}
+								style="background-color:transparent; padding-left:1rem;"
+							>
+								{dotty}
+							</p>
+						{/if}
+					</div>
+				{/if}
 			</div>
 		{/if}
 		<div class="left-part">
 			<div class="inventory">
 				{#each inventory2 as item}
-					<h4>{item.name}</h4>
-					<h4>Damage: {item.damage}</h4>
+					<h5>{item.name}</h5>
+					{#if item.damage}
+						<p>Damage: {item.damage}</p>
+					{/if}
+					{#if item.armor}
+						<p>Armor: {item.armor}</p>
+					{/if}
+					{#if item.healing}
+						<p>Healing: {item.healing}</p>
+					{/if}
 				{/each}
 			</div>
 			<div class="spells">
 				{#each spells2 as spell}
-					<h4>{spell.name}</h4>
-					<h4>Damage: {spell.damage}</h4>
+					<h5>{spell.name}</h5>
+					{#if spell.damage}
+						<p>Damage: {spell.damage}</p>
+					{/if}
+					{#if spell.healing}
+						<p>Healing: {spell.healing}</p>
+					{/if}
 				{/each}
 			</div>
 			<div class="stats">
 				{#each stats2 as stats}
-					<h4>Level: {stats.level}</h4>
-					<h4>Power Level: {stats.powerLevel}</h4>
-					<h4>Gold: {stats.gold}</h4>
+					<p>Health: {stats.healthPoints}</p>
+					<p>Level: {stats.level}</p>
+					<p>Power Level: {stats.powerLevel}</p>
+					<p>Gold: {stats.gold}</p>
 				{/each}
 			</div>
 		</div>
@@ -219,12 +262,13 @@
 	}
 	.game-master {
 		width: 70%;
-		max-height: 60%;
+		min-height: 20%;
+		max-height: 50%;
 		line-height: 1.8;
 		background-color: #1a1a1a69;
 		backdrop-filter: blur(8px);
 		margin-inline: auto;
-		padding: 1rem 1rem;
+		padding: 1rem 1.3rem;
 		border-radius: 1rem;
 		font-size: 1.4rem;
 		color: #ccc;
@@ -235,6 +279,7 @@
 		left: 2rem;
 	}
 	.choices {
+		min-height: 34%;
 		display: grid;
 		grid-gap: 0.3rem;
 		grid-template-columns: 1fr;
@@ -246,7 +291,7 @@
 		border-radius: 0.5rem;
 		font-size: 1.4rem;
 		color: #ddd;
-		padding: 0.3rem 0.5rem;
+		padding: 0.4rem 0.6rem;
 		border: none;
 		position: relative;
 		text-align: start;
@@ -256,7 +301,8 @@
 		border: none;
 		border-radius: 0.2rem;
 		width: 70%;
-		height: 1.3rem;
+		height: 60%;
+		font-size: 1.4rem;
 		outline: none;
 		padding: 0.1rem 0.3rem;
 		position: absolute;
@@ -269,8 +315,7 @@
 		justify-content: flex-end;
 		height: 100%;
 	}
-	.choice form button {
-	}
+
 	* {
 		padding: 0;
 		margin: 0;
@@ -278,7 +323,9 @@
 		font-family: 'Signika Negative';
 		color: #eee;
 	}
-
+	html {
+		font-size: 32.5% !important;
+	}
 	button {
 		background-color: black;
 		padding: 0.3rem 0.7rem;

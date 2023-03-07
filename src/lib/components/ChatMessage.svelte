@@ -2,10 +2,11 @@
 	import type { ChatCompletionRequestMessageRoleEnum } from 'openai'
 	export let type: ChatCompletionRequestMessageRoleEnum
 	export let message: string
+	import { fade } from 'svelte/transition'
 </script>
 
-<div class="chat {type === 'user' ? 'ok' : 'chat-start'} justify-end">
-	<div class="chat-bubble ">
+<div>
+	<div in:fade={{ duration: 1200 }}>
 		{message}
 	</div>
 </div>
