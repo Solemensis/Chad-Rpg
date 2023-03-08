@@ -26,18 +26,19 @@
 			payload: JSON.stringify({ messages: chatMessages })
 		})
 
-		query = ''
-
 		eventSource.addEventListener('error', handleError)
 
 		eventSource.addEventListener('message', (e) => {
 			try {
 				loading = false
-				// console.log(answer)
 				parseText(answer)
 				if (e.data === '[DONE]') {
 					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
 
+					console.log(answer)
+					choiceDelay = 0
+
+					query = ''
 					return
 				}
 
@@ -55,10 +56,11 @@
 	}
 
 	function handleError<T>(err: T) {
-		loading = false
-		query = ''
-		answer = ''
+		// loading = false
 		console.error(err)
+		handleSubmit()
+		// query = ''
+		// answer = ''
 	}
 
 	// from here, my code starts
@@ -102,7 +104,6 @@
 		if (choiceMatch) {
 			choices2 = JSON.parse(choiceMatch[1])
 		}
-
 		if (statsMatch) {
 			stats2 = JSON.parse(statsMatch[1])
 		}
@@ -116,6 +117,7 @@
 		}
 		return result
 	}
+
 	function extractStory(str: string): string {
 		if (str.includes('@choices')) {
 			const index = str.indexOf('@choices')
@@ -126,6 +128,7 @@
 	}
 
 	function giveYourAnswer(choice) {
+		choices2 = []
 		query = choice
 		answer = ''
 
@@ -140,7 +143,7 @@
 	let gameStarted = false
 
 	//transition delay logic
-	let delay = 0
+	let choiceDelay = 0
 	function getDelayTime() {
 		delay += 300
 		return { delay }
@@ -200,15 +203,21 @@
 			<button
 				on:click={() => {
 					giveYourAnswer(
-						'Player enters a tavern and starts to chat with the innkeeper. (game-theme:medieval)'
+						`Player in a medieval RPG game (such as World of Warcraft) goes into a tavern and begins to converse with the person who runs the establishment, known as the innkeeper.`
 					)
 				}}>at a tavern in Medieval World</button
 			>
 			<button
 				on:click={() =>
 					giveYourAnswer(
-						'Player visits a grand library in a city to research ancient texts. (game-theme:medieval)'
+						`In this game with a medieval role playing game theme (like world of warcraft), the player will visit a grand library located in a city to research ancient texts. As the player, you will immerse yourself in the atmosphere of the medieval world, surrounded by the scent of old books and the quiet murmurs of fellow scholars. Your objective is to conduct research and uncover information about ancient texts that could reveal important insights into the history and culture of this fascinating time period.`
 					)}>at a grand library in Medieval World</button
+			>
+			<button
+				on:click={() =>
+					giveYourAnswer(
+						'In this game with a theme inspired by the Harry Potter world, the player will receive a letter via owl delivered to their window in their room. The letter is an invitation to attend Hogwarts, a magical school. As the player, you will experience the excitement of receiving this invitation and begin your journey into the world of magic and wizardry'
+					)}>hari potr</button
 			>
 		</div>
 		{#if gameStarted}
@@ -233,7 +242,7 @@
 						<div in:fade={{ ...getDelayTime(), duration: 700 }} class="choice">
 							<form on:submit|preventDefault={() => giveYourAnswer(query)}>
 								<input
-									placeholder="You can write your own answer too!"
+									placeholder="You can write your own action!"
 									type="text"
 									bind:value={query}
 								/>
@@ -321,16 +330,17 @@
 		font-size: 1.4rem;
 		color: #ccc;
 		overflow: auto;
+		transition: 0.2s;
 	}
 	.game-starters {
 		position: absolute;
 		left: 2rem;
 	}
 	.choices {
-		min-height: 34%;
-		display: grid;
-		grid-gap: 0.3rem;
-		grid-template-columns: 1fr;
+		min-height: 36.9%;
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
 		width: 70%;
 		margin-inline: auto;
 	}
@@ -349,7 +359,7 @@
 		border: none;
 		border-radius: 0.2rem;
 		width: 70%;
-		height: 60%;
+		height: 70%;
 		font-size: 1.4rem;
 		outline: none;
 		padding: 0.1rem 0.3rem;
