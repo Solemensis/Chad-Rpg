@@ -136,9 +136,11 @@
 		return Math.floor(Math.random() * num) + 1
 	}
 
-	let fetchedBg = ''
+	let fetchedBg1 = ''
+	let fetchedBg2 = ''
+	let img1active = false
+	let img2active = false
 	async function fetchImg() {
-		fetchedBg = ''
 		//list imgs
 		const { data: imgs } = await supabase.storage.from('imgs').list(`${fetchThisBg}`, {
 			limit: 100,
@@ -148,17 +150,23 @@
 		console.log(imgs)
 		console.log(imgs.length)
 
-		console.log(`${fetchThisBg}/${getRandomNumber(imgs.length)}.jpg`)
 		//fetch img
 		const { data: img, error } = await supabase.storage
 			.from('imgs')
-			.download(`${fetchThisBg}/${getRandomNumber(imgs.length)}.jpg`)
+			.download(`${fetchThisBg}/${getRandomNumber(imgs.length - 1)}.png`)
 
 		const reader = new FileReader()
-		reader.readAsDataURL(img)
+		reader.readAsDataURL(img ? img : console.log('no img'))
 		reader.onload = () => {
-			fetchedBg = reader.result
-			console.log('fetchedbg: ' + fetchedBg)
+			if (!img1active) {
+				fetchedBg1 = reader.result
+				img1active = !img1active
+				img2active = !img1active
+			} else if (!img2active) {
+				fetchedBg2 = reader.result
+				img2active = !img2active
+				img1active = !img2active
+			}
 		}
 	}
 
@@ -355,11 +363,19 @@
 <div>
 	<img
 		class="background-img"
-		src={fetchedBg}
-		style="opacity:{fetchedBg ? '1' : '0'}; transition:opacity 2s;"
+		src={fetchedBg1}
+		style="opacity:{img1active ? '1' : '0'}; transition:2s;"
+	/>
+	<img
+		class="background-img"
+		src={fetchedBg2}
+		style="opacity:{img2active ? '1' : '0'}; transition:2s;"
 	/>
 	<!-- {#if !backgroundImg} -->
-	<div class="background-img" style="opacity:{fetchedBg ? '0' : '1'}; transition:opacity 2s;" />
+	<div
+		class="background-img"
+		style="opacity:{!img1active && !img2active ? '1' : '0'}; transition:2s;"
+	/>
 	<!-- {/if} -->
 	<div class="description-window" style="left:{x}px; top:{y}px; display:{displayItemWindow}">
 		<h5 class="desc-name">{name}</h5>
