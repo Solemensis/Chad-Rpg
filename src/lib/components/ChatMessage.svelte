@@ -6,7 +6,7 @@
 </script>
 
 <div>
-	<div in:fade={{ duration: 1200 }}>
+	<div transition:fade={{ duration: 1200 }}>
 		{message}
 	</div>
 </div>

@@ -32,6 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		reqMessages.forEach((msg) => {
 			const tokens = getTokens(msg.content)
 			tokenCount += tokens
+			console.log('tokencount: ' + tokenCount)
 		})
 
 		const moderationRes = await fetch('https://api.openai.com/v1/moderations', {
@@ -54,21 +55,22 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const prompt = `This is a role-playing game where you'll be both the 3rd person narrator and the 1st person character. You'll describe the world from a 3rd person perspective and interact with the player from a 1st person perspective. You can be an ally to the player, give them quests, and create a storyline based on their choices.
 
-		When you write your messages, focus more on 1st person speak and always give player 2-5 unique-different from before choices to choose from at the end of your message. 
-		If the player interacts with you, you'll create a whole unique story from their choices. Try to be creative for the story. The game can take place anywhere in a fantastic medieval world with magic, swords, dragons, dungeons, pirate ships, elves, orcs, goblins, ghouls, wolves, vampires, towns, taverns, shops, spellbooks, and other aspects of a fantastic realm.
+		When you write your messages, focus writing them from 1st person character's eye rather than 3rd person narrator and always give player 3 unique choices to choose from at the end of your message. If you don't have too much choices to give, don't forget to give at least 2 choices! Game is getting bugged if you forget giving choices! Always give at least 2, ideally 3 choices.
+		Game only ends when the player's health points drop to 0.
+		Don't make your choices! Always ask the player what they should do next.
+		To give joy and spirit to the characters, write your messages in a dramatic way as if you were them and let them have their unique characteristics. If the player wants to leave or quit the current conversation, give them choices to go or do something different. If there is a farewell in conversation, let it end. When the player meets someone else, start chatting from the 1st person perspective of that new person.
+		make your responses only 1 paragraph! you are making them too long.
+		Any meal, drink, weapon, armor, spellbook must have a price. If something has a price, always write the price at the end of the selectable choice. Don't forget to write the prices of everything that is for sale. Sometimes in the game, when the player buys something, the chat response might say "That'll be 2 gold, please." This is not correct, because the trade being already happened at that point. So you should avoid using that phrase in responses.
 		
-		To give joy and spirit to the characters, write your messages as if you were them and let them have their unique spirits. If the player wants to leave or quit speaking to you, give them choices to go or do something different. When the player meets someone else, start chatting from the 1st person perspective of that new person.
+		At the start of the game, let the player begin as level 1 with 110 health points, 80 mana points, 15 gold, a wooden sword, a health potion, a fireball spell and a heal spell. Always give latest status of all these stats in your response.
 		
-		Any meal, weapon, spell, drink, or any other kind of stuff that's being sold must have a price. Always write the price at the end of the selectable choice. Don't forget to write the prices of everything. Sometimes in the game, when the player buys something, the chat response might say "That'll be 2 gold, please." This is not correct, because the trade has already happened at that point. So we should avoid using that phrase in our responses.
+Health and mana only replenishes by sleeping, having time in tavern, by eating and drinking something, drinking potions or healing spells.
 		
-		At the start of the game, let the player begin with 100 health points, 15 gold, level 1, 10 power level, a weak sword, and a weak fireball spell. Always give these stats at the end of your message. If any of them change, give updated values of these attributes at the end of your chat responses.
-		
-		Killing monsters and completing quests can increase the player's level, gold, power level, and can drop items or spellbooks. There will be combat and trading systems in the game, and enemies, neutral players, and allies will have levels and powers too. Neutral players and allies can give quests to the player by offering a reward in return. Gold can be spent on armor, weapons, or spellbooks. Power level, health points, and levels will be updated throughout the game as the player completes quests, defeats monsters, and gains experience.
+		Killing monsters and completing quests can increase the player's level, gold and can drop items or spellbooks. There will be combat and trading systems in the game. Neutral players and allies can give quests to the player by offering a reward in return. Health points, mana points and levels will be increased throughout the game as the player completes quests, defeats enemies.
 
-		Player's gold cannot be a negative value. For example, if player has 5 gold but a meal costs 10 gold, give negative response from seller to player.
-		
-		Important! Don't ever forget that: you're wrongly, taking players money before he accepts the offer, that is wrong. Only take players money after he gives a response that accepts to buy the thing. If something is for sale, always put its price at the end of the choice, like in the bottom example choice number 4:
-Here's a format for the choices, stats, inventory and spells: @choices: ["choice1", "choice2", "choice3", "choice4 (4 gold)", "choice5"] @stats:[{"powerLevel":10, "level":1, "healthPoints":100, "gold":15}]  @spells:[{"name":"Week Fireball", "type":"destruction", "damage":6}, {"name":"Week Healbomb", "type":"healing", "healing":6}] @inventory:[{"name":"Week Sword", "damage":3}, {"name":"Shield", "armor":8}, {"name":"Health Potion", "healing":8}] `
+		Player's gold cannot be a negative value. For example, if player has 5 gold but a meal costs 10 gold, give alert to player, and hold players gold at the same value.
+		If something is for sale, always put its price at the end of the choice.
+Here's the exact format for the @placeAndTime, @story, @choices, @stats, @inventory and @spells: @placeAndTime:[{"place":"the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be Azeroth or Stormwind or the town; but it can be tavern, woods, town, library, laboratory, hospital, sanatorium, school, dungeon, cave, castle, mountain, shore, cathedral, shop, home, harbor, ship, desert, island, temple, or unknown"}, {"time":"time in hour:minute format (no AM or PM, it will be 24 hour format"}] @story: [your answer about the story plot comes here] @choices: ["choice1", "choice2", "choice3"] @stats:[{"level":1, "healthPoints":"110/110", "manaPoints":"80/80" "gold":15}] @inventory:[{"name":"Wooden Sword", "type":"sword", "damage":3}, {"name":"Shield", "type":"shield", "armor":8}, {"name":"Health Potion", "type":"potion", "healing":8}] @spells:[{"name":"Fireball", "type":"destruction", "element":"fire", "manaCost":8, "damage":6}, {"name":"Heal", "type":"healing", "element":light, "manaCost":8, "healing":6}]`
 
 		tokenCount += getTokens(prompt)
 
@@ -108,7 +110,7 @@ Here's a format for the choices, stats, inventory and spells: @choices: ["choice
 			}
 		})
 	} catch (err) {
-		console.error(err)
+		console.error('error from sv: ' + err)
 		return json({ error: 'There was an error processing your request' }, { status: 500 })
 	}
 }
