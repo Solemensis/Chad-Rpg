@@ -39,6 +39,7 @@
 				if (e.data === '[DONE]') {
 					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
 					loading = false
+					logged = false
 
 					console.log('chatResponse: ' + answer)
 					console.log('chatMessages.length: ' + chatMessages.length)
@@ -74,18 +75,95 @@
 
 	// from here, my code starts
 
+	function checkWordsForImg(str) {
+		const words = str.split(' ')
+		const specificWords = [
+			'Tavern',
+			'Woods',
+			'Town',
+			'Library',
+			'Laboratory',
+			'Hospital',
+			'Sanatorium',
+			'School',
+			'Dungeon',
+			'Cave',
+			'Castle',
+			'Mountain',
+			'Shore',
+			'Cathedral',
+			'Shop',
+			'Home',
+			'Harbor',
+			'Dock',
+			'Ship',
+			'Desert',
+			'Island',
+			'Temple',
+			'Unknown',
+			'Underground',
+			'City',
+			'Throne',
+			'Monastery'
+		]
+
+		for (let i = 0; i < words.length; i++) {
+			const word = words[i]
+			if (specificWords.includes(word)) {
+				return word
+			}
+		}
+
+		return null
+	}
+
 	let choices2: string[] = []
 	let spells2: string[] = []
 	let inventory2: string[] = []
 	let stats2: string[] = []
+	let placeAndTime2: string[] = []
 
 	let result = {
 		choices: choices2,
 		spells: spells2,
 		inventory: inventory2,
-		stats: stats2
+		stats: stats2,
+		placeAndTime: placeAndTime2
 	}
 
+	// function to get a random number from imgs.length
+	function getRandomNumber(num) {
+		return Math.floor(Math.random() * num) + 1
+	}
+
+	let fetchedBg = ''
+	async function fetchImg() {
+		fetchedBg = ''
+		//list imgs
+		const { data: imgs } = await supabase.storage.from('imgs').list(`${fetchThisBg}`, {
+			limit: 100,
+			offset: 0,
+			sortBy: { column: 'name', order: 'asc' }
+		})
+		console.log(imgs)
+		console.log(imgs.length)
+
+		console.log(`${fetchThisBg}/${getRandomNumber(imgs.length)}.jpg`)
+		//fetch img
+		const { data: img, error } = await supabase.storage
+			.from('imgs')
+			.download(`${fetchThisBg}/${getRandomNumber(imgs.length)}.jpg`)
+
+		const reader = new FileReader()
+		reader.readAsDataURL(img)
+		reader.onload = () => {
+			fetchedBg = reader.result
+			console.log('fetchedbg: ' + fetchedBg)
+		}
+	}
+
+	let logged = false
+	let fetchThisBg = ''
 	function parseText(
 		text: string,
 		result: {
@@ -93,28 +171,44 @@
 			stats?: string[]
 			inventory?: string[]
 			spells?: string[]
+			placeAndTime?: string[]
 		} = {}
 	): {
 		choices?: string[]
 		stats?: string[]
 		inventory?: string[]
 		spells?: string[]
+		placeAndTime?: string[]
 	} {
+		const placeAndTimeRegex = /@placeAndTime:\s*(\[[^\]]*\])/
 		const choiceRegex = /@choices:\s*(\[[^\]]*\])/
 		const statsRegex = /@stats:\s*(\[[^\]]*\])/
 		const inventoryRegex = /@inventory:\s*(\[[^\]]*\])/
 		const spellsRegex = /@spells:\s*(\[[^\]]*\])/
 
+		const placeAndTimeMatch = text.match(placeAndTimeRegex)
 		const choiceMatch = text.match(choiceRegex)
 		const statsMatch = text.match(statsRegex)
 		const inventoryMatch = text.match(inventoryRegex)
 		const spellsMatch = text.match(spellsRegex)
+
+		if (placeAndTimeMatch) {
+			placeAndTime2 = JSON.parse(placeAndTimeMatch[1])
+
+			if (!logged) {
+				fetchThisBg = checkWordsForImg(placeAndTime2[0].place)
+				fetchImg()
+				console.log(checkWordsForImg(placeAndTime2[0].place))
+				logged = true
+			}
+		}
 
 		if (choiceMatch) {
 			choices2 = JSON.parse(choiceMatch[1])
 		}
 		if (statsMatch) {
 			stats2 = JSON.parse(statsMatch[1])
+			// console.log(stats2[0].level)
 		}
 
 		if (inventoryMatch) {
@@ -163,7 +257,7 @@
 		answer = ''
 
 		handleSubmit()
-		query = ''
+		// query = ''
 
 		if (gameStarted == false) {
 			gameStarted = true
@@ -256,27 +350,16 @@
 	function hideWindow() {
 		displayItemWindow = 'none'
 	}
-
-	let backgroundImg = ''
-	async function downimg() {
-		const { data, error } = await supabase.storage.from('imgs').download(`folder/smith.jpg`)
-
-		const reader = new FileReader()
-		reader.readAsDataURL(data)
-		reader.onload = () => {
-			backgroundImg = reader.result
-		}
-	}
 </script>
 
 <div>
 	<img
 		class="background-img"
-		src={backgroundImg}
-		style="opacity:{backgroundImg ? '1' : '0'}; transition:2s;"
+		src={fetchedBg}
+		style="opacity:{fetchedBg ? '1' : '0'}; transition:opacity 2s;"
 	/>
 	<!-- {#if !backgroundImg} -->
-	<div class="background-img" style="opacity:{backgroundImg ? '0' : '1'}; transition:2s;" />
+	<div class="background-img" style="opacity:{fetchedBg ? '0' : '1'}; transition:opacity 2s;" />
 	<!-- {/if} -->
 	<div class="description-window" style="left:{x}px; top:{y}px; display:{displayItemWindow}">
 		<h5 class="desc-name">{name}</h5>
@@ -301,7 +384,7 @@
 		<div class="game-starters">
 			<h3>Start the game</h3>
 			<h3>loading: {loading}</h3>
-			<button on:click={downimg}>down</button>
+			<!-- <button on:click={downimg}>down</button> -->
 
 			<h3>gamestarted: {gameStarted}</h3>
 
@@ -315,6 +398,8 @@
 					)
 				}}>at a tavern in Medieval World</button
 			>
+			<!-- <h3>stats: {stats2[0]}</h3> -->
+			<h3>choices: {choices2[0]}</h3>
 			<!-- <button
 				on:click={() =>
 					giveYourAnswer(
@@ -615,16 +700,15 @@
 	.game-master {
 		width: 70%;
 		height: 25%;
-		/* min-height: 25%; */
-		/* max-height: 40%; */
+
 		line-height: 1.8;
-		background-color: #1a1a1a69;
-		backdrop-filter: blur(8px);
+		background-color: #0d0d0db3;
+		backdrop-filter: blur(24px);
 		margin-inline: auto;
 		padding: 0.5rem 0.9rem;
 		border-radius: 1rem;
 		font-size: 1.4rem;
-		color: #ccc;
+		color: #eee;
 		overflow: auto;
 	}
 	.game-starters {
@@ -768,7 +852,8 @@
 		left: 0;
 		z-index: -999;
 		height: 100vh;
-		background-image: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.4)), url(/images/1.jpg);
+		background-image: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.767)),
+			url(/images/main-bg.jpg);
 		width: 100%;
 		background-position: 50%;
 		background-repeat: no-repeat;
