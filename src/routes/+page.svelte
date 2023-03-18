@@ -104,7 +104,9 @@
 			'Underground',
 			'City',
 			'Throne',
-			'Monastery'
+			'Monastery',
+			'Inn',
+			'Garden'
 		]
 
 		for (let i = 0; i < words.length; i++) {
@@ -140,6 +142,8 @@
 	let fetchedBg2 = ''
 	let img1active = false
 	let img2active = false
+
+	let time: string = ''
 	async function fetchImg() {
 		//list imgs
 		const { data: imgs } = await supabase.storage.from('imgs').list(`${fetchThisBg}`, {
@@ -147,16 +151,25 @@
 			offset: 0,
 			sortBy: { column: 'name', order: 'asc' }
 		})
-		console.log(imgs)
-		console.log(imgs.length)
+
+		//find night or day
 
 		//fetch img
-		const { data: img, error } = await supabase.storage
-			.from('imgs')
-			.download(`${fetchThisBg}/${getRandomNumber(imgs.length - 1)}.png`)
+		let finalImg
+		if (fetchThisBg == 'Town' && extractHours(time) >= 18 && extractHours(time) <= 6) {
+			const { data: img, error } = await supabase.storage
+				.from('imgs')
+				.download(`${fetchThisBg}_night/${getRandomNumber(imgs.length - 1)}.png`)
+			finalImg = img
+		} else {
+			const { data: img, error } = await supabase.storage
+				.from('imgs')
+				.download(`${fetchThisBg}/${getRandomNumber(imgs.length - 1)}.png`)
+			finalImg = img
+		}
 
 		const reader = new FileReader()
-		reader.readAsDataURL(img ? img : console.log('no img'))
+		reader.readAsDataURL(finalImg ? finalImg : console.log('no img'))
 		reader.onload = () => {
 			if (!img1active) {
 				fetchedBg1 = reader.result
@@ -168,6 +181,11 @@
 				img1active = !img2active
 			}
 		}
+	}
+
+	function extractHours(timeString) {
+		const hour = parseInt(timeString.split(':')[0], 10)
+		return hour
 	}
 
 	let logged = false
@@ -205,8 +223,9 @@
 
 			if (!logged) {
 				fetchThisBg = checkWordsForImg(placeAndTime2[0].place)
+				time = placeAndTime2[0].time
 				fetchImg()
-				console.log(checkWordsForImg(placeAndTime2[0].place))
+
 				logged = true
 			}
 		}
@@ -251,11 +270,70 @@
 		return str.slice(startIndex, endIndex).trim()
 	}
 
+	function getHpMp(inputString) {
+		const parts = inputString.split('/')
+		return parts[0]
+	}
+
+	function isHpOrMpFull(s) {
+		const [left, right] = s.split('/')
+		return left === right
+	}
+
+	let coolDowns = {}
+
+	function useItem(item) {
+		if (item.type == 'weapon') {
+			if (stats2[0].inCombat) {
+				giveYourAnswer(`Attack with ${item.name}!`)
+			} else {
+				return
+			}
+		} else if (item.type == 'destruction') {
+			if (stats2[0].inCombat && getHpMp(stats2[0].manaPoints) >= item.manaCost) {
+				if (!coolDowns[`${item.name}`]) {
+					giveYourAnswer(`Attack with ${item.name}!`)
+					coolDowns[`${item.name}`] = 1
+				} else if (coolDowns[`${item.name}`] >= 3) {
+					giveYourAnswer(`Attack with ${item.name}!`)
+					coolDowns[`${item.name}`] = 1
+				} else {
+					return
+				}
+			} else {
+				return
+			}
+		} else if (item.type == 'healing') {
+			if (!isHpOrMpFull(stats2[0].healthPoints)) {
+				giveYourAnswer(
+					`If player has ${item.manaCost} mana, heal player with ${item.name} by ${item.healing}. If not, alert player that he/she does not have enough mana.`
+				)
+			} else return
+		} else if (item.type == 'potion') {
+			if (!isHpOrMpFull(stats2[0].healthPoints) && item.healing) {
+				giveYourAnswer(
+					`Drink a ${item.name} from your inventory to heal by ${item.healing}. (that potion must be gone from inventory after that)`
+				)
+			} else if (!isHpOrMpFull(stats2[0].manaPoints) && item.mana) {
+				giveYourAnswer(
+					`Drink a ${item.name} from your inventory to fill up mana by ${item.mana}. (that potion must be gone from inventory after that)`
+				)
+			} else return
+		}
+	}
+
 	function giveYourAnswer(choice) {
 		if (!choice) {
 			return
 		}
 		story = ''
+
+		//increase all the cooldowns by 1 with every choice
+		for (const key in coolDowns) {
+			if (coolDowns.hasOwnProperty(key)) {
+				coolDowns[key] += 1
+			}
+		}
 
 		displayItemWindow = 'none'
 
@@ -265,7 +343,7 @@
 		answer = ''
 
 		handleSubmit()
-		// query = ''
+		query = ''
 
 		if (gameStarted == false) {
 			gameStarted = true
@@ -362,19 +440,19 @@
 
 <div>
 	<img
-		class="background-img"
+		class="fetched-bg"
 		src={fetchedBg1}
-		style="opacity:{img1active ? '1' : '0'}; transition:2s;"
+		style="opacity:{img1active ? '1' : '0'}; transition:opacity 2s;"
 	/>
 	<img
-		class="background-img"
+		class="fetched-bg"
 		src={fetchedBg2}
-		style="opacity:{img2active ? '1' : '0'}; transition:2s;"
+		style="opacity:{img2active ? '1' : '0'}; transition:opacity 2s;"
 	/>
 	<!-- {#if !backgroundImg} -->
 	<div
-		class="background-img"
-		style="opacity:{!img1active && !img2active ? '1' : '0'}; transition:2s;"
+		class="main-bg"
+		style="opacity:{!img1active && !img2active ? '1' : '0'}; transition:opacity 2s;"
 	/>
 	<!-- {/if} -->
 	<div class="description-window" style="left:{x}px; top:{y}px; display:{displayItemWindow}">
@@ -398,11 +476,10 @@
 
 	<div class="whole-content">
 		<div class="game-starters">
-			<h3>Start the game</h3>
-			<h3>loading: {loading}</h3>
+			<h5>loading: {loading}</h5>
 			<!-- <button on:click={downimg}>down</button> -->
 
-			<h3>gamestarted: {gameStarted}</h3>
+			<h5>gamestarted: {gameStarted}</h5>
 
 			<button on:click={() => giveYourAnswer(randomize(medievalStarter))}
 				>at a random place in Medieval World</button
@@ -415,7 +492,7 @@
 				}}>at a tavern in Medieval World</button
 			>
 			<!-- <h3>stats: {stats2[0]}</h3> -->
-			<h3>choices: {choices2[0]}</h3>
+			<h3>hour: {time}</h3>
 			<!-- <button
 				on:click={() =>
 					giveYourAnswer(
@@ -457,9 +534,7 @@
 							<h3>Inventory</h3>
 							{#if inventory2[0]}
 								<img
-									on:click={giveYourAnswer(
-										`If there's an enemy ahead, attack with ${inventory2[0].name}. If not, alert player that he/she can use ${inventory2[0].name} only against enemies.`
-									)}
+									on:click={useItem(inventory2[0])}
 									on:mousemove={(event) => handleMouseMove(event, inventory2[0])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -469,6 +544,7 @@
 							{/if}
 							{#if inventory2[1]}
 								<img
+									on:click={useItem(inventory2[1])}
 									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -478,6 +554,7 @@
 							{/if}
 							{#if inventory2[2]}
 								<img
+									on:click={useItem(inventory2[2])}
 									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -487,6 +564,7 @@
 							{/if}
 							{#if inventory2[3]}
 								<img
+									on:click={useItem(inventory2[3])}
 									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -496,6 +574,7 @@
 							{/if}
 							{#if inventory2[4]}
 								<img
+									on:click={useItem(inventory2[4])}
 									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -505,6 +584,7 @@
 							{/if}
 							{#if inventory2[5]}
 								<img
+									on:click={useItem(inventory2[5])}
 									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -568,6 +648,7 @@
 
 							{#if spells2[0]}
 								<img
+									on:click={useItem(spells2[0])}
 									on:mousemove={(event) => handleMouseMove(event, spells2[0])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -577,6 +658,7 @@
 							{/if}
 							{#if spells2[1]}
 								<img
+									on:click={useItem(spells2[1])}
 									on:mousemove={(event) => handleMouseMove(event, spells2[1])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -586,6 +668,7 @@
 							{/if}
 							{#if spells2[2]}
 								<img
+									on:click={useItem(spells2[2])}
 									on:mousemove={(event) => handleMouseMove(event, spells2[2])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -595,6 +678,7 @@
 							{/if}
 							{#if spells2[3]}
 								<img
+									on:click={useItem(spells2[3])}
 									on:mousemove={(event) => handleMouseMove(event, spells2[3])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -604,6 +688,7 @@
 							{/if}
 							{#if spells2[4]}
 								<img
+									on:click={useItem(spells2[4])}
 									on:mousemove={(event) => handleMouseMove(event, spells2[4])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -613,6 +698,7 @@
 							{/if}
 							{#if spells2[5]}
 								<img
+									on:click={useItem(spells2[5])}
 									on:mousemove={(event) => handleMouseMove(event, spells2[5])}
 									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
@@ -737,7 +823,7 @@
 		gap: 2rem;
 	}
 	.game-starters * {
-		width: 5rem;
+		width: 8rem;
 	}
 	.game-controls {
 		display: flex;
@@ -862,7 +948,20 @@
 		border: none;
 	}
 
-	.background-img {
+	.fetched-bg {
+		position: absolute;
+		top: 0;
+		left: 0;
+		z-index: -999;
+		height: 100vh;
+		width: 100%;
+		background-position: 50%;
+		background-repeat: no-repeat;
+		background-size: cover;
+		overflow: hidden;
+	}
+
+	.main-bg {
 		position: absolute;
 		top: 0;
 		left: 0;
