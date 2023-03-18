@@ -1,0 +1,52 @@
+// function useItem(item) {
+	// 	if (item.type == 'weapon') {
+	// 		if (stats2[0].inCombat) {
+	// 			giveYourAnswer(`Attack with ${item.name}!`)
+	// 		} else {
+	// 			return
+	// 		}
+	// 	} else if (item.type == 'destruction') {
+	// 		if (stats2[0].inCombat && getHpMp(stats2[0].manaPoints) >= item.manaCost) {
+	// 			if (!coolDowns[`${item.name}`] || coolDowns[`${item.name}`] >= 3) {
+	// 				giveYourAnswer(`Attack with ${item.name}!`)
+	// 				coolDowns[`${item.name}`] = 1
+	// 			} else {
+	// 				console.log('on cooldown')
+	// 			}
+	// 		} else {
+	// 			if (!stats2[0].inCombat) {
+	// 				console.log('you are not in combat.')
+	// 			} else {
+	// 				console.log('you have not enough mana.')
+	// 			}
+	// 		}
+	// 	} else if (item.type == 'healing') {
+	// 		if (!isHpOrMpFull(stats2[0].healthPoints) && getHpMp(stats2[0].manaPoints) >= item.manaCost) {
+	// 			if (!coolDowns[`${item.name}`] || coolDowns[`${item.name}`] >= 3) {
+	// 				giveYourAnswer(`Heal player with ${item.name}.`)
+
+	// 				coolDowns[`${item.name}`] = 1
+	// 			} else {
+	// 				console.log('on cooldown')
+	// 			}
+	// 		} else {
+	// 			if (isHpOrMpFull(stats2[0].healthPoints)) {
+	// 				console.log("you're at full mana.")
+	// 			} else {
+	// 				console.log('you have not enough mana.')
+	// 			}
+
+	// 			return
+	// 		}
+	// 	} else if (item.type == 'potion') {
+	// 		if (!isHpOrMpFull(stats2[0].healthPoints) && item.healing) {
+	// 			giveYourAnswer(
+	// 				`Drink a ${item.name} from your inventory to heal by ${item.healing}. (that potion must be gone from inventory after that)`
+	// 			)
+	// 		} else if (!isHpOrMpFull(stats2[0].manaPoints) && item.mana) {
+	// 			giveYourAnswer(
+	// 				`Drink a ${item.name} from your inventory to fill up mana by ${item.mana}. (that potion must be gone from inventory after that)`
+	// 			)
+	// 		} else return
+	// 	}
+	// }

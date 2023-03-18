@@ -36,6 +36,7 @@
 				// loading = false
 				parseText(answer)
 				story = extractStory(answer)
+
 				if (e.data === '[DONE]') {
 					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
 					loading = false
@@ -47,7 +48,6 @@
 					//choice transition delay reset for every new conversation
 					delay = -300
 
-					query = ''
 					return
 				}
 
@@ -122,7 +122,7 @@
 	let choices2: string[] = []
 	let spells2: string[] = []
 	let inventory2: string[] = []
-	let stats2: string[] = []
+	let stats2: string[] = [{ inCombat: false }]
 	let placeAndTime2: string[] = []
 
 	let result = {
@@ -152,9 +152,7 @@
 			sortBy: { column: 'name', order: 'asc' }
 		})
 
-		//find night or day
-
-		//fetch img
+		//fetch img based on time and place
 		let finalImg
 		if (fetchThisBg == 'Town' && extractHours(time) >= 18 && extractHours(time) <= 6) {
 			const { data: img, error } = await supabase.storage
@@ -235,7 +233,6 @@
 		}
 		if (statsMatch) {
 			stats2 = JSON.parse(statsMatch[1])
-			// console.log(stats2[0].level)
 		}
 
 		if (inventoryMatch) {
@@ -247,15 +244,6 @@
 		}
 		return result
 	}
-
-	// function extractStory(str: string): string {
-	// 	if (str.includes('@choices')) {
-	// 		const index = str.indexOf('@choices')
-	// 		return str.substring(0, index)
-	// 	} else {
-	// 		return str
-	// 	}
-	// }
 
 	function extractStory(str) {
 		const storyIndex = str.indexOf('@story')
@@ -283,42 +271,45 @@
 	let coolDowns = {}
 
 	function useItem(item) {
-		if (item.type == 'weapon') {
-			if (stats2[0].inCombat) {
-				giveYourAnswer(`Attack with ${item.name}!`)
-			} else {
-				return
+		const { type, name, manaCost, healing, mana } = item
+		const { inCombat, manaPoints, healthPoints } = stats2[0]
+
+		if (type === 'weapon') {
+			if (!inCombat) return console.log('you are not in combat.')
+			return giveYourAnswer(`Attack with ${name}! (eventScore: ${119})`)
+		}
+
+		if (type === 'destruction') {
+			if (!inCombat) return console.log('you are not in combat.')
+			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
+			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
+			coolDowns[name] = 1
+			return giveYourAnswer(
+				`Attack with ${name}! (dice: 2/20 - give a @story where player couldn't deal a succesful ${name} damage.)`
+			)
+		}
+
+		if (type === 'healing') {
+			if (isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
+			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
+			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
+			coolDowns[name] = 1
+			return giveYourAnswer(`Heal player with ${name}.`)
+		}
+
+		if (type === 'potion') {
+			if (healing && isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
+			if (healing && !isHpOrMpFull(healthPoints)) {
+				return giveYourAnswer(
+					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
+				)
 			}
-		} else if (item.type == 'destruction') {
-			if (stats2[0].inCombat && getHpMp(stats2[0].manaPoints) >= item.manaCost) {
-				if (!coolDowns[`${item.name}`]) {
-					giveYourAnswer(`Attack with ${item.name}!`)
-					coolDowns[`${item.name}`] = 1
-				} else if (coolDowns[`${item.name}`] >= 3) {
-					giveYourAnswer(`Attack with ${item.name}!`)
-					coolDowns[`${item.name}`] = 1
-				} else {
-					return
-				}
-			} else {
-				return
+			if (mana && isHpOrMpFull(manaPoints)) return console.log("you're at full mana.")
+			if (mana && !isHpOrMpFull(manaPoints)) {
+				return giveYourAnswer(
+					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
+				)
 			}
-		} else if (item.type == 'healing') {
-			if (!isHpOrMpFull(stats2[0].healthPoints)) {
-				giveYourAnswer(
-					`If player has ${item.manaCost} mana, heal player with ${item.name} by ${item.healing}. If not, alert player that he/she does not have enough mana.`
-				)
-			} else return
-		} else if (item.type == 'potion') {
-			if (!isHpOrMpFull(stats2[0].healthPoints) && item.healing) {
-				giveYourAnswer(
-					`Drink a ${item.name} from your inventory to heal by ${item.healing}. (that potion must be gone from inventory after that)`
-				)
-			} else if (!isHpOrMpFull(stats2[0].manaPoints) && item.mana) {
-				giveYourAnswer(
-					`Drink a ${item.name} from your inventory to fill up mana by ${item.mana}. (that potion must be gone from inventory after that)`
-				)
-			} else return
 		}
 	}
 
@@ -327,6 +318,7 @@
 			return
 		}
 		story = ''
+		query = ''
 
 		//increase all the cooldowns by 1 with every choice
 		for (const key in coolDowns) {
@@ -527,184 +519,246 @@
 					<div style="opacity:{choices2.length ? '1' : '0'}; transition:1.5s;" class="ui-left">
 						<!-- {#if stats2[0] && stats2[0].healthPoints} -->
 						<div class="hp-bar">
-							{stats2[0] && stats2[0].healthPoints ? stats2[0].healthPoints : '110/110'}
+							{stats2[0] && stats2[0].healthPoints ? stats2[0].healthPoints : '70/70'}
 						</div>
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
 							<h3>Inventory</h3>
 							{#if inventory2[0]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(inventory2[0])}
-									on:mousemove={(event) => handleMouseMove(event, inventory2[0])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{inventory2[0].type}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, inventory2[0])}
+										on:mouseleave={hideWindow}
+										src="/images/{inventory2[0].type}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if inventory2[1]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(inventory2[1])}
-									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{inventory2[1].type}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mouseleave={hideWindow}
+										src="/images/{inventory2[1].type}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if inventory2[2]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(inventory2[2])}
-									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{inventory2[2].type}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mouseleave={hideWindow}
+										src="/images/{inventory2[2].type}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if inventory2[3]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(inventory2[3])}
-									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{inventory2[3].type}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mouseleave={hideWindow}
+										src="/images/{inventory2[3].type}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if inventory2[4]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(inventory2[4])}
-									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{inventory2[4].type}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mouseleave={hideWindow}
+										src="/images/{inventory2[4].type}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if inventory2[5]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(inventory2[5])}
-									on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{inventory2[5].type}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mouseleave={hideWindow}
+										src="/images/{inventory2[5].type}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 						</div>
 					</div>
-					<div class="choices">
-						{#each choices2 as choice}
-							<button
-								disabled={loading}
-								transition:fade={{ ...getDelayTime(), duration: 700 }}
-								class="choice"
-								on:click={() => giveYourAnswer(choice)}>{choice}</button
-							>
-						{/each}
-						{#if choices2.length >= 3}
-							<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choice">
-								<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-									<input
-										placeholder="Go to a nearby Tavern | Speak about Magic"
-										type="text"
-										bind:value={query}
-									/>
-									<button disabled={!query} type="submit">Answer</button>
-								</form>
+					<div class="ui-mid">
+						{#if stats2[0] && !stats2[0].inCombat}
+							<div class="choices">
+								{#each choices2 as choice}
+									<button
+										disabled={loading}
+										transition:fade={{ ...getDelayTime(), duration: 700 }}
+										class="choice"
+										on:click={() => giveYourAnswer(choice)}>{choice}</button
+									>
+								{/each}
+								{#if choices2.length >= 3}
+									<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choice">
+										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
+											<input
+												placeholder="Go to a nearby Tavern | Speak about Magic"
+												type="text"
+												bind:value={query}
+											/>
+											<button disabled={!query} type="submit">Answer</button>
+										</form>
+									</div>
+								{/if}
 							</div>
-						{/if}
-						{#if story.length && !choices2.length}
-							<div>
-								<p
-									in:fade={{ duration: 1000 }}
-									style="background-color:transparent; padding-left:1rem;"
-								>
-									{dotty}
-								</p>
-								<div in:fade={{ delay: 10000, duration: 700 }} class="choice">
-									<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-										<input
-											placeholder="Go to a nearby Tavern | Speak about Magic"
-											type="text"
-											bind:value={query}
-										/>
-										<button type="submit">Answer</button>
-									</form>
+							{#if story.length && !choices2.length}
+								<div>
+									<p
+										in:fade={{ duration: 1000 }}
+										style="background-color:transparent; padding-left:1rem;"
+									>
+										{dotty}
+									</p>
+									<div in:fade={{ delay: 10000, duration: 700 }} class="choice">
+										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
+											<input
+												placeholder="Go to a nearby Tavern | Speak about Magic"
+												type="text"
+												bind:value={query}
+											/>
+											<button type="submit">Answer</button>
+										</form>
+									</div>
 								</div>
+							{/if}
+						{:else if choices2.length && stats2[0] && stats2[0].inCombat}
+							<div class="choices">
+								<button
+									disabled={loading}
+									transition:fade={{ ...getDelayTime(), duration: 700 }}
+									class="choice choiceCombat"
+									on:click={() => giveYourAnswer('Try To Retreat! (70% chance')}
+									>Try To Retreat! (70%)</button
+								>
 							</div>
 						{/if}
 					</div>
+
 					<div style="opacity:{choices2.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
 						<!-- {#if stats2[0] && stats2[0].manaPoints} -->
 
 						<div class="mp-bar">
-							{stats2[0] && stats2[0].manaPoints ? stats2[0].manaPoints : '80/80'}
+							{stats2[0] && stats2[0].manaPoints ? stats2[0].manaPoints : '50/50'}
 						</div>
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
 							<h3>Spells</h3>
 
 							{#if spells2[0]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(spells2[0])}
-									on:mousemove={(event) => handleMouseMove(event, spells2[0])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{spells2[0].element}.svg"
-									alt=""
-								/>
+									><img
+										on:mousemove={(event) => handleMouseMove(event, spells2[0])}
+										on:mouseleave={hideWindow}
+										src="/images/{spells2[0].element}.svg"
+										alt=""
+									/></button
+								>
 							{/if}
 							{#if spells2[1]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(spells2[1])}
-									on:mousemove={(event) => handleMouseMove(event, spells2[1])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{spells2[1].element}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, spells2[1])}
+										on:mouseleave={hideWindow}
+										src="/images/{spells2[1].element}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if spells2[2]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(spells2[2])}
-									on:mousemove={(event) => handleMouseMove(event, spells2[2])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{spells2[2].element}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, spells2[2])}
+										on:mouseleave={hideWindow}
+										src="/images/{spells2[2].element}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if spells2[3]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(spells2[3])}
-									on:mousemove={(event) => handleMouseMove(event, spells2[3])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{spells2[3].element}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, spells2[3])}
+										on:mouseleave={hideWindow}
+										src="/images/{spells2[3].element}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if spells2[4]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(spells2[4])}
-									on:mousemove={(event) => handleMouseMove(event, spells2[4])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{spells2[4].element}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, spells2[4])}
+										on:mouseleave={hideWindow}
+										src="/images/{spells2[4].element}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 							{#if spells2[5]}
-								<img
+								<button
+									disabled={loading}
 									on:click={useItem(spells2[5])}
-									on:mousemove={(event) => handleMouseMove(event, spells2[5])}
-									on:mouseleave={hideWindow}
 									in:fade={{ duration: 600 }}
-									src="/images/{spells2[5].element}.svg"
-									alt=""
-								/>
+								>
+									<img
+										on:mousemove={(event) => handleMouseMove(event, spells2[5])}
+										on:mouseleave={hideWindow}
+										src="/images/{spells2[5].element}.svg"
+										alt=""
+									/>
+								</button>
 							{/if}
 						</div>
 					</div>
@@ -789,9 +843,7 @@
 		border-radius: 0.5rem;
 		z-index: 100;
 	}
-	/* .ui-left{
-		display:flex; flex-direction:column;
-	} */
+
 	.main-game {
 		display: flex;
 		flex-direction: column;
@@ -830,17 +882,20 @@
 		width: 70%;
 		margin-inline: auto;
 		align-items: center;
+		justify-content: space-between;
+		gap: 2rem;
 	}
 
 	.ui-left,
 	.ui-right {
-		width: 17%;
+		width: 15%;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 		height: 100%;
 		justify-content: flex-end;
 	}
+
 	.hp-bar,
 	.mp-bar {
 		text-align: center;
@@ -883,10 +938,19 @@
 	}
 	.spells img,
 	.inventory img {
-		width: 85%;
+		width: 100%;
 		padding: 0.2rem;
+	}
+	.spells button,
+	.inventory button {
 		background-color: rgba(115, 115, 115, 0.267);
-		border-radius: 0.3rem;
+		border: none;
+		border-radius: 0.5rem;
+		width: 3rem;
+		height: 3rem;
+	}
+	button {
+		background-color: gray;
 	}
 
 	.choices {
@@ -895,7 +959,7 @@
 		justify-content: space-between;
 		flex-direction: column;
 		gap: 0.3rem;
-		width: 60%;
+		width: 100%;
 		margin-inline: auto;
 	}
 
@@ -904,13 +968,16 @@
 		border-radius: 0.5rem;
 		font-size: 1.4rem;
 		color: #ddd;
-		padding: 0.4rem 0.6rem;
+		padding: 0.7rem 0.6rem;
 		border: none;
 		position: relative;
 		text-align: center;
 		transition: 0.2s;
 	}
 	.choice:hover:not(:last-child) {
+		background-color: #372b2b;
+	}
+	.choiceCombat:hover {
 		background-color: #372b2b;
 	}
 	.choice form input {
@@ -940,12 +1007,6 @@
 	}
 	html {
 		font-size: 32.5% !important;
-	}
-	button {
-		background-color: black;
-		padding: 0.3rem 0.7rem;
-		border-radius: 0.5rem;
-		border: none;
 	}
 
 	.fetched-bg {
