@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="800px" height="800px" viewBox="0 -3.5 30 30" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+    <title>coin</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#FFC923" offset="0%">
+</stop>
+            <stop stop-color="#FFAD41" offset="100%">
+</stop>
+        </linearGradient>
+    </defs>
+    <g id="icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ui-gambling-website-lined-icnos-casinoshunter" transform="translate(-1125.000000, -2041.000000)" fill-rule="nonzero">
+            <g id="4" transform="translate(50.000000, 1871.000000)">
+                <g id="coin" transform="translate(1075.000000, 170.000000)">
+                    <path d="M15.0015318,0 C23.2459666,0 30.0283147,3.84541158 30.0014522,8.89840846 C29.9965884,9.80284326 29.7747958,10.6686433 29.3668043,11.4805986 C29.78428,12.3063345 30.0063567,13.1886424 30.0014522,14.1112045 C29.9743184,19.1568024 23.1958752,23 15.0015318,23 C6.80718838,23 0.0287452493,19.1568024 0.00161125443,14.1111777 C-0.00329319505,13.1886205 0.218783563,12.3063166 0.63529835,11.4803202 C0.228267728,10.6686252 0.00647508416,9.80282127 0.00161125443,8.89838167 C-0.0252510763,3.84541158 6.75709701,0 15.0015318,0 Z" fill="url(#linearGradient-1)">
+</path>
+                    <path d="M30.001,8.88238167 L30.0020465,13.6575532 C27.173493,17.2189187 21.4467641,19.5622885 15.0015318,19.5622885 C8.49193397,19.5622885 2.76785045,17.3112139 -3.21964677e-14,13.7699861 L0.001,8.90638167 L30.001,8.88238167 Z M30.0015317,8.90800594 L0.00137409822,8.89838167 C0.0287452493,13.9440064 6.80718838,17.787204 15.0015317,17.787204 C23.1958752,17.787204 29.9742388,13.9536039 30.0015317,8.90800594 Z" id="Combined-Shape" fill="#DF960A">
+</path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

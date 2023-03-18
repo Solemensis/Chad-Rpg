@@ -11,6 +11,7 @@
 	let story: string = ''
 	let loading: boolean = false
 	let chatMessages: ChatCompletionRequestMessage[] = []
+	let saveQuery: ''
 
 	const handleSubmit = async () => {
 		if (query === '') {
@@ -20,6 +21,7 @@
 		choices2 = []
 
 		loading = true
+		saveQuery = query
 		chatMessages = [...chatMessages, { role: 'user', content: query }]
 
 		const eventSource = new SSE('/api/chat', {
@@ -67,8 +69,8 @@
 	function handleError<T>(err: T) {
 		// loading = false
 		console.error('error from client: ' + err)
-		console.log('query: ' + query)
-		giveYourAnswer(query)
+		console.log('saveQuery: ' + saveQuery)
+		giveYourAnswer(saveQuery)
 		// query = ''
 		// answer = ''
 	}
@@ -270,13 +272,22 @@
 
 	let coolDowns = {}
 
+	function throwDice(damage) {
+		let dice = Math.floor(Math.random() * 20) + 1
+
+		console.log(damage)
+		console.log(dice)
+		console.log(damage * dice)
+		return damage * dice
+	}
+
 	function useItem(item) {
-		const { type, name, manaCost, healing, mana } = item
+		const { type, name, damage, manaCost, healing, mana } = item
 		const { inCombat, manaPoints, healthPoints } = stats2[0]
 
 		if (type === 'weapon') {
 			if (!inCombat) return console.log('you are not in combat.')
-			return giveYourAnswer(`Attack with ${name}! (eventScore: ${119})`)
+			return giveYourAnswer(`Attack with ${name}! (@combatScore: ${throwDice(damage)})`)
 		}
 
 		if (type === 'destruction') {
@@ -284,9 +295,7 @@
 			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
 			coolDowns[name] = 1
-			return giveYourAnswer(
-				`Attack with ${name}! (dice: 2/20 - give a @story where player couldn't deal a succesful ${name} damage.)`
-			)
+			return giveYourAnswer(`Attack with ${name} spell! (@combatScore: ${throwDice(damage) + 5})`)
 		}
 
 		if (type === 'healing') {
@@ -294,7 +303,7 @@
 			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
 			coolDowns[name] = 1
-			return giveYourAnswer(`Heal player with ${name}.`)
+			return giveYourAnswer(`Heal myself with ${name} spell. (@healScore: ${throwDice(healing)})`)
 		}
 
 		if (type === 'potion') {
@@ -318,7 +327,6 @@
 			return
 		}
 		story = ''
-		query = ''
 
 		//increase all the cooldowns by 1 with every choice
 		for (const key in coolDowns) {
@@ -334,8 +342,12 @@
 		query = choice
 		answer = ''
 
-		handleSubmit()
-		query = ''
+		try {
+			handleSubmit()
+			query = ''
+		} catch (error) {
+			handleError(error)
+		}
 
 		if (gameStarted == false) {
 			gameStarted = true
@@ -456,9 +468,12 @@
 			<p class="desc-element">element: {element}</p>
 		{/if}
 		{#if damage}
-			<p class="desc-damage">damage: {damage}</p>
+			<p class="desc-damage">damage: x{damage}</p>
 		{/if}
-		{#if healing}
+		{#if healing && type == 'healing'}
+			<p class="desc-healing">healing: x{healing}</p>
+		{/if}
+		{#if healing && type == 'potion'}
 			<p class="desc-healing">healing: {healing}</p>
 		{/if}
 		{#if armor}
@@ -485,6 +500,7 @@
 			>
 			<!-- <h3>stats: {stats2[0]}</h3> -->
 			<h3>hour: {time}</h3>
+			<!-- <img src="images/dice.webp" /> -->
 			<!-- <button
 				on:click={() =>
 					giveYourAnswer(
@@ -559,7 +575,7 @@
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mousemove={(event) => handleMouseMove(event, inventory2[2])}
 										on:mouseleave={hideWindow}
 										src="/images/{inventory2[2].type}.svg"
 										alt=""
@@ -573,7 +589,7 @@
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mousemove={(event) => handleMouseMove(event, inventory2[3])}
 										on:mouseleave={hideWindow}
 										src="/images/{inventory2[3].type}.svg"
 										alt=""
@@ -587,7 +603,7 @@
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mousemove={(event) => handleMouseMove(event, inventory2[4])}
 										on:mouseleave={hideWindow}
 										src="/images/{inventory2[4].type}.svg"
 										alt=""
@@ -601,7 +617,7 @@
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mousemove={(event) => handleMouseMove(event, inventory2[5])}
 										on:mouseleave={hideWindow}
 										src="/images/{inventory2[5].type}.svg"
 										alt=""
@@ -622,7 +638,7 @@
 									>
 								{/each}
 								{#if choices2.length >= 3}
-									<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choice">
+									<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choiceInput">
 										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
 											<input
 												placeholder="Go to a nearby Tavern | Speak about Magic"
@@ -634,6 +650,12 @@
 									</div>
 								{/if}
 							</div>
+							{#if choices2.length >= 3}
+								<div transition:fade={{ ...getDelayTime(), duration: 700 }} class="gold">
+									<img src="images/gold.svg" />
+									<p>{stats2[0].gold}</p>
+								</div>
+							{/if}
 							{#if story.length && !choices2.length}
 								<div>
 									<p
@@ -655,16 +677,30 @@
 								</div>
 							{/if}
 						{:else if choices2.length && stats2[0] && stats2[0].inCombat}
-							<div class="choices">
+							<!-- combat ui -->
+							<div class="combat">
 								<button
 									disabled={loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
 									class="choice choiceCombat"
-									on:click={() => giveYourAnswer('Try To Retreat! (70% chance')}
-									>Try To Retreat! (70%)</button
+									on:click={() => giveYourAnswer('Try To Retreat! (60% chance')}
+									>Try To Retreat! (60%)</button
 								>
 							</div>
 						{/if}
+
+						<!-- {if }
+						<div  class="choice">
+										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
+											<input
+												placeholder="Go to a nearby Tavern | Speak about Magic"
+												type="text"
+												bind:value={query}
+											/>
+											<button type="submit">Answer</button>
+										</form>
+									</div>
+									{/if} -->
 					</div>
 
 					<div style="opacity:{choices2.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
@@ -962,6 +998,42 @@
 		width: 100%;
 		margin-inline: auto;
 	}
+	.combat {
+		min-height: 36.9%;
+		display: flex;
+		justify-content: space-between;
+		flex-direction: column;
+		gap: 0.3rem;
+		width: 100%;
+		height: 100%;
+		margin-inline: auto;
+		background-color: #40404050;
+		border-radius: 0.5rem;
+	}
+
+	.gold {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		background-color: rgba(64, 64, 64, 0.714);
+		border-radius: 0.2rem;
+		padding: 0.2rem 0.5rem;
+	}
+	.gold img {
+		width: 1.1rem;
+		height: 1.1rem;
+	}
+	.gold p {
+		font-size: 1.2rem;
+	}
+	.ui-mid {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: flex-start;
+	}
 
 	.choice {
 		background-color: #362525;
@@ -974,16 +1046,20 @@
 		text-align: center;
 		transition: 0.2s;
 	}
-	.choice:hover:not(:last-child) {
-		background-color: #372b2b;
-	}
-	.choiceCombat:hover {
-		background-color: #372b2b;
-	}
-	.choice form input {
-		background-color: #1f1f1f;
+	.choiceInput {
+		background-color: #1f1f1fc8;
+		border-radius: 0.5rem;
+		font-size: 1.4rem;
+		color: #ddd;
+		padding: 0.7rem 0.6rem;
 		border: none;
-		border-radius: 0.2rem;
+		position: relative;
+		text-align: center;
+		transition: 0.2s;
+	}
+	.choiceInput form input {
+		background-color: #1f1f1fc8;
+		border: none;
 		width: 85%;
 		height: 100%;
 		font-size: 1.2rem;
@@ -991,6 +1067,13 @@
 		padding: 0.1rem 0.3rem;
 		text-align: start;
 	}
+	.choice:hover:not(:last-child) {
+		background-color: #372b2b;
+	}
+	.choiceCombat:hover {
+		background-color: #372b2b;
+	}
+
 	.choice form {
 		display: flex;
 		align-items: center;
