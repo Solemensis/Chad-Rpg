@@ -29,11 +29,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		let tokenCount = 0
 
-		reqMessages.forEach((msg) => {
-			const tokens = getTokens(msg.content)
-			tokenCount += tokens
-			console.log('tokencount: ' + tokenCount)
-		})
+		
 
 		const moderationRes = await fetch('https://api.openai.com/v1/moderations', {
 			headers: {
@@ -68,19 +64,28 @@ export const POST: RequestHandler = async ({ request }) => {
 		
 		Killing monsters and completing quests can increase the player's level, gold and can drop items. There will be combat and trading systems in the game. Neutral players and allies can give quests to the player by offering a reward in return. Health points, mana points and levels will be increased throughout the game as the player completes quests, defeats enemies.
 
-		
+		do not give "drink a potion" or "cast a fireball" type of choices! Player will be handling item-skill usage from his/her inventory&spell ui by clicking them.
+		do not give any choices when inCombat is true! Player will handle his movement by his own input.
+
 		If something is for sale, always put its price at the end of the selectable @choice in the @choices between brackets. some examples: @choices: ["buy the sword (10 gold)", "buy the roasted chicken (4 gold)"]
 
 
-		Combat system: In combat, player will use weapons or spells. When weapons or spells used by player, you'll be given a @combatScore input by player. There will be 8 possibilities with this number. If number is >=1 and <10, you'll give a poor combat scenario for the @story. If number is >=10 and <25, you'll give a bad combat scenario for the @story. If number is >=25 and <45, you'll give a medi-ocre combat scenario for the @story. If number is between >=45 and <65, you'll give a decent combat scenario for the @story. If number is >=65 and <90, you'll give a great combat scenario. If number is >=90 and <125, you'll give an excellent combat scenario. If number is >=125, you'll give an epic, near perfect combat scenario. Note that, if @combatScore is low, combat should keep going for some rounds, so do not end the combat immedietaly.
-		Do not start the fight before turning "inCombat" to true! Say something like "you are now in battle!", and then change "inCombat" to true.
+		Combat system: In combat, player will use weapons or spells. When weapons or spells used by player, you'll be given a @combatScore as chat answer. There will be 8 possibilities with this @combatScore. If @combatScore is >=1 and <10, you'll give the worst combat scenario for the @story. If @combatScore is >=10 and <25, you'll give a bad combat scenario for the @story. If @combatScore is >=25 and <45, you'll give a medi-ocre combat scenario for the @story. If @combatScore is between >=45 and <65, you'll give a decent combat scenario for the @story. If @combatScore is >=65 and <90, you'll give a great combat scenario. If @combatScore is >=90 and <125, you'll give an excellent combat scenario. If @combatScore is >=125, you'll give an epic, near perfect combat scenario. Note that, if @combatScore is low, combat should keep going for some rounds, so do not end the combat immedietaly.
+		Do not start the fight before turning "inCombat" to true! Don't just start and end the combat with one @story, let player use some skills or weapons to fight. Say something like "you are now in battle!", and then change "inCombat" to true.
+		Sometimes you are giving random @combatScores by yourself, don't do that. Let player give the @combatScore always.
 
-		Healing system with spells: When healing spells used, you'll be given a @healScore input by player. Always fill the healthPoints by the amount of @healScore.
+		Healing system with spells: When healing spells used, you'll be given a @healScore as chat answer player. Always fill the healthPoints by the amount of @healScore.
 
 
 		Here's the exact format for the @placeAndTime, @story, @choices, @stats, @inventory and @spells: @placeAndTime: [{"place":[the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"], "time":[time in hour:minute format (no AM or PM, it will be 24 hour format]}] @story:[your answer about the story plot comes here (you are forgetting to add @story to the start. Don't forget!)] @choices: ["choice1", "choice2", "choice3"] @stats:[{"level":1, "healthPoints":"70/70", "manaPoints":"50/50", "gold":15, "inCombat":[this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.}] @inventory:[{"name":"Wooden Sword", "type":"weapon", "damage":4}, {"name":"Health Potion", "type":"potion", "healing":40}] @spells:[{"name":"Fireball", "type":"destruction", "element":"fire", "manaCost":12, "damage":5}, {"name":"Basic heal", "type":"healing", "element":light, "manaCost":10, "healing":2}]`
 
 		tokenCount += getTokens(prompt)
+
+		reqMessages.forEach((msg) => {
+			const tokens = getTokens(msg.content)
+			tokenCount += tokens
+			console.log('tokencount: ' + tokenCount)
+		})
 
 		if (tokenCount >= 4000) {
 			throw new Error('Query too large')
@@ -94,7 +99,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const chatRequestOpts: CreateChatCompletionRequest = {
 			model: 'gpt-3.5-turbo',
 			messages,
-			temperature: 0.7,
+			temperature: 0.4,
 			stream: true
 		}
 

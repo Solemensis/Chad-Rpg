@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
 	import ChatMessage from '$lib/components/ChatMessage.svelte'
 	import type { ChatCompletionRequestMessage } from 'openai'
 	import { SSE } from 'sse.js'
@@ -11,7 +10,7 @@
 	let story: string = ''
 	let loading: boolean = false
 	let chatMessages: ChatCompletionRequestMessage[] = []
-	let saveQuery: ''
+	let saveQuery: string = ''
 
 	const handleSubmit = async () => {
 		if (query === '') {
@@ -40,18 +39,25 @@
 				story = extractStory(answer)
 
 				if (e.data === '[DONE]') {
-					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
+					chatMessages = [...chatMessages, { role: 'assistant', content: answer}]
 					loading = false
 					logged = false
+console.log('chatResponse: ' + answer)
+console.log(chatMessages.length)	
 
-					console.log('chatResponse: ' + answer)
-					console.log('chatMessages.length: ' + chatMessages.length)
+					if(chatMessages.length >=18){
+					chatMessages.splice(1, 2)
+}
+					
+
+					// console.log('chatMessages: ' + JSON.stringify(chatMessages))
 
 					//choice transition delay reset for every new conversation
 					delay = -300
 
 					return
 				}
+				
 
 				const completionResponse = JSON.parse(e.data)
 				const [{ delta }] = completionResponse.choices
@@ -66,18 +72,22 @@
 		eventSource.stream()
 	}
 
+	let handleErr:boolean=false
 	function handleError<T>(err: T) {
 		// loading = false
-		console.error('error from client: ' + err)
+		console.error('error from client: ' + JSON.stringify(err))
 		console.log('saveQuery: ' + saveQuery)
-		giveYourAnswer(saveQuery)
+
+		handleErr=true;
+
+
 		// query = ''
 		// answer = ''
 	}
 
 	// from here, my code starts
 
-	function checkWordsForImg(str) {
+	function checkWordsForImg(str: any) {
 		const words = str.split(' ')
 		const specificWords = [
 			'Tavern',
@@ -89,7 +99,7 @@
 			'Sanatorium',
 			'School',
 			'Dungeon',
-			'Cave',
+			'Cave',	
 			'Castle',
 			'Mountain',
 			'Shore',
@@ -121,29 +131,30 @@
 		return null
 	}
 
-	let choices2: string[] = []
-	let spells2: string[] = []
-	let inventory2: string[] = []
-	let stats2: string[] = [{ inCombat: false }]
-	let placeAndTime2: string[] = []
+	// let choices2: string[] = []
+	let choices2: any[] = []
+	let spells2: any[] = []
+	let inventory2: any[] = []
+	let stats2: any[] = [{ inCombat: false }]
+	let placeAndTime2: any[] = []
 
-	let result = {
-		choices: choices2,
-		spells: spells2,
-		inventory: inventory2,
-		stats: stats2,
-		placeAndTime: placeAndTime2
-	}
+	// let result = {
+	// 	choices: choices2,
+	// 	spells: spells2,
+	// 	inventory: inventory2,
+	// 	stats: stats2,
+	// 	placeAndTime: placeAndTime2
+	// }
 
 	// function to get a random number from imgs.length
-	function getRandomNumber(num) {
+	function getRandomNumber(num: any) {
 		return Math.floor(Math.random() * num) + 1
 	}
 
-	let fetchedBg1 = ''
-	let fetchedBg2 = ''
-	let img1active = false
-	let img2active = false
+	let fetchedBg1: any = ''
+	let fetchedBg2: any = ''
+	let img1active: boolean = false
+	let img2active: boolean = false
 
 	let time: string = ''
 	async function fetchImg() {
@@ -155,17 +166,19 @@
 		})
 
 		//fetch img based on time and place
-		let finalImg
-		if (fetchThisBg == 'Town' && extractHours(time) >= 18 && extractHours(time) <= 6) {
-			const { data: img, error } = await supabase.storage
-				.from('imgs')
-				.download(`${fetchThisBg}_night/${getRandomNumber(imgs.length - 1)}.png`)
-			finalImg = img
-		} else {
-			const { data: img, error } = await supabase.storage
-				.from('imgs')
-				.download(`${fetchThisBg}/${getRandomNumber(imgs.length - 1)}.png`)
-			finalImg = img
+		let finalImg: any
+		if (imgs) {
+			if (fetchThisBg == 'Town' && extractHours(time) >= 18 && extractHours(time) <= 6) {
+				const { data: img, error } = await supabase.storage
+					.from('imgs')
+					.download(`${fetchThisBg}_night/${getRandomNumber(imgs.length - 1)}.png`)
+				finalImg = img
+			} else {
+				const { data: img, error } = await supabase.storage
+					.from('imgs')
+					.download(`${fetchThisBg}/${getRandomNumber(imgs.length - 1)}.png`)
+				finalImg = img
+			}
 		}
 
 		const reader = new FileReader()
@@ -183,40 +196,41 @@
 		}
 	}
 
-	function extractHours(timeString) {
+	function extractHours(timeString: any) {
 		const hour = parseInt(timeString.split(':')[0], 10)
 		return hour
 	}
 
-	let logged = false
-	let fetchThisBg = ''
+	let logged: boolean = false
+	let fetchThisBg: string = ''
 	function parseText(
 		text: string,
 		result: {
-			choices?: string[]
-			stats?: string[]
-			inventory?: string[]
-			spells?: string[]
-			placeAndTime?: string[]
+			choices?: any[]
+			stats?: any[]
+			inventory?: any[]
+			spells?: any[]
+			placeAndTime?: any[]
 		} = {}
 	): {
-		choices?: string[]
-		stats?: string[]
-		inventory?: string[]
-		spells?: string[]
-		placeAndTime?: string[]
+		// choices?: string[]
+		choices?: any[]
+		stats?: any[]
+		inventory?: any[]
+		spells?: any[]
+		placeAndTime?: any[]
 	} {
-		const placeAndTimeRegex = /@placeAndTime:\s*(\[[^\]]*\])/
-		const choiceRegex = /@choices:\s*(\[[^\]]*\])/
-		const statsRegex = /@stats:\s*(\[[^\]]*\])/
-		const inventoryRegex = /@inventory:\s*(\[[^\]]*\])/
-		const spellsRegex = /@spells:\s*(\[[^\]]*\])/
+		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
+		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
+		const statsRegex: any = /@stats:\s*(\[[^\]]*\])/
+		const inventoryRegex: any = /@inventory:\s*(\[[^\]]*\])/
+		const spellsRegex: any = /@spells:\s*(\[[^\]]*\])/
 
-		const placeAndTimeMatch = text.match(placeAndTimeRegex)
-		const choiceMatch = text.match(choiceRegex)
-		const statsMatch = text.match(statsRegex)
-		const inventoryMatch = text.match(inventoryRegex)
-		const spellsMatch = text.match(spellsRegex)
+		const placeAndTimeMatch: any = text.match(placeAndTimeRegex)
+		const choiceMatch: any = text.match(choiceRegex)
+		const statsMatch: any = text.match(statsRegex)
+		const inventoryMatch: any = text.match(inventoryRegex)
+		const spellsMatch: any = text.match(spellsRegex)
 
 		if (placeAndTimeMatch) {
 			placeAndTime2 = JSON.parse(placeAndTimeMatch[1])
@@ -247,7 +261,7 @@
 		return result
 	}
 
-	function extractStory(str) {
+	function extractStory(str: any) {
 		const storyIndex = str.indexOf('@story')
 		if (storyIndex === -1) {
 			return ''
@@ -260,19 +274,19 @@
 		return str.slice(startIndex, endIndex).trim()
 	}
 
-	function getHpMp(inputString) {
+	function getHpMp(inputString: any) {
 		const parts = inputString.split('/')
 		return parts[0]
 	}
 
-	function isHpOrMpFull(s) {
+	function isHpOrMpFull(s: any) {
 		const [left, right] = s.split('/')
 		return left === right
 	}
 
-	let coolDowns = {}
+	let coolDowns: any = {}
 
-	function throwDice(damage) {
+	function randomNumber1_20(damage: any) {
 		let dice = Math.floor(Math.random() * 20) + 1
 
 		console.log(damage)
@@ -281,39 +295,88 @@
 		return damage * dice
 	}
 
-	function useItem(item) {
+
+
+
+	let combatChoice: { name: string, damage:any, prompt:string, combatScore:any, healing:any } =
+	 { name: "", damage:"", prompt:"", combatScore:undefined, healing:"" };
+		
+		function throwDice(combatEvent:any){
+if (!combatEvent.name) return console.log("you need to choose a weapon or spell.")
+
+		if (coolDowns[combatEvent.name]){
+coolDowns[combatEvent.name] = 1
+
+		}
+			//zar numarasını bi süre göstermek için 1-2 saniyelik bi timeout 
+			//içine alıncak giveYourAnswer
+			console.log(combatEvent.prompt)
+			giveYourAnswer(combatEvent.prompt)
+
+			//empty the object after
+			combatChoice.name = "";
+			combatChoice.damage = undefined;
+			combatChoice.healing = undefined;
+			combatChoice.prompt = "";
+		}
+
+	function useItem(item: any) {
 		const { type, name, damage, manaCost, healing, mana } = item
 		const { inCombat, manaPoints, healthPoints } = stats2[0]
 
 		if (type === 'weapon') {
 			if (!inCombat) return console.log('you are not in combat.')
-			return giveYourAnswer(`Attack with ${name}! (@combatScore: ${throwDice(damage)})`)
+			combatChoice.combatScore=randomNumber1_20(damage)
+			combatChoice.prompt=(`Attack with ${name}! (@combatScore: ${combatChoice.combatScore})`)
+			combatChoice.name=name
+			combatChoice.damage=damage
+			combatChoice.healing=undefined
+
+			console.log(combatChoice)
+			return;
 		}
 
 		if (type === 'destruction') {
 			if (!inCombat) return console.log('you are not in combat.')
 			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
-			coolDowns[name] = 1
-			return giveYourAnswer(`Attack with ${name} spell! (@combatScore: ${throwDice(damage) + 5})`)
+			coolDowns[name] = 3
+			combatChoice.combatScore=randomNumber1_20(damage)
+
+			combatChoice.prompt=(`Attack with ${name} spell! (@combatScore: ${combatChoice.combatScore})`)
+			combatChoice.name=name
+			combatChoice.damage=damage
+			combatChoice.healing=undefined
+			return;
 		}
 
 		if (type === 'healing') {
 			if (isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
 			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
-			coolDowns[name] = 1
-			return giveYourAnswer(`Heal myself with ${name} spell. (@healScore: ${throwDice(healing)})`)
+
+
+			coolDowns[name] = 3
+			combatChoice.combatScore=randomNumber1_20(healing)
+
+			combatChoice.prompt=(`Heal myself with ${name} spell. (@healScore: ${combatChoice.combatScore})`)
+			combatChoice.name=name
+			combatChoice.healing=healing
+			combatChoice.damage=undefined
+			return;
 		}
 
 		if (type === 'potion') {
 			if (healing && isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
+			if (inCombat) return console.log("you can't drink in combat.")
+
 			if (healing && !isHpOrMpFull(healthPoints)) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
 				)
 			}
 			if (mana && isHpOrMpFull(manaPoints)) return console.log("you're at full mana.")
+			if (inCombat) return console.log("you can't drink in combat.")
 			if (mana && !isHpOrMpFull(manaPoints)) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
@@ -322,7 +385,7 @@
 		}
 	}
 
-	function giveYourAnswer(choice) {
+	function giveYourAnswer(choice: any) {
 		if (!choice) {
 			return
 		}
@@ -354,10 +417,10 @@
 		}
 	}
 
-	let gameStarted = false
+	let gameStarted: boolean = false
 
 	//transition delay logic
-	let delay = -300
+	let delay: any = -300
 	function getDelayTime() {
 		delay += 300
 
@@ -365,7 +428,7 @@
 	}
 
 	//message loading animation logic
-	let dotty = '.'
+	let dotty: any = '.'
 	setInterval(() => {
 		if (dotty == '...') {
 			dotty = ''
@@ -373,7 +436,7 @@
 		dotty += '.'
 	}, 400)
 
-	const medievalStarter = [
+	const medievalStarter: any = [
 		'Player enters a tavern and starts to chat with the innkeeper. (game-theme:medieval)',
 		'Player is looking for spellbooks at a library in a town. (game-theme:medieval)',
 		'Player arrives at a small village and meets with the local blacksmith. (game-theme:medieval)',
@@ -398,7 +461,7 @@
 		'Player discovers a hidden underground city and meets with its inhabitants. (game-theme:medieval)'
 	]
 
-	function randomize(gameStarter) {
+	function randomize(gameStarter: any) {
 		const randomIndex = Math.floor(Math.random() * gameStarter.length)
 		const randomlySelectedElement = gameStarter[randomIndex]
 
@@ -407,11 +470,11 @@
 	}
 
 	//description window
-	let x = 0
-	let y = 0
-	let displayItemWindow = 'none'
+	let x: any = 0
+	let y: any = 0
+	let displayItemWindow: any = 'none'
 
-	function handleMouseMove(event, item) {
+	function handleMouseMove(event: any, item: any) {
 		displayItemWindow = 'block'
 		x = event.clientX + 10
 		y = event.clientY - 40
@@ -430,12 +493,13 @@
 		armor = item && item.armor ? item.armor : undefined
 		element = item && item.element ? item.element : undefined
 	}
-	let name
-	let damage
-	let type
-	let healing
-	let armor
-	let element
+
+	let name: any
+	let damage: any
+	let type: any
+	let healing: any
+	let armor: any
+	let element: any
 
 	function hideWindow() {
 		displayItemWindow = 'none'
@@ -447,11 +511,13 @@
 		class="fetched-bg"
 		src={fetchedBg1}
 		style="opacity:{img1active ? '1' : '0'}; transition:opacity 2s;"
+		alt=""
 	/>
 	<img
 		class="fetched-bg"
 		src={fetchedBg2}
 		style="opacity:{img2active ? '1' : '0'}; transition:opacity 2s;"
+		alt=""
 	/>
 	<!-- {#if !backgroundImg} -->
 	<div
@@ -499,7 +565,6 @@
 				}}>at a tavern in Medieval World</button
 			>
 			<!-- <h3>stats: {stats2[0]}</h3> -->
-			<h3>hour: {time}</h3>
 			<!-- <img src="images/dice.webp" /> -->
 			<!-- <button
 				on:click={() =>
@@ -543,7 +608,7 @@
 							{#if inventory2[0]}
 								<button
 									disabled={loading}
-									on:click={useItem(inventory2[0])}
+									on:click={() => useItem(inventory2[0])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -557,7 +622,7 @@
 							{#if inventory2[1]}
 								<button
 									disabled={loading}
-									on:click={useItem(inventory2[1])}
+									on:click={() => useItem(inventory2[1])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -571,7 +636,7 @@
 							{#if inventory2[2]}
 								<button
 									disabled={loading}
-									on:click={useItem(inventory2[2])}
+									on:click={() => useItem(inventory2[2])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -585,7 +650,7 @@
 							{#if inventory2[3]}
 								<button
 									disabled={loading}
-									on:click={useItem(inventory2[3])}
+									on:click={() => useItem(inventory2[3])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -599,7 +664,7 @@
 							{#if inventory2[4]}
 								<button
 									disabled={loading}
-									on:click={useItem(inventory2[4])}
+									on:click={() => useItem(inventory2[4])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -613,7 +678,7 @@
 							{#if inventory2[5]}
 								<button
 									disabled={loading}
-									on:click={useItem(inventory2[5])}
+									on:click={() => useItem(inventory2[5])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -638,7 +703,10 @@
 									>
 								{/each}
 								{#if choices2.length >= 3}
-									<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choiceInput">
+									<div
+										transition:fade={{ ...getDelayTime(), duration: 400 }}
+										class="choice choiceInput"
+									>
 										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
 											<input
 												placeholder="Go to a nearby Tavern | Speak about Magic"
@@ -650,41 +718,67 @@
 									</div>
 								{/if}
 							</div>
-							{#if choices2.length >= 3}
-								<div transition:fade={{ ...getDelayTime(), duration: 700 }} class="gold">
-									<img src="images/gold.svg" />
-									<p>{stats2[0].gold}</p>
-								</div>
-							{/if}
-							{#if story.length && !choices2.length}
-								<div>
-									<p
-										in:fade={{ duration: 1000 }}
-										style="background-color:transparent; padding-left:1rem;"
-									>
-										{dotty}
-									</p>
-									<div in:fade={{ delay: 10000, duration: 700 }} class="choice">
-										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-											<input
-												placeholder="Go to a nearby Tavern | Speak about Magic"
-												type="text"
-												bind:value={query}
-											/>
-											<button type="submit">Answer</button>
-										</form>
+							{#if choices2.length >= 2}
+								<div class="stats">
+									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
+										<img src="images/gold.svg" alt="" />
+										<p>{stats2[0] && stats2[0].gold? stats2[0].gold : "15"}</p>
+									</div>
+									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
+										<img src="images/time.svg" alt="" />
+
+										<p>{stats2[0] && placeAndTime2[0].time? placeAndTime2[0].time:"00:00"}</p>
 									</div>
 								</div>
+							
 							{/if}
-						{:else if choices2.length && stats2[0] && stats2[0].inCombat}
+								
+							{#if handleErr}
+									<div in:fade={{ duration: 700 }} class="choice" >
+										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
+										<input
+										placeholder="No conversation generated. Please write your own action."
+										type="text"
+										bind:value={query}
+										/>
+										<button on:click={()=>handleErr=false} type="submit">Answer</button>
+										</form>
+									</div>
+			
+
+
+								{/if}
+							 
+						{:else if  stats2[0] && stats2[0].inCombat}
 							<!-- combat ui -->
 							<div class="combat">
+								<div class="combat-box">
+									<h3>You are now in <span class="span-heading">Combat!</span></h3>
+
+									<ul>
+										{#if !combatChoice.name}
+										<li >Choose an attacking <span class="g-span">item</span> or <span class="g-span">spell</span> </li>
+										{:else if combatChoice.damage}
+										<li >You chose <span class="g-span">{combatChoice.name}</span> with <span class="g-span">x{combatChoice.damage}</span> damage! </li>
+										{:else if combatChoice.healing}
+										<li >You chose <span class="g-span">{combatChoice.name}</span> with <span class="g-span">x{combatChoice.healing}</span> heal power! </li>
+
+										{/if}
+
+										<li>Then, press the <span class="g-span">dice</span> to learn your fate!</li>
+										<li>
+											Your fighting scenario will be calculated based on these and some element of surprise.
+										</li>
+									</ul>
+
+									<img on:click={()=>throwDice(combatChoice)} src="images/dice.webp" alt=''/>
+								</div>
 								<button
 									disabled={loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
 									class="choice choiceCombat"
-									on:click={() => giveYourAnswer('Try To Retreat! (60% chance')}
-									>Try To Retreat! (60%)</button
+									on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
+									>Or, just try to Retreat! [60% chance]</button
 								>
 							</div>
 						{/if}
@@ -716,7 +810,7 @@
 							{#if spells2[0]}
 								<button
 									disabled={loading}
-									on:click={useItem(spells2[0])}
+									on:click={() => useItem(spells2[0])}
 									in:fade={{ duration: 600 }}
 									><img
 										on:mousemove={(event) => handleMouseMove(event, spells2[0])}
@@ -729,7 +823,7 @@
 							{#if spells2[1]}
 								<button
 									disabled={loading}
-									on:click={useItem(spells2[1])}
+									on:click={() => useItem(spells2[1])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -743,7 +837,7 @@
 							{#if spells2[2]}
 								<button
 									disabled={loading}
-									on:click={useItem(spells2[2])}
+									on:click={() => useItem(spells2[2])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -757,7 +851,7 @@
 							{#if spells2[3]}
 								<button
 									disabled={loading}
-									on:click={useItem(spells2[3])}
+									on:click={() => useItem(spells2[3])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -771,7 +865,7 @@
 							{#if spells2[4]}
 								<button
 									disabled={loading}
-									on:click={useItem(spells2[4])}
+									on:click={() => useItem(spells2[4])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -785,7 +879,7 @@
 							{#if spells2[5]}
 								<button
 									disabled={loading}
-									on:click={useItem(spells2[5])}
+									on:click={() => useItem(spells2[5])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -890,7 +984,6 @@
 	.game-master {
 		width: 70%;
 		height: 25%;
-
 		line-height: 1.8;
 		background-color: #0d0d0db3;
 		backdrop-filter: blur(24px);
@@ -924,25 +1017,23 @@
 
 	.ui-left,
 	.ui-right {
-		width: 15%;
+		width: 25%;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
 		height: 100%;
-		justify-content: flex-end;
 	}
 
 	.hp-bar,
 	.mp-bar {
 		text-align: center;
 		font-size: 1.2rem;
-		border-radius: 0.3rem;
-		height: 100%;
+		border-radius: 0.2rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		border-bottom-left-radius: 0;
 		border-bottom-right-radius: 0;
+		padding: 0.2rem 0;
 	}
 	.spells,
 	.inventory {
@@ -952,16 +1043,16 @@
 		grid-template-columns: 1fr 1fr 1fr;
 		grid-template-rows: 1fr 1fr 1fr 1fr;
 		background-color: #362525bc;
-		border-radius: 0.3rem;
-		min-height: 30vh;
+		border-radius: 0.2rem;
+		min-height: 25vh;
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
 	}
 	.hp-bar {
-		background-color: #ba3232;
+		background-color: #b02863aa;
 	}
 	.mp-bar {
-		background-color: #38389f;
+		background-color: #76399caa;
 	}
 	.spells h3,
 	.inventory h3 {
@@ -974,16 +1065,24 @@
 	}
 	.spells img,
 	.inventory img {
-		width: 100%;
+		width: 85%;
+		margin-inline: auto;
 		padding: 0.2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.spells img:active, .inventory img:active{
+		animation: button-pop 0.3s ease-out;
+
 	}
 	.spells button,
 	.inventory button {
 		background-color: rgba(115, 115, 115, 0.267);
 		border: none;
-		border-radius: 0.5rem;
-		width: 3rem;
-		height: 3rem;
+		border-radius: 0.4rem;
+		width: 85%;
+		height: 85%;
 	}
 	button {
 		background-color: gray;
@@ -1003,27 +1102,105 @@
 		display: flex;
 		justify-content: space-between;
 		flex-direction: column;
-		gap: 0.3rem;
 		width: 100%;
 		height: 100%;
 		margin-inline: auto;
-		background-color: #40404050;
-		border-radius: 0.5rem;
+		gap:1rem;
 	}
 
-	.gold {
+	.combat-box h3{
+
+		position:absolute;
+		top:0.9rem;
+		left:50%;
+		width:100%;
+		transform:translateX(-50%);
+		text-align:center;
+		font-weight:300;
+font-size:1.5rem;
+	}
+	
+	.combat-box{
+		background-color: rgba(31, 31, 31, 0.841);
+		border-radius: 0.5rem;
+		display:flex;
+		align-items:flex-end;
+height:100%;		
+justify-content:space-around;
+		position:relative;
+		padding: 0 0.2rem;
+		
+	}
+	.combat-box img{
+	height:50%;	
+	align-self:center;
+	background-color: rgba(19, 19, 19, 0.725);
+		border-radius: 20rem;
+		padding:0.7rem 0.8rem 0.6rem 0.7rem;
+
+		
+	}
+	.combat-box img:active{
+		animation: button-pop 0.3s ease-out;
+
+	}
+
+	.combat-box ul{
+padding-bottom:0.6rem;
+
+padding-left:0.4rem;
+width:60%;
+font-size:1rem;
+	}
+.combat-box ul li{
+	color:#bbb;
+	padding-left:0.4rem;
+margin-bottom:0.4rem;
+
+
+}
+
+	.combat-box ul li:nth-child(1) {list-style-type: "⚔️";}
+	.combat-box ul li:nth-child(2) {
+list-style-type: "🎲";
+
+}
+	.combat-box ul li:nth-child(3) {
+list-style-type: "🔮";
+line-height:1.2;
+font-size:0.8rem;
+padding-left:0.5rem;
+margin-left:-0.15rem;
+
+	color:#aaa;
+	}
+	.span-heading{
+		color:rgb(228, 55, 55);
+font-weight:400;
+	}
+	.g-span{
+		 color: #3fcf8e;
+	}
+
+	.stats {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.stat {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		background-color: rgba(64, 64, 64, 0.714);
-		border-radius: 0.2rem;
+		background-color: rgba(64, 64, 64, 0.8);
+		border-radius: 0.3rem;
 		padding: 0.2rem 0.5rem;
 	}
-	.gold img {
+	.stat img {
 		width: 1.1rem;
 		height: 1.1rem;
 	}
-	.gold p {
+	.stat p {
 		font-size: 1.2rem;
 	}
 	.ui-mid {
@@ -1033,6 +1210,7 @@
 		flex-direction: column;
 		justify-content: space-between;
 		align-items: flex-start;
+		gap: 0.8rem;
 	}
 
 	.choice {
@@ -1040,7 +1218,7 @@
 		border-radius: 0.5rem;
 		font-size: 1.4rem;
 		color: #ddd;
-		padding: 0.7rem 0.6rem;
+		padding: 0.4rem 0.6rem;
 		border: none;
 		position: relative;
 		text-align: center;
@@ -1048,17 +1226,13 @@
 	}
 	.choiceInput {
 		background-color: #1f1f1fc8;
-		border-radius: 0.5rem;
-		font-size: 1.4rem;
-		color: #ddd;
-		padding: 0.7rem 0.6rem;
-		border: none;
-		position: relative;
-		text-align: center;
-		transition: 0.2s;
+	}
+	.choiceInput form {
+		display: flex;
+		align-items: center;
 	}
 	.choiceInput form input {
-		background-color: #1f1f1fc8;
+		background-color: transparent;
 		border: none;
 		width: 85%;
 		height: 100%;
@@ -1066,6 +1240,22 @@
 		outline: none;
 		padding: 0.1rem 0.3rem;
 		text-align: start;
+	}
+	.choiceInput button {
+		border: none;
+		color: #ddd;
+		border-radius: 0.3rem;
+		padding: 0.2rem 0.5rem;
+		background-color: #9018c486;
+	}
+	.choiceInput button:active {
+		animation: button-pop 0.3s ease-out;
+	}
+	.choiceInput button:hover {
+		background-color: #a61ce186;
+	}
+	::placeholder {
+		color: #aaa;
 	}
 	.choice:hover:not(:last-child) {
 		background-color: #372b2b;
@@ -1087,9 +1277,6 @@
 		box-sizing: border-box;
 		font-family: 'Signika Negative';
 		color: #eee;
-	}
-	html {
-		font-size: 32.5% !important;
 	}
 
 	.fetched-bg {
@@ -1132,5 +1319,18 @@
 	}
 	::-webkit-scrollbar-thumb:hover {
 		background-color: hsl(22, 8%, 20%);
+	}
+
+	/* button pop animation */
+	@keyframes button-pop {
+		0% {
+			transform: scale(0.93);
+		}
+		40% {
+			transform: scale(1.02);
+		}
+		100% {
+			transform: scale(1);
+		}
 	}
 </style>
