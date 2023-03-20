@@ -39,16 +39,17 @@
 				story = extractStory(answer)
 
 				if (e.data === '[DONE]') {
-					chatMessages = [...chatMessages, { role: 'assistant', content: answer}]
+					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
 					loading = false
 					logged = false
-console.log('chatResponse: ' + answer)
-console.log(chatMessages.length)	
 
-					if(chatMessages.length >=18){
-					chatMessages.splice(1, 2)
-}
-					
+					console.log(answer)
+					console.log(shop2)
+
+					//to handle token limitation of gpt
+					if (chatMessages.length >= 18) {
+						chatMessages.splice(1, 2)
+					}
 
 					// console.log('chatMessages: ' + JSON.stringify(chatMessages))
 
@@ -57,7 +58,6 @@ console.log(chatMessages.length)
 
 					return
 				}
-				
 
 				const completionResponse = JSON.parse(e.data)
 				const [{ delta }] = completionResponse.choices
@@ -72,14 +72,13 @@ console.log(chatMessages.length)
 		eventSource.stream()
 	}
 
-	let handleErr:boolean=false
+	let handleErr: boolean = false
 	function handleError<T>(err: T) {
 		// loading = false
 		console.error('error from client: ' + JSON.stringify(err))
 		console.log('saveQuery: ' + saveQuery)
 
-		handleErr=true;
-
+		handleErr = true
 
 		// query = ''
 		// answer = ''
@@ -99,7 +98,7 @@ console.log(chatMessages.length)
 			'Sanatorium',
 			'School',
 			'Dungeon',
-			'Cave',	
+			'Cave',
 			'Castle',
 			'Mountain',
 			'Shore',
@@ -135,16 +134,9 @@ console.log(chatMessages.length)
 	let choices2: any[] = []
 	let spells2: any[] = []
 	let inventory2: any[] = []
-	let stats2: any[] = [{ inCombat: false }]
+	let stats2: any[] = [{ inCombat: false, shopMode: false }]
+	let shop2: any[] = []
 	let placeAndTime2: any[] = []
-
-	// let result = {
-	// 	choices: choices2,
-	// 	spells: spells2,
-	// 	inventory: inventory2,
-	// 	stats: stats2,
-	// 	placeAndTime: placeAndTime2
-	// }
 
 	// function to get a random number from imgs.length
 	function getRandomNumber(num: any) {
@@ -203,32 +195,19 @@ console.log(chatMessages.length)
 
 	let logged: boolean = false
 	let fetchThisBg: string = ''
-	function parseText(
-		text: string,
-		result: {
-			choices?: any[]
-			stats?: any[]
-			inventory?: any[]
-			spells?: any[]
-			placeAndTime?: any[]
-		} = {}
-	): {
-		// choices?: string[]
-		choices?: any[]
-		stats?: any[]
-		inventory?: any[]
-		spells?: any[]
-		placeAndTime?: any[]
-	} {
+
+	function parseText(text: string) {
 		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
 		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
 		const statsRegex: any = /@stats:\s*(\[[^\]]*\])/
+		const shopRegex: any = /@shop:\s*(\[[^\]]*\])/
 		const inventoryRegex: any = /@inventory:\s*(\[[^\]]*\])/
 		const spellsRegex: any = /@spells:\s*(\[[^\]]*\])/
 
 		const placeAndTimeMatch: any = text.match(placeAndTimeRegex)
 		const choiceMatch: any = text.match(choiceRegex)
 		const statsMatch: any = text.match(statsRegex)
+		const shopMatch: any = text.match(shopRegex)
 		const inventoryMatch: any = text.match(inventoryRegex)
 		const spellsMatch: any = text.match(spellsRegex)
 
@@ -250,6 +229,9 @@ console.log(chatMessages.length)
 		if (statsMatch) {
 			stats2 = JSON.parse(statsMatch[1])
 		}
+		if (shopMatch) {
+			shop2 = JSON.parse(shopMatch[1])
+		}
 
 		if (inventoryMatch) {
 			inventory2 = JSON.parse(inventoryMatch[1])
@@ -258,7 +240,7 @@ console.log(chatMessages.length)
 		if (spellsMatch) {
 			spells2 = JSON.parse(spellsMatch[1])
 		}
-		return result
+		return
 	}
 
 	function extractStory(str: any) {
@@ -295,30 +277,27 @@ console.log(chatMessages.length)
 		return damage * dice
 	}
 
+	let combatChoice: { name: string; damage: any; prompt: string; combatScore: any; healing: any } =
+		{ name: '', damage: '', prompt: '', combatScore: undefined, healing: '' }
 
+	function throwDice(combatEvent: any) {
+		if (!combatEvent.name) return console.log('you need to choose a weapon or spell.')
 
-
-	let combatChoice: { name: string, damage:any, prompt:string, combatScore:any, healing:any } =
-	 { name: "", damage:"", prompt:"", combatScore:undefined, healing:"" };
-		
-		function throwDice(combatEvent:any){
-if (!combatEvent.name) return console.log("you need to choose a weapon or spell.")
-
-		if (coolDowns[combatEvent.name]){
-coolDowns[combatEvent.name] = 1
-
+		if (coolDowns[combatEvent.name]) {
+			coolDowns[combatEvent.name] = 1
 		}
-			//zar numarasını bi süre göstermek için 1-2 saniyelik bi timeout 
-			//içine alıncak giveYourAnswer
-			console.log(combatEvent.prompt)
-			giveYourAnswer(combatEvent.prompt)
+		//zar numarasını bi süre göstermek için 1-2 saniyelik bi timeout
+		//içine alıncak giveYourAnswer
+		console.log(combatEvent.prompt)
+		giveYourAnswer(combatEvent.prompt)
 
-			//empty the object after
-			combatChoice.name = "";
-			combatChoice.damage = undefined;
-			combatChoice.healing = undefined;
-			combatChoice.prompt = "";
-		}
+		//empty the object after
+		combatChoice.name = ''
+		combatChoice.damage = undefined
+		combatChoice.healing = undefined
+		combatChoice.prompt = ''
+		combatChoice.combatScore = undefined
+	}
 
 	function useItem(item: any) {
 		const { type, name, damage, manaCost, healing, mana } = item
@@ -326,14 +305,34 @@ coolDowns[combatEvent.name] = 1
 
 		if (type === 'weapon') {
 			if (!inCombat) return console.log('you are not in combat.')
-			combatChoice.combatScore=randomNumber1_20(damage)
-			combatChoice.prompt=(`Attack with ${name}! (@combatScore: ${combatChoice.combatScore})`)
-			combatChoice.name=name
-			combatChoice.damage=damage
-			combatChoice.healing=undefined
+			combatChoice.combatScore = randomNumber1_20(damage)
 
+			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
+				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player taking some serious hits and lose some huge health from enemy attacks, losing combat advantage aswell.)`
+			}
+			if (combatChoice.combatScore >= 10 && combatChoice.combatScore < 20) {
+				combatChoice.prompt = `Attack with ${name}! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
+			}
+			if (combatChoice.combatScore >= 20 && combatChoice.combatScore < 50) {
+				combatChoice.prompt = `Attack with ${name}! (give a medi-ocre @story where player lands a decent attack, which leads to an okayish scenario in combat for now.)`
+			}
+			if (combatChoice.combatScore >= 50 && combatChoice.combatScore < 80) {
+				combatChoice.prompt = `Attack with ${name}! (Tell a thrilling @story where player lands a great attack, dealing significant damage to the enemy and gaining an advantage in combat.)`
+			}
+			if (combatChoice.combatScore >= 80 && combatChoice.combatScore < 100) {
+				combatChoice.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy or causing massive damage.)`
+			}
+
+			if (combatChoice.combatScore >= 100) {
+				combatChoice.prompt = `Attack with ${name}! (Craft a legendary @story where player uses the most powerful spell, unleashing an unstoppable force that annihilates the enemy and wins the battle.)`
+			}
+
+			combatChoice.name = name
+			combatChoice.damage = damage
+			combatChoice.healing = undefined
 			console.log(combatChoice)
-			return;
+
+			return
 		}
 
 		if (type === 'destruction') {
@@ -341,29 +340,55 @@ coolDowns[combatEvent.name] = 1
 			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
 			coolDowns[name] = 3
-			combatChoice.combatScore=randomNumber1_20(damage)
+			combatChoice.combatScore = randomNumber1_20(damage)
 
-			combatChoice.prompt=(`Attack with ${name} spell! (@combatScore: ${combatChoice.combatScore})`)
-			combatChoice.name=name
-			combatChoice.damage=damage
-			combatChoice.healing=undefined
-			return;
+			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
+				combatChoice.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player taking some serious hits and lose some huge health from enemy attacks, losing combat advantage aswell.)`
+			}
+			if (combatChoice.combatScore >= 10 && combatChoice.combatScore < 20) {
+				combatChoice.prompt = `Attack with ${name} spell! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
+			}
+			if (combatChoice.combatScore >= 20 && combatChoice.combatScore < 50) {
+				combatChoice.prompt = `Attack with ${name} spell! (give a medi-ocre @story where player lands a decent attack, which leads to an okayish scenario in combat for now.)`
+			}
+			if (combatChoice.combatScore >= 50 && combatChoice.combatScore < 80) {
+				combatChoice.prompt = `Attack with ${name} spell! (Tell a thrilling @story where player lands a great attack, dealing significant damage to the enemy and gaining an advantage in combat.)`
+			}
+			if (combatChoice.combatScore >= 80 && combatChoice.combatScore < 100) {
+				combatChoice.prompt = `Attack with ${name} spell! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy or causing massive damage.)`
+			}
+
+			if (combatChoice.combatScore >= 100) {
+				combatChoice.prompt = `Attack with ${name} spell! (Craft a legendary @story where player uses the most powerful spell, unleashing an unstoppable force that annihilates the enemy and wins the battle.)`
+			}
+
+			combatChoice.name = name
+			combatChoice.damage = damage
+			combatChoice.healing = undefined
+			console.log(combatChoice)
+
+			return
 		}
 
 		if (type === 'healing') {
 			if (isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
 			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
-if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1_20(healing)} amount.)`)
+			if (!inCombat)
+				return giveYourAnswer(
+					`Heal myself with ${name} spell by ${randomNumber1_20(healing)} amount.)`
+				)
 
 			coolDowns[name] = 3
-			combatChoice.combatScore=randomNumber1_20(healing)
+			combatChoice.combatScore = randomNumber1_20(healing)
 
-			combatChoice.prompt=(`Heal myself with ${name} spell. (@healScore: ${combatChoice.combatScore})`)
-			combatChoice.name=name
-			combatChoice.healing=healing
-			combatChoice.damage=undefined
-			return;
+			combatChoice.prompt = `Heal myself with ${name} spell by ${combatChoice.combatScore} amount.`
+			combatChoice.name = name
+			combatChoice.healing = healing
+			combatChoice.damage = undefined
+			console.log(combatChoice)
+
+			return
 		}
 
 		if (type === 'potion') {
@@ -702,19 +727,17 @@ if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1
 										on:click={() => giveYourAnswer(choice)}>{choice}</button
 									>
 								{/each}
-								{#if choices2.length >= 3}
+								{#if choices2.length >= 2}
 									<div
 										transition:fade={{ ...getDelayTime(), duration: 400 }}
 										class="choice choiceInput"
 									>
-										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-											<input
-												placeholder="Go to a nearby Tavern | Speak about Magic"
-												type="text"
-												bind:value={query}
-											/>
-											<button disabled={!query} type="submit">Answer</button>
-										</form>
+										<input
+											placeholder="Go to a nearby Tavern | Speak about Magic"
+											type="text"
+											bind:value={query}
+										/>
+										<button disabled={!query} on:click={() => giveYourAnswer(query)}>Answer</button>
 									</div>
 								{/if}
 							</div>
@@ -722,34 +745,27 @@ if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1
 								<div class="stats">
 									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
 										<img src="images/gold.svg" alt="" />
-										<p>{stats2[0] && stats2[0].gold? stats2[0].gold : "15"}</p>
+										<p>{stats2[0] && stats2[0].gold ? stats2[0].gold : '15'}</p>
 									</div>
 									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
 										<img src="images/time.svg" alt="" />
 
-										<p>{stats2[0] && placeAndTime2[0].time? placeAndTime2[0].time:"00:00"}</p>
+										<p>{stats2[0] && placeAndTime2[0].time ? placeAndTime2[0].time : '00:00'}</p>
 									</div>
 								</div>
-							
 							{/if}
-								
+
 							{#if handleErr}
-									<div in:fade={{ duration: 700 }} class="choice" >
-										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-										<input
-										placeholder="No conversation generated. Please write your own action."
+								<div transition:fade={{ duration: 700 }} class="choice choiceInput">
+									<input
+										placeholder="Please input your answer again."
 										type="text"
 										bind:value={query}
-										/>
-										<button on:click={()=>handleErr=false} type="submit">Answer</button>
-										</form>
-									</div>
-			
-
-
-								{/if}
-							 
-						{:else if  stats2[0] && stats2[0].inCombat}
+									/>
+									<button disabled={!query} on:click={() => giveYourAnswer(query)}>Answer</button>
+								</div>
+							{/if}
+						{:else if stats2[0] && stats2[0].inCombat}
 							<!-- combat ui -->
 							<div class="combat">
 								<div class="combat-box">
@@ -757,26 +773,61 @@ if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1
 
 									<ul>
 										{#if !combatChoice.name}
-										<li >Choose an <span class="g-span">item</span> or a <span class="g-span">spell.</span></li>
+											<li>
+												Choose an <span class="g-span">item</span> or a
+												<span class="g-span">spell.</span>
+											</li>
 										{:else if combatChoice.damage}
-										<li >You chose <span class="g-span">{combatChoice.name}</span> with <span class="g-span">x{combatChoice.damage}</span> damage! </li>
+											<li>
+												You chose <span class="g-span">{combatChoice.name}</span> with
+												<span class="g-span">x{combatChoice.damage}</span> damage!
+											</li>
 										{:else if combatChoice.healing}
-										<li >You chose <span class="g-span">{combatChoice.name}</span> with <span class="g-span">x{combatChoice.healing}</span> heal power! </li>
-
+											<li>
+												You chose <span class="g-span">{combatChoice.name}</span> with
+												<span class="g-span">x{combatChoice.healing}</span> heal power!
+											</li>
 										{/if}
 
 										<li>Then, press the <span class="g-span">dice</span> to learn your fate!</li>
 										<li>
-											Your fighting scenario will be calculated based on these and some element of surprise.
+											Your fighting scenario will be calculated based on these and some element of
+											surprise.
 										</li>
 									</ul>
 
-									<img on:click={()=>throwDice(combatChoice)} src="images/dice.webp" alt=''/>
+									<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
 								</div>
 								<button
 									disabled={loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
 									class="choice choiceCombat"
+									style="opacity: {choices2.length ? '1' : '0'}; transition:1.5s;"
+									on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
+									>Or, just try to Retreat! [60% chance]</button
+								>
+							</div>
+							<!-- shop ui -->
+							{:else if stats2[0] && stats2[0].shopMode}
+							<div class="combat">
+								<div class="combat-box">
+									<h3>You're in a local <span class="span-heading">Shop.</span></h3>
+
+									<ul>
+										{#each buyables as buyable}
+										<li>{buyable.name} - {buyable.price}</li>
+										{/each}
+										
+										<li>Leave the Shop</li>
+									</ul>
+
+									<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
+								</div>
+								<button
+									disabled={loading}
+									transition:fade={{ ...getDelayTime(), duration: 700 }}
+									class="choice choiceCombat"
+									style='opacity: {choices2.length? "1":"0"}; transition:1.5s;'
 									on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
 									>Or, just try to Retreat! [60% chance]</button
 								>
@@ -797,7 +848,7 @@ if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1
 									{/if} -->
 					</div>
 
-					<div style="opacity:{choices2.length||stats2[0].inCombat ? '1' : '0'}; transition:1.5s;" class="ui-right">
+					<div style="opacity:{choices2.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
 						<!-- {#if stats2[0] && stats2[0].manaPoints} -->
 
 						<div class="mp-bar">
@@ -1072,9 +1123,9 @@ if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1
 		align-items: center;
 		justify-content: center;
 	}
-	.spells img:active, .inventory img:active{
+	.spells img:active,
+	.inventory img:active {
 		animation: button-pop 0.3s ease-out;
-
 	}
 	.spells button,
 	.inventory button {
@@ -1105,82 +1156,77 @@ if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1
 		width: 100%;
 		height: 100%;
 		margin-inline: auto;
-		gap:1rem;
+		gap: 1rem;
 	}
 
-	.combat-box h3{
-
-		position:absolute;
-		top:0.9rem;
-		left:50%;
-		width:100%;
-		transform:translateX(-50%);
-		text-align:center;
-		font-weight:300;
-font-size:1.5rem;
+	.combat-box h3 {
+		position: absolute;
+		top: 0.9rem;
+		left: 50%;
+		width: 100%;
+		transform: translateX(-50%);
+		text-align: center;
+		font-weight: 300;
+		font-size: 1.5rem;
 	}
-	
-	.combat-box{
+
+	.combat-box {
 		background-color: rgba(31, 31, 31, 0.841);
 		border-radius: 0.5rem;
-		display:flex;
-		align-items:flex-end;
-height:100%;		
-justify-content:space-around;
-		position:relative;
+		display: flex;
+		align-items: flex-end;
+		height: 100%;
+		justify-content: space-around;
+		position: relative;
 		padding: 0 0.2rem;
-		
 	}
-	.combat-box img{
-	height:50%;	
-	align-self:center;
-	background-color: rgba(19, 19, 19, 0.725);
+	.combat-box img {
+		height: 50%;
+		align-self: center;
+		background-color: rgba(19, 19, 19, 0.725);
 		border-radius: 20rem;
-		padding:0.7rem 0.8rem 0.6rem 0.7rem;
-
-		
+		padding: 0.7rem 0.8rem 0.6rem 0.7rem;
+		/* padding: 5rem; */
 	}
-	.combat-box img:active{
+	.combat-box img:active {
 		animation: button-pop 0.3s ease-out;
-
 	}
 
-	.combat-box ul{
-padding-bottom:0.7rem;
+	.combat-box ul {
+		padding-bottom: 0.7rem;
 
-padding-left:0.4rem;
-width:60%;
-font-size:1rem;
+		padding-left: 0.4rem;
+		width: 60%;
+		font-size: 1rem;
 	}
-.combat-box ul li{
-	color:#bbb;
-	padding-left:0.4rem;
-margin-bottom:0.4rem;
+	.combat-box ul li {
+		color: #bbb;
+		padding-left: 0.4rem;
+		margin-bottom: 0.4rem;
+	}
 
-
-}
-
-	.combat-box ul li:nth-child(1) {list-style-type: "⚔️";}
+	.combat-box ul li:nth-child(1) {
+		list-style-type: '⚔️';
+	}
 	.combat-box ul li:nth-child(2) {
-list-style-type: "🎲";
-
-}
+		list-style-type: '🎲';
+	}
 	.combat-box ul li:nth-child(3) {
-list-style-type: "🔮";
-line-height:1.2;
-font-size:0.8rem;
-padding-left:0.6rem;
-margin-left:-0.15rem;
-margin-top:0.6rem;
+		list-style-type: '🔮';
+		line-height: 1.2;
+		font-size: 0.8rem;
+		padding-left: 0.6rem;
+		margin-left: -0.15rem;
+		margin-top: 0.6rem;
 
-	color:#aaa;
+		color: #aaa;
 	}
-	.span-heading{
-		color:rgb(228, 55, 55);
-font-weight:400;
+	.span-heading {
+		color: rgb(228, 55, 55);
+		font-weight: 400;
 	}
-	.g-span{
-		 color: #3fcf8e;
+	.g-span {
+		color: #3fcf8e;
 	}
 
 	.stats {
@@ -1227,12 +1273,11 @@ font-weight:400;
 	}
 	.choiceInput {
 		background-color: #1f1f1fc8;
-	}
-	.choiceInput form {
 		display: flex;
 		align-items: center;
 	}
-	.choiceInput form input {
+
+	.choiceInput input {
 		background-color: transparent;
 		border: none;
 		width: 85%;
