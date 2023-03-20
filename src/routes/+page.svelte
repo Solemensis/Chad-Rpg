@@ -354,7 +354,7 @@ coolDowns[combatEvent.name] = 1
 			if (isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
 			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
-
+if (!inCombat) giveYourAnswer(`Heal myself with ${name} spell by ${randomNumber1_20(healing)} amount.)`)
 
 			coolDowns[name] = 3
 			combatChoice.combatScore=randomNumber1_20(healing)
@@ -757,7 +757,7 @@ coolDowns[combatEvent.name] = 1
 
 									<ul>
 										{#if !combatChoice.name}
-										<li >Choose an attacking <span class="g-span">item</span> or <span class="g-span">spell</span> </li>
+										<li >Choose an <span class="g-span">item</span> or a <span class="g-span">spell.</span></li>
 										{:else if combatChoice.damage}
 										<li >You chose <span class="g-span">{combatChoice.name}</span> with <span class="g-span">x{combatChoice.damage}</span> damage! </li>
 										{:else if combatChoice.healing}
@@ -797,7 +797,7 @@ coolDowns[combatEvent.name] = 1
 									{/if} -->
 					</div>
 
-					<div style="opacity:{choices2.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
+					<div style="opacity:{choices2.length||stats2[0].inCombat ? '1' : '0'}; transition:1.5s;" class="ui-right">
 						<!-- {#if stats2[0] && stats2[0].manaPoints} -->
 
 						<div class="mp-bar">
@@ -1146,7 +1146,7 @@ justify-content:space-around;
 	}
 
 	.combat-box ul{
-padding-bottom:0.6rem;
+padding-bottom:0.7rem;
 
 padding-left:0.4rem;
 width:60%;
@@ -1169,8 +1169,9 @@ list-style-type: "🎲";
 list-style-type: "🔮";
 line-height:1.2;
 font-size:0.8rem;
-padding-left:0.5rem;
+padding-left:0.6rem;
 margin-left:-0.15rem;
+margin-top:0.6rem;
 
 	color:#aaa;
 	}
