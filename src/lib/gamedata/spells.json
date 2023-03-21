@@ -1,0 +1,143 @@
+[
+	{
+		"name": "Mend Wounds",
+		"healing": 3,
+		"price": 50,
+		"mana": 20,
+		"type": "spell"
+	},
+	{
+		"name": "Nature's Grace",
+		"healing": 4,
+		"price": 80,
+		"mana": 25,
+		"type": "spell"
+	},
+	{
+		"name": "Renewed Vigor",
+		"healing": 5,
+		"price": 150,
+		"mana": 35,
+		"type": "spell"
+	},
+	{
+		"name": "Healing Light",
+		"healing": 7,
+		"price": 250,
+		"mana": 50,
+		"type": "spell"
+	},
+	{
+		"name": "Breath of Life",
+		"healing": 9,
+		"price": 350,
+		"mana": 70,
+		"type": "spell"
+	},
+
+	{
+		"name": "Arcane Nova",
+		"damage": 13,
+		"price": 400,
+		"mana": 65,
+		"type": "spell"
+	},
+	{
+		"name": "Shadow Lance",
+		"damage": 9,
+		"price": 250,
+		"mana": 50,
+		"type": "spell"
+	},
+	{
+		"name": "Frostbite Blast",
+		"damage": 8,
+		"price": 200,
+		"mana": 40,
+		"type": "spell"
+	},
+	{
+		"name": "Death's Embrace",
+		"damage": 11,
+		"price": 350,
+		"mana": 60,
+		"type": "spell"
+	},
+	{
+		"name": "Solar Flare",
+		"damage": 7,
+		"price": 130,
+		"mana": 30,
+		"type": "spell"
+	},
+	{
+		"name": "Thundering Tempest",
+		"damage": 7,
+		"price": 130,
+		"mana": 30,
+		"type": "spell"
+	},
+	{
+		"name": "Divine Judgement",
+		"damage": 15,
+		"price": 500,
+		"mana": 70,
+		"type": "spell"
+	},
+	{
+		"name": "Poisonous Cloud",
+		"damage": 6,
+		"price": 80,
+		"mana": 25,
+		"type": "spell"
+	},
+	{
+		"name": "Eldritch Blast",
+		"damage": 10,
+		"price": 300,
+		"mana": 55,
+		"type": "spell"
+	},
+	{
+		"name": "Acid Rain",
+		"damage": 6,
+		"price": 80,
+		"mana": 25,
+		"type": "spell"
+	},
+	{
+		"name": "Inferno Burst",
+		"damage": 6,
+		"price": 80,
+		"mana": 25,
+		"type": "spell"
+	},
+	{
+		"name": "Storm Surge",
+		"damage": 5,
+		"price": 65,
+		"mana": 20,
+		"type": "spell"
+	},
+	{
+		"name": "Spectral Blade",
+		"damage": 8,
+		"price": 200,
+		"mana": 40,
+		"type": "spell"
+	},
+	{
+		"name": "Necrotic Touch",
+		"damage": 5,
+		"price": 65,
+		"mana": 20,
+		"type": "spell"
+	},
+	{
+		"name": "Soul Drain",
+		"damage": 5,
+		"price": 65,
+		"mana": 20,
+		"type": "spell"
+	}
+]

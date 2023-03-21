@@ -5,6 +5,8 @@
 	import { fade } from 'svelte/transition'
 	import { supabase } from '$lib/supabaseClient'
 
+	import weapons from '$lib/gamedata/weapons.json';
+
 	let query: string = ''
 	let answer: string = ''
 	let story: string = ''
@@ -134,7 +136,7 @@
 	let choices2: any[] = []
 	let spells2: any[] = []
 	let inventory2: any[] = []
-	let stats2: any[] = [{ inCombat: false, shopMode: false }]
+	let stats2: any[] = [{ inCombat: false, shopMode: 'none' }]
 	let shop2: any[] = []
 	let placeAndTime2: any[] = []
 
@@ -308,7 +310,7 @@
 			combatChoice.combatScore = randomNumber1_20(damage)
 
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
-				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player taking some serious hits and lose some huge health from enemy attacks, losing combat advantage aswell.)`
+				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player taking some serious hits and lose some huge health from enemy attacks, losing combat advantage aswell. End the combat with a failure, give a scenario where player barely escapes.)`
 			}
 			if (combatChoice.combatScore >= 10 && combatChoice.combatScore < 20) {
 				combatChoice.prompt = `Attack with ${name}! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
@@ -582,6 +584,7 @@
 			<button on:click={() => giveYourAnswer(randomize(medievalStarter))}
 				>at a random place in Medieval World</button
 			>
+			<h2>{weapons[0].name}</h2>
 			<button
 				on:click={() => {
 					giveYourAnswer(
@@ -717,7 +720,7 @@
 						</div>
 					</div>
 					<div class="ui-mid">
-						{#if stats2[0] && !stats2[0].inCombat}
+						{#if stats2[0] && !stats2[0].inCombat && stats2[0].shopMode == 'none'}
 							<div class="choices">
 								{#each choices2 as choice}
 									<button
@@ -733,7 +736,7 @@
 										class="choice choiceInput"
 									>
 										<input
-											placeholder="Go to a nearby Tavern | Speak about Magic"
+											placeholder="Go to local Inn, find someone to talk to"
 											type="text"
 											bind:value={query}
 										/>
@@ -744,11 +747,11 @@
 							{#if choices2.length >= 2}
 								<div class="stats">
 									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
-										<img src="images/gold.svg" alt="" />
+										<img class="svg-images" src="images/gold.svg" alt="" />
 										<p>{stats2[0] && stats2[0].gold ? stats2[0].gold : '15'}</p>
 									</div>
 									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
-										<img src="images/time.svg" alt="" />
+										<img class="svg-images" src="images/time.svg" alt="" />
 
 										<p>{stats2[0] && placeAndTime2[0].time ? placeAndTime2[0].time : '00:00'}</p>
 									</div>
@@ -762,7 +765,13 @@
 										type="text"
 										bind:value={query}
 									/>
-									<button disabled={!query} on:click={() => giveYourAnswer(query)}>Answer</button>
+									<button
+										disabled={!query}
+										on:click={() => {
+											giveYourAnswer(query)
+											handleErr = !handleErr
+										}}>Answer</button
+									>
 								</div>
 							{/if}
 						{:else if stats2[0] && stats2[0].inCombat}
@@ -795,8 +804,9 @@
 											surprise.
 										</li>
 									</ul>
-
-									<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
+									<button class="combat-button">
+										<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
+									</button>
 								</div>
 								<button
 									disabled={loading}
@@ -808,28 +818,53 @@
 								>
 							</div>
 							<!-- shop ui -->
-							{:else if stats2[0] && stats2[0].shopMode}
-							<div class="combat">
-								<div class="combat-box">
-									<h3>You're in a local <span class="span-heading">Shop.</span></h3>
+						{:else if stats2[0] && stats2[0].shopMode != 'none'}
+							<div class="shop">
+								<div class="shop-box">
+									{#if stats2[0].shopMode == 'weaponsmith'}
+										<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
+									{/if}
+									{#if stats2[0].shopMode == 'armorsmith'}
+										<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
+									{/if}
+									{#if stats2[0].shopMode == 'spell shop'}
+										<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
+									{/if}
+									{#if stats2[0].shopMode == 'potion shop'}
+										<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
+									{/if}
+									{#if stats2[0].shopMode != 'none' && stats2[0].shopMode != 'weaponsmith' && stats2[0].shopMode != 'armorsmith' && stats2[0].shopMode != 'spell shop' && stats2[0].shopMode != 'potion shop'}
+										<h3>You're at a local <span class="g-span">Merchant</span></h3>
+									{/if}
 
 									<ul>
-										{#each buyables as buyable}
-										<li>{buyable.name} - {buyable.price}</li>
+										{#each shop2 as buyable}
+										<button class="item-button" on:click={()=>console.log("anan: ", buyable.name)} >
+											{#if buyable.damage}
+												<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage</li>
+											{/if}
+											{#if buyable.healing}
+												<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
+											{/if}
+											{#if buyable.armor}
+												<li>{buyable.name} - {buyable.price} gold - {buyable.armor} armor</li>
+											{/if}
+											{#if buyable.mana}
+												<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
+											{/if}
+											</button>
 										{/each}
-										
-										<li>Leave the Shop</li>
 									</ul>
-
-									<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
+									<button class="buy-button">
+										<img src="images/buy.svg" alt="" />
+									</button>
 								</div>
 								<button
 									disabled={loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
 									class="choice choiceCombat"
-									style='opacity: {choices2.length? "1":"0"}; transition:1.5s;'
-									on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
-									>Or, just try to Retreat! [60% chance]</button
+									style="opacity: {choices2.length ? '1' : '0'}; transition:1.5s;"
+									on:click={() => giveYourAnswer('Leave the shop')}>Leave the Shop</button
 								>
 							</div>
 						{/if}
@@ -1148,7 +1183,8 @@
 		width: 100%;
 		margin-inline: auto;
 	}
-	.combat {
+	.combat,
+	.shop {
 		min-height: 36.9%;
 		display: flex;
 		justify-content: space-between;
@@ -1159,7 +1195,8 @@
 		gap: 1rem;
 	}
 
-	.combat-box h3 {
+	.combat-box h3,
+	.shop-box h3 {
 		position: absolute;
 		top: 0.9rem;
 		left: 50%;
@@ -1170,7 +1207,8 @@
 		font-size: 1.5rem;
 	}
 
-	.combat-box {
+	.combat-box,
+	.shop-box {
 		background-color: rgba(31, 31, 31, 0.841);
 		border-radius: 0.5rem;
 		display: flex;
@@ -1180,26 +1218,27 @@
 		position: relative;
 		padding: 0 0.2rem;
 	}
-	.combat-box img {
+	.combat-button img {
 		height: 50%;
 		align-self: center;
 		background-color: rgba(19, 19, 19, 0.725);
 		border-radius: 20rem;
 		padding: 0.7rem 0.8rem 0.6rem 0.7rem;
-		/* padding: 5rem; */
 	}
 	.combat-box img:active {
 		animation: button-pop 0.3s ease-out;
 	}
 
-	.combat-box ul {
+	.combat-box ul,
+	.shop-box ul {
 		padding-bottom: 0.7rem;
 
 		padding-left: 0.4rem;
 		width: 60%;
 		font-size: 1rem;
 	}
-	.combat-box ul li {
+	.combat-box ul li,
+	.shop-box ul li {
 		color: #bbb;
 		padding-left: 0.4rem;
 		margin-bottom: 0.4rem;
@@ -1220,6 +1259,28 @@
 		margin-top: 0.6rem;
 
 		color: #aaa;
+	}
+	.buy-button {
+		border: none;
+		align-self: flex-end;
+		margin-bottom: 1.4rem;
+		background-color: rgba(19, 19, 19, 0.525);
+		border-radius: 0.6rem;
+		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
+	}
+	.buy-button img {
+		width: 3.5rem;
+	}
+	.buy-button:active {
+		animation: button-pop 0.3s ease-out;
+	}
+	.item-button{
+		border:none;
+		background-color:transparent;
+	}
+
+	.shop-box ul li {
+		list-style-type: '\1F7E3';
 	}
 	.span-heading {
 		color: rgb(228, 55, 55);
@@ -1243,10 +1304,11 @@
 		border-radius: 0.3rem;
 		padding: 0.2rem 0.5rem;
 	}
-	.stat img {
+	.svg-images {
 		width: 1.1rem;
 		height: 1.1rem;
 	}
+
 	.stat p {
 		font-size: 1.2rem;
 	}
