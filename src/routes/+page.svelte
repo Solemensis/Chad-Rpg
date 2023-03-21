@@ -5,6 +5,8 @@
 	import { fade } from 'svelte/transition'
 	import { supabase } from '$lib/supabaseClient'
 
+	import frpgPlaces from '$lib/gamedata/places/frpg.json';
+	import frpgStarter from '$lib/gamedata/gamestarters/frpg.json';
 	import weapons from '$lib/gamedata/weapons.json';
 
 	let query: string = ''
@@ -12,17 +14,16 @@
 	let story: string = ''
 	let loading: boolean = false
 	let chatMessages: ChatCompletionRequestMessage[] = []
-	let saveQuery: string = ''
+
 
 	const handleSubmit = async () => {
 		if (query === '') {
 			return
 		}
 
-		choices2 = []
+		choices = []
 
 		loading = true
-		saveQuery = query
 		chatMessages = [...chatMessages, { role: 'user', content: query }]
 
 		const eventSource = new SSE('/api/chat', {
@@ -39,14 +40,14 @@
 				// loading = false
 				parseText(answer)
 				story = extractStory(answer)
-
 				if (e.data === '[DONE]') {
 					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
 					loading = false
 					logged = false
 
 					console.log(answer)
-					console.log(shop2)
+console.log(event)
+
 
 					//to handle token limitation of gpt
 					if (chatMessages.length >= 18) {
@@ -78,7 +79,6 @@
 	function handleError<T>(err: T) {
 		// loading = false
 		console.error('error from client: ' + JSON.stringify(err))
-		console.log('saveQuery: ' + saveQuery)
 
 		handleErr = true
 
@@ -86,45 +86,13 @@
 		// answer = ''
 	}
 
-	// from here, my code starts
 
 	function checkWordsForImg(str: any) {
 		const words = str.split(' ')
-		const specificWords = [
-			'Tavern',
-			'Woods',
-			'Town',
-			'Library',
-			'Laboratory',
-			'Hospital',
-			'Sanatorium',
-			'School',
-			'Dungeon',
-			'Cave',
-			'Castle',
-			'Mountain',
-			'Shore',
-			'Cathedral',
-			'Shop',
-			'Home',
-			'Harbor',
-			'Dock',
-			'Ship',
-			'Desert',
-			'Island',
-			'Temple',
-			'Unknown',
-			'Underground',
-			'City',
-			'Throne',
-			'Monastery',
-			'Inn',
-			'Garden'
-		]
 
 		for (let i = 0; i < words.length; i++) {
 			const word = words[i]
-			if (specificWords.includes(word)) {
+			if (frpgPlaces.includes(word)) {
 				return word
 			}
 		}
@@ -132,13 +100,13 @@
 		return null
 	}
 
-	// let choices2: string[] = []
-	let choices2: any[] = []
-	let spells2: any[] = []
-	let inventory2: any[] = []
-	let stats2: any[] = [{ inCombat: false, shopMode: 'none' }]
-	let shop2: any[] = []
-	let placeAndTime2: any[] = []
+	let choices: any[] = []
+	let spells: any[] = []
+	let inventory: any[] = []
+	let stats: any[] = []
+	let event: any[] = [{ inCombat: false, shopMode: 'none' }]
+	let shop: any[] = []
+	let placeAndTime: any[] = []
 
 	// function to get a random number from imgs.length
 	function getRandomNumber(num: any) {
@@ -198,50 +166,70 @@
 	let logged: boolean = false
 	let fetchThisBg: string = ''
 
+
+
+
+	function shuffleItems(items: any) {
+  // Start at the end of the array and work backwards
+  for (let i = items.length - 1; i > 0; i--) {
+    // Pick a random index between 0 and i (inclusive)
+    const j = Math.floor(Math.random() * (i + 1));
+
+    // Swap the current element with the randomly selected one
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+
+  // Return the first three shuffled items
+  return items.slice(0, 3);
+}
+
+let shopItems:any[] = []
+
+
+function mixBuyables(category:any){
+	if (category =="weaponsmith") shopItems=shuffleItems(weapons)
+	console.log(shopItems)
+	return;
+}
+
 	function parseText(text: string) {
 		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
 		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
-		const statsRegex: any = /@stats:\s*(\[[^\]]*\])/
-		const shopRegex: any = /@shop:\s*(\[[^\]]*\])/
-		const inventoryRegex: any = /@inventory:\s*(\[[^\]]*\])/
-		const spellsRegex: any = /@spells:\s*(\[[^\]]*\])/
+		const eventRegex: any = /@event:\s*(\[[^\]]*\])/
 
 		const placeAndTimeMatch: any = text.match(placeAndTimeRegex)
 		const choiceMatch: any = text.match(choiceRegex)
-		const statsMatch: any = text.match(statsRegex)
-		const shopMatch: any = text.match(shopRegex)
-		const inventoryMatch: any = text.match(inventoryRegex)
-		const spellsMatch: any = text.match(spellsRegex)
+		const eventMatch: any = text.match(eventRegex)
 
 		if (placeAndTimeMatch) {
-			placeAndTime2 = JSON.parse(placeAndTimeMatch[1])
+			placeAndTime = JSON.parse(placeAndTimeMatch[1])
 
 			if (!logged) {
-				fetchThisBg = checkWordsForImg(placeAndTime2[0].place)
-				time = placeAndTime2[0].time
+				fetchThisBg = checkWordsForImg(placeAndTime[0].place)
+				time = placeAndTime[0].time
 				fetchImg()
 
 				logged = true
 			}
 		}
 
+	
+		
+		if (eventMatch){
+			event = JSON.parse(eventMatch[1])
+
+			if (event[0].shopMode !="none")
+			{
+				mixBuyables(event[0].shopMode)
+			}
+		}
 		if (choiceMatch) {
-			choices2 = JSON.parse(choiceMatch[1])
-		}
-		if (statsMatch) {
-			stats2 = JSON.parse(statsMatch[1])
-		}
-		if (shopMatch) {
-			shop2 = JSON.parse(shopMatch[1])
+			//bunlar çat çat çat yazılıyo galiba. tek 1 kere yazılcak şekilde optimize et
+
+			choices = JSON.parse(choiceMatch[1])
 		}
 
-		if (inventoryMatch) {
-			inventory2 = JSON.parse(inventoryMatch[1])
-		}
-
-		if (spellsMatch) {
-			spells2 = JSON.parse(spellsMatch[1])
-		}
+		
 		return
 	}
 
@@ -282,6 +270,7 @@
 	let combatChoice: { name: string; damage: any; prompt: string; combatScore: any; healing: any } =
 		{ name: '', damage: '', prompt: '', combatScore: undefined, healing: '' }
 
+
 	function throwDice(combatEvent: any) {
 		if (!combatEvent.name) return console.log('you need to choose a weapon or spell.')
 
@@ -303,7 +292,8 @@
 
 	function useItem(item: any) {
 		const { type, name, damage, manaCost, healing, mana } = item
-		const { inCombat, manaPoints, healthPoints } = stats2[0]
+		const { manaPoints, healthPoints } = stats[0]
+		const {inCombat} = event[0]
 
 		if (type === 'weapon') {
 			if (!inCombat) return console.log('you are not in combat.')
@@ -427,7 +417,7 @@
 
 		displayItemWindow = 'none'
 
-		choices2 = []
+		choices = []
 
 		query = choice
 		answer = ''
@@ -463,36 +453,13 @@
 		dotty += '.'
 	}, 400)
 
-	const medievalStarter: any = [
-		'Player enters a tavern and starts to chat with the innkeeper. (game-theme:medieval)',
-		'Player is looking for spellbooks at a library in a town. (game-theme:medieval)',
-		'Player arrives at a small village and meets with the local blacksmith. (game-theme:medieval)',
-		"Player visits a healer's hut to seek treatment for a wound. (game-theme:medieval)",
-		"Player explores the town's market and meets with various vendors. (game-theme:medieval)",
-		'Player meets with a nobleman in his castle to discuss a quest. (game-theme:medieval)',
-		'Player seeks refuge in a church from a storm or danger outside. (game-theme:medieval)',
-		'Player participates in a festival or celebration in a town square. (game-theme:medieval)',
-		'Player visits a wise old sage in his hidden cottage in the woods. (game-theme:medieval)',
-		'Player trains with a knight in a castle courtyard. (game-theme:medieval)',
-		'Player joins a group of travelers on a caravan to a nearby city. (game-theme:medieval)',
-		'Player attends a performance at a theater in a grand city. (game-theme:medieval)',
-		'Player enters a secluded monastery to seek guidance from the monks. (game-theme:medieval)',
-		'Player discovers a hidden cave and meets with a hermit who lives there. (game-theme:medieval)',
-		'Player investigates a mysterious castle in the middle of a forest. (game-theme:medieval)',
-		'Player explores a deserted island and meets with a castaway. (game-theme:medieval)',
-		'Player enters a mystical garden and meets with a fairy queen. (game-theme:medieval)',
-		"Player seeks shelter in a wizard's tower during a dangerous quest. (game-theme:medieval)",
-		'Player participates in a tournament of knights in a grand arena. (game-theme:medieval)',
-		'Player seeks an audience with a powerful king in his throne room. (game-theme:medieval)',
-		'Player visits a grand library in a city to research ancient texts. (game-theme:medieval)',
-		'Player discovers a hidden underground city and meets with its inhabitants. (game-theme:medieval)'
-	]
+	
 
 	function randomize(gameStarter: any) {
 		const randomIndex = Math.floor(Math.random() * gameStarter.length)
 		const randomlySelectedElement = gameStarter[randomIndex]
 
-		chatMessages = [{ role: 'user', content: randomlySelectedElement }]
+		chatMessages = [...chatMessages, { role: 'user', content: randomlySelectedElement }]
 		return randomlySelectedElement
 	}
 
@@ -581,7 +548,7 @@
 
 			<h5>gamestarted: {gameStarted}</h5>
 
-			<button on:click={() => giveYourAnswer(randomize(medievalStarter))}
+			<button on:click={() => giveYourAnswer(randomize(frpgStarter))}
 				>at a random place in Medieval World</button
 			>
 			<h2>{weapons[0].name}</h2>
@@ -592,7 +559,7 @@
 					)
 				}}>at a tavern in Medieval World</button
 			>
-			<!-- <h3>stats: {stats2[0]}</h3> -->
+			<!-- <h3>stats: {stats[0]}</h3> -->
 			<!-- <img src="images/dice.webp" /> -->
 			<!-- <button
 				on:click={() =>
@@ -625,94 +592,94 @@
 					<ChatMessage type="assistant" message={story ? story : dotty} />
 				</div>
 				<div transition:fade={{ duration: 2000 }} class="game-controls">
-					<div style="opacity:{choices2.length ? '1' : '0'}; transition:1.5s;" class="ui-left">
-						<!-- {#if stats2[0] && stats2[0].healthPoints} -->
+					<div style="opacity:{choices.length ? '1' : '0'}; transition:1.5s;" class="ui-left">
+						<!-- {#if stats[0] && stats[0].healthPoints} -->
 						<div class="hp-bar">
-							{stats2[0] && stats2[0].healthPoints ? stats2[0].healthPoints : '70/70'}
+							 70/70
 						</div>
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
 							<h3>Inventory</h3>
-							{#if inventory2[0]}
+							{#if inventory[0]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(inventory2[0])}
+									on:click={() => useItem(inventory[0])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[0])}
+										on:mousemove={(event) => handleMouseMove(event, inventory[0])}
 										on:mouseleave={hideWindow}
-										src="/images/{inventory2[0].type}.svg"
+										src="/images/{inventory[0].type}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if inventory2[1]}
+							{#if inventory[1]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(inventory2[1])}
+									on:click={() => useItem(inventory[1])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[1])}
+										on:mousemove={(event) => handleMouseMove(event, inventory[1])}
 										on:mouseleave={hideWindow}
-										src="/images/{inventory2[1].type}.svg"
+										src="/images/{inventory[1].type}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if inventory2[2]}
+							{#if inventory[2]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(inventory2[2])}
+									on:click={() => useItem(inventory[2])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[2])}
+										on:mousemove={(event) => handleMouseMove(event, inventory[2])}
 										on:mouseleave={hideWindow}
-										src="/images/{inventory2[2].type}.svg"
+										src="/images/{inventory[2].type}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if inventory2[3]}
+							{#if inventory[3]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(inventory2[3])}
+									on:click={() => useItem(inventory[3])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[3])}
+										on:mousemove={(event) => handleMouseMove(event, inventory[3])}
 										on:mouseleave={hideWindow}
-										src="/images/{inventory2[3].type}.svg"
+										src="/images/{inventory[3].type}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if inventory2[4]}
+							{#if inventory[4]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(inventory2[4])}
+									on:click={() => useItem(inventory[4])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[4])}
+										on:mousemove={(event) => handleMouseMove(event, inventory[4])}
 										on:mouseleave={hideWindow}
-										src="/images/{inventory2[4].type}.svg"
+										src="/images/{inventory[4].type}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if inventory2[5]}
+							{#if inventory[5]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(inventory2[5])}
+									on:click={() => useItem(inventory[5])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory2[5])}
+										on:mousemove={(event) => handleMouseMove(event, inventory[5])}
 										on:mouseleave={hideWindow}
-										src="/images/{inventory2[5].type}.svg"
+										src="/images/{inventory[5].type}.svg"
 										alt=""
 									/>
 								</button>
@@ -720,9 +687,9 @@
 						</div>
 					</div>
 					<div class="ui-mid">
-						{#if stats2[0] && !stats2[0].inCombat && stats2[0].shopMode == 'none'}
+						{#if event[0]&& event[0].shopMode == 'none'&& event[0] && !event[0].inCombat  }
 							<div class="choices">
-								{#each choices2 as choice}
+								{#each choices as choice}
 									<button
 										disabled={loading}
 										transition:fade={{ ...getDelayTime(), duration: 700 }}
@@ -730,7 +697,7 @@
 										on:click={() => giveYourAnswer(choice)}>{choice}</button
 									>
 								{/each}
-								{#if choices2.length >= 2}
+								{#if choices.length >= 2}
 									<div
 										transition:fade={{ ...getDelayTime(), duration: 400 }}
 										class="choice choiceInput"
@@ -744,16 +711,16 @@
 									</div>
 								{/if}
 							</div>
-							{#if choices2.length >= 2}
+							{#if choices.length >= 2}
 								<div class="stats">
 									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
 										<img class="svg-images" src="images/gold.svg" alt="" />
-										<p>{stats2[0] && stats2[0].gold ? stats2[0].gold : '15'}</p>
+										<p>20</p>
 									</div>
 									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
 										<img class="svg-images" src="images/time.svg" alt="" />
 
-										<p>{stats2[0] && placeAndTime2[0].time ? placeAndTime2[0].time : '00:00'}</p>
+										<p>{placeAndTime[0].time ? placeAndTime[0].time : '00:00'}</p>
 									</div>
 								</div>
 							{/if}
@@ -774,7 +741,7 @@
 									>
 								</div>
 							{/if}
-						{:else if stats2[0] && stats2[0].inCombat}
+						{:else if event[0] && event[0].inCombat}
 							<!-- combat ui -->
 							<div class="combat">
 								<div class="combat-box">
@@ -812,33 +779,33 @@
 									disabled={loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
 									class="choice choiceCombat"
-									style="opacity: {choices2.length ? '1' : '0'}; transition:1.5s;"
+									style="opacity: {choices.length ? '1' : '0'}; transition:1.5s;"
 									on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
 									>Or, just try to Retreat! [60% chance]</button
 								>
 							</div>
 							<!-- shop ui -->
-						{:else if stats2[0] && stats2[0].shopMode != 'none'}
+						{:else if event[0] && event[0].shopMode != 'none'}
 							<div class="shop">
 								<div class="shop-box">
-									{#if stats2[0].shopMode == 'weaponsmith'}
+									{#if event[0].shopMode == 'weaponsmith'}
 										<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
 									{/if}
-									{#if stats2[0].shopMode == 'armorsmith'}
+									{#if event[0].shopMode == 'armorsmith'}
 										<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
 									{/if}
-									{#if stats2[0].shopMode == 'spell shop'}
+									{#if event[0].shopMode == 'spell shop'}
 										<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
 									{/if}
-									{#if stats2[0].shopMode == 'potion shop'}
+									{#if event[0].shopMode == 'potion shop'}
 										<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
 									{/if}
-									{#if stats2[0].shopMode != 'none' && stats2[0].shopMode != 'weaponsmith' && stats2[0].shopMode != 'armorsmith' && stats2[0].shopMode != 'spell shop' && stats2[0].shopMode != 'potion shop'}
+									{#if event[0].shopMode != 'none' && event[0].shopMode != 'weaponsmith' && event[0].shopMode != 'armorsmith' && event[0].shopMode != 'spell shop' && event[0].shopMode != 'potion shop'}
 										<h3>You're at a local <span class="g-span">Merchant</span></h3>
 									{/if}
 
 									<ul>
-										{#each shop2 as buyable}
+										{#each shop as buyable}
 										<button class="item-button" on:click={()=>console.log("anan: ", buyable.name)} >
 											{#if buyable.damage}
 												<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage</li>
@@ -863,7 +830,7 @@
 									disabled={loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
 									class="choice choiceCombat"
-									style="opacity: {choices2.length ? '1' : '0'}; transition:1.5s;"
+									style="opacity: {choices.length ? '1' : '0'}; transition:1.5s;"
 									on:click={() => giveYourAnswer('Leave the shop')}>Leave the Shop</button
 								>
 							</div>
@@ -883,95 +850,95 @@
 									{/if} -->
 					</div>
 
-					<div style="opacity:{choices2.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
-						<!-- {#if stats2[0] && stats2[0].manaPoints} -->
+					<div style="opacity:{choices.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
+						<!-- {#if stats[0] && stats[0].manaPoints} -->
 
 						<div class="mp-bar">
-							{stats2[0] && stats2[0].manaPoints ? stats2[0].manaPoints : '50/50'}
+							50/50
 						</div>
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
 							<h3>Spells</h3>
 
-							{#if spells2[0]}
+							{#if spells[0]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spells2[0])}
+									on:click={() => useItem(spells[0])}
 									in:fade={{ duration: 600 }}
 									><img
-										on:mousemove={(event) => handleMouseMove(event, spells2[0])}
+										on:mousemove={(event) => handleMouseMove(event, spells[0])}
 										on:mouseleave={hideWindow}
-										src="/images/{spells2[0].element}.svg"
+										src="/images/{spells[0].element}.svg"
 										alt=""
 									/></button
 								>
 							{/if}
-							{#if spells2[1]}
+							{#if spells[1]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spells2[1])}
+									on:click={() => useItem(spells[1])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, spells2[1])}
+										on:mousemove={(event) => handleMouseMove(event, spells[1])}
 										on:mouseleave={hideWindow}
-										src="/images/{spells2[1].element}.svg"
+										src="/images/{spells[1].element}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if spells2[2]}
+							{#if spells[2]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spells2[2])}
+									on:click={() => useItem(spells[2])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, spells2[2])}
+										on:mousemove={(event) => handleMouseMove(event, spells[2])}
 										on:mouseleave={hideWindow}
-										src="/images/{spells2[2].element}.svg"
+										src="/images/{spells[2].element}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if spells2[3]}
+							{#if spells[3]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spells2[3])}
+									on:click={() => useItem(spells[3])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, spells2[3])}
+										on:mousemove={(event) => handleMouseMove(event, spells[3])}
 										on:mouseleave={hideWindow}
-										src="/images/{spells2[3].element}.svg"
+										src="/images/{spells[3].element}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if spells2[4]}
+							{#if spells[4]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spells2[4])}
+									on:click={() => useItem(spells[4])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, spells2[4])}
+										on:mousemove={(event) => handleMouseMove(event, spells[4])}
 										on:mouseleave={hideWindow}
-										src="/images/{spells2[4].element}.svg"
+										src="/images/{spells[4].element}.svg"
 										alt=""
 									/>
 								</button>
 							{/if}
-							{#if spells2[5]}
+							{#if spells[5]}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spells2[5])}
+									on:click={() => useItem(spells[5])}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, spells2[5])}
+										on:mousemove={(event) => handleMouseMove(event, spells[5])}
 										on:mouseleave={hideWindow}
-										src="/images/{spells2[5].element}.svg"
+										src="/images/{spells[5].element}.svg"
 										alt=""
 									/>
 								</button>
@@ -1000,7 +967,7 @@
 
 		<!-- <div class="left-part">
 			<div class="inventory">
-				{#each inventory2 as item}
+				{#each inventory as item}
 					<h5>{item.name}</h5>
 					{#if item.damage}
 						<p>Damage: {item.damage}</p>
@@ -1014,7 +981,7 @@
 				{/each}
 			</div>
 			<div class="spells">
-				{#each spells2 as spell}
+				{#each spells as spell}
 					<h5>{spell.name}</h5>
 					{#if spell.damage}
 						<p>Damage: {spell.damage}</p>
@@ -1025,7 +992,7 @@
 				{/each}
 			</div>
 			<div class="stats">
-				{#each stats2 as stats}
+				{#each stats as stats}
 					<p>Health: {stats.healthPoints}</p>
 					<p>Level: {stats.level}</p>
 					<p>Power Level: {stats.powerLevel}</p>
