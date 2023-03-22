@@ -5,16 +5,16 @@
 	import { fade } from 'svelte/transition'
 	import { supabase } from '$lib/supabaseClient'
 
-	import frpgPlaces from '$lib/gamedata/places/frpg.json';
-	import frpgStarter from '$lib/gamedata/gamestarters/frpg.json';
-	import weapons from '$lib/gamedata/weapons.json';
+	import frpgPlaces from '$lib/gamedata/places/frpg.json'
+	import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
+	import buyWeapons from '$lib/gamedata/weapons.json'
+	import buySpells from '$lib/gamedata/spells.json'
 
 	let query: string = ''
 	let answer: string = ''
 	let story: string = ''
 	let loading: boolean = false
 	let chatMessages: ChatCompletionRequestMessage[] = []
-
 
 	const handleSubmit = async () => {
 		if (query === '') {
@@ -46,8 +46,7 @@
 					logged = false
 
 					console.log(answer)
-console.log(event)
-
+					console.log(event)
 
 					//to handle token limitation of gpt
 					if (chatMessages.length >= 18) {
@@ -86,7 +85,6 @@ console.log(event)
 		// answer = ''
 	}
 
-
 	function checkWordsForImg(str: any) {
 		const words = str.split(' ')
 
@@ -101,12 +99,39 @@ console.log(event)
 	}
 
 	let choices: any[] = []
-	let spells: any[] = []
-	let inventory: any[] = []
-	let stats: any[] = []
-	let event: any[] = [{ inCombat: false, shopMode: 'none' }]
 	let shop: any[] = []
 	let placeAndTime: any[] = []
+
+	let event: any[] = [{ inCombat: false, shopMode: null, gold: 15 }]
+
+	let stats: any[] = [{ hp: 80, maxHp: 80, mp: 60, maxMp: 60 }]
+	let spells: any[] = [
+		{
+			name: 'Fireball',
+			damage: 4,
+			price: 15,
+			manaCost: 12,
+			type: 'destruction spell',
+			element: 'fire'
+		},
+		{
+			name: 'Light Heal',
+			healing: 2,
+			price: 10,
+			manaCost: 12,
+			type: 'healing spell',
+			element: 'light'
+		}
+	]
+	let inventory: any[] = [
+		{
+			name: 'Wooden Sword',
+			damage: 3,
+			price: 10,
+			type: 'weapon',
+			class: 'sword'
+		}
+	]
 
 	// function to get a random number from imgs.length
 	function getRandomNumber(num: any) {
@@ -166,31 +191,26 @@ console.log(event)
 	let logged: boolean = false
 	let fetchThisBg: string = ''
 
-
-
-
 	function shuffleItems(items: any) {
-  // Start at the end of the array and work backwards
-  for (let i = items.length - 1; i > 0; i--) {
-    // Pick a random index between 0 and i (inclusive)
-    const j = Math.floor(Math.random() * (i + 1));
+		// Start at the end of the array and work backwards
+		for (let i = items.length - 1; i > 0; i--) {
+			// Pick a random index between 0 and i (inclusive)
+			const j = Math.floor(Math.random() * (i + 1))
 
-    // Swap the current element with the randomly selected one
-    [items[i], items[j]] = [items[j], items[i]];
-  }
+			// Swap the current element with the randomly selected one
+			;[items[i], items[j]] = [items[j], items[i]]
+		}
 
-  // Return the first three shuffled items
-  return items.slice(0, 3);
-}
+		// Return the first three shuffled items
+		return items.slice(0, 3)
+	}
 
-let shopItems:any[] = []
-
-
-function mixBuyables(category:any){
-	if (category =="weaponsmith") shopItems=shuffleItems(weapons)
-	console.log(shopItems)
-	return;
-}
+	function mixBuyables(category: any) {
+		if (category == 'weaponsmith') shop = shuffleItems(buyWeapons)
+		if (category == 'spell shop') shop = shuffleItems(buySpells)
+		console.log(shop)
+		return
+	}
 
 	function parseText(text: string) {
 		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
@@ -213,13 +233,10 @@ function mixBuyables(category:any){
 			}
 		}
 
-	
-		
-		if (eventMatch){
+		if (eventMatch) {
 			event = JSON.parse(eventMatch[1])
-
-			if (event[0].shopMode !="none")
-			{
+			console.log('matched')
+			if (event[0].shopMode) {
 				mixBuyables(event[0].shopMode)
 			}
 		}
@@ -229,7 +246,6 @@ function mixBuyables(category:any){
 			choices = JSON.parse(choiceMatch[1])
 		}
 
-		
 		return
 	}
 
@@ -246,15 +262,15 @@ function mixBuyables(category:any){
 		return str.slice(startIndex, endIndex).trim()
 	}
 
-	function getHpMp(inputString: any) {
-		const parts = inputString.split('/')
-		return parts[0]
-	}
+	// function getHpMp(inputString: any) {
+	// 	const parts = inputString.split('/')
+	// 	return parts[0]
+	// }
 
-	function isHpOrMpFull(s: any) {
-		const [left, right] = s.split('/')
-		return left === right
-	}
+	// function isHpOrMpFull(s: any) {
+	// 	const [left, right] = s.split('/')
+	// 	return left === right
+	// }
 
 	let coolDowns: any = {}
 
@@ -269,7 +285,6 @@ function mixBuyables(category:any){
 
 	let combatChoice: { name: string; damage: any; prompt: string; combatScore: any; healing: any } =
 		{ name: '', damage: '', prompt: '', combatScore: undefined, healing: '' }
-
 
 	function throwDice(combatEvent: any) {
 		if (!combatEvent.name) return console.log('you need to choose a weapon or spell.')
@@ -292,8 +307,8 @@ function mixBuyables(category:any){
 
 	function useItem(item: any) {
 		const { type, name, damage, manaCost, healing, mana } = item
-		const { manaPoints, healthPoints } = stats[0]
-		const {inCombat} = event[0]
+		const { mp, maxMp, hp, maxHp } = stats[0]
+		const { inCombat } = event[0]
 
 		if (type === 'weapon') {
 			if (!inCombat) return console.log('you are not in combat.')
@@ -327,9 +342,9 @@ function mixBuyables(category:any){
 			return
 		}
 
-		if (type === 'destruction') {
+		if (type === 'destruction spell') {
 			if (!inCombat) return console.log('you are not in combat.')
-			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
+			if (mp < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
 			coolDowns[name] = 3
 			combatChoice.combatScore = randomNumber1_20(damage)
@@ -362,9 +377,9 @@ function mixBuyables(category:any){
 			return
 		}
 
-		if (type === 'healing') {
-			if (isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
-			if (getHpMp(manaPoints) < manaCost) return console.log('you have not enough mana.')
+		if (type === 'healing spell') {
+			if (hp >= maxHp) return console.log("you're at full health.")
+			if (mp < manaCost) return console.log('you have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
 			if (!inCombat)
 				return giveYourAnswer(
@@ -384,22 +399,38 @@ function mixBuyables(category:any){
 		}
 
 		if (type === 'potion') {
-			if (healing && isHpOrMpFull(healthPoints)) return console.log("you're at full health.")
+			if (healing && hp >= maxHp) return console.log("you're at full health.")
 			if (inCombat) return console.log("you can't drink in combat.")
 
-			if (healing && !isHpOrMpFull(healthPoints)) {
+			if (healing && hp < maxHp) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
 				)
 			}
-			if (mana && isHpOrMpFull(manaPoints)) return console.log("you're at full mana.")
+			if (mp && mp >= maxMp) return console.log("you're at full mana.")
 			if (inCombat) return console.log("you can't drink in combat.")
-			if (mana && !isHpOrMpFull(manaPoints)) {
+			if (mp && mp < maxMp) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
 				)
 			}
 		}
+	}
+
+	function buyItem(item:any){
+	if (event[0].gold < item.price) return console.log("not enough gold.")
+
+	event[0].gold -= item.price
+	if (item.type=="weapon" || item.type =="potion"){
+	inventory.push(item)
+	inventory=inventory
+	return console.log("buyout succesful!")
+}else if (item.type=="destruction spell" || item.type=="healing spell"||item.type=="utility spell"){
+	spells.push(item)
+	spells=spells
+
+	return console.log("buyout succesful!")
+}
 	}
 
 	function giveYourAnswer(choice: any) {
@@ -452,8 +483,6 @@ function mixBuyables(category:any){
 		}
 		dotty += '.'
 	}, 400)
-
-	
 
 	function randomize(gameStarter: any) {
 		const randomIndex = Math.floor(Math.random() * gameStarter.length)
@@ -551,7 +580,6 @@ function mixBuyables(category:any){
 			<button on:click={() => giveYourAnswer(randomize(frpgStarter))}
 				>at a random place in Medieval World</button
 			>
-			<h2>{weapons[0].name}</h2>
 			<button
 				on:click={() => {
 					giveYourAnswer(
@@ -593,101 +621,33 @@ function mixBuyables(category:any){
 				</div>
 				<div transition:fade={{ duration: 2000 }} class="game-controls">
 					<div style="opacity:{choices.length ? '1' : '0'}; transition:1.5s;" class="ui-left">
-						<!-- {#if stats[0] && stats[0].healthPoints} -->
+						<!-- {#if stats[0] && stats[0].hp} -->
 						<div class="hp-bar">
-							 70/70
+							{stats[0].hp}/{stats[0].maxHp}
 						</div>
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
 							<h3>Inventory</h3>
-							{#if inventory[0]}
+							{#each inventory as item }
 								<button
 									disabled={loading}
-									on:click={() => useItem(inventory[0])}
+									on:click={() => useItem(item)}
 									in:fade={{ duration: 600 }}
 								>
 									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory[0])}
+										on:mousemove={(event) => handleMouseMove(event, item)}
 										on:mouseleave={hideWindow}
-										src="/images/{inventory[0].type}.svg"
+										src="/images/{item.class}.svg"
 										alt=""
 									/>
 								</button>
-							{/if}
-							{#if inventory[1]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(inventory[1])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory[1])}
-										on:mouseleave={hideWindow}
-										src="/images/{inventory[1].type}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if inventory[2]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(inventory[2])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory[2])}
-										on:mouseleave={hideWindow}
-										src="/images/{inventory[2].type}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if inventory[3]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(inventory[3])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory[3])}
-										on:mouseleave={hideWindow}
-										src="/images/{inventory[3].type}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if inventory[4]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(inventory[4])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory[4])}
-										on:mouseleave={hideWindow}
-										src="/images/{inventory[4].type}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if inventory[5]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(inventory[5])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, inventory[5])}
-										on:mouseleave={hideWindow}
-										src="/images/{inventory[5].type}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-						</div>
+								{/each}
+							</div>
+							
+						
 					</div>
 					<div class="ui-mid">
-						{#if event[0]&& event[0].shopMode == 'none'&& event[0] && !event[0].inCombat  }
+						{#if event[0] && !event[0].shopMode && !event[0].inCombat}
 							<div class="choices">
 								{#each choices as choice}
 									<button
@@ -711,19 +671,6 @@ function mixBuyables(category:any){
 									</div>
 								{/if}
 							</div>
-							{#if choices.length >= 2}
-								<div class="stats">
-									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
-										<img class="svg-images" src="images/gold.svg" alt="" />
-										<p>20</p>
-									</div>
-									<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
-										<img class="svg-images" src="images/time.svg" alt="" />
-
-										<p>{placeAndTime[0].time ? placeAndTime[0].time : '00:00'}</p>
-									</div>
-								</div>
-							{/if}
 
 							{#if handleErr}
 								<div transition:fade={{ duration: 700 }} class="choice choiceInput">
@@ -775,17 +722,9 @@ function mixBuyables(category:any){
 										<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
 									</button>
 								</div>
-								<button
-									disabled={loading}
-									transition:fade={{ ...getDelayTime(), duration: 700 }}
-									class="choice choiceCombat"
-									style="opacity: {choices.length ? '1' : '0'}; transition:1.5s;"
-									on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
-									>Or, just try to Retreat! [60% chance]</button
-								>
 							</div>
 							<!-- shop ui -->
-						{:else if event[0] && event[0].shopMode != 'none'}
+						{:else if event[0] && event[0].shopMode}
 							<div class="shop">
 								<div class="shop-box">
 									{#if event[0].shopMode == 'weaponsmith'}
@@ -800,25 +739,28 @@ function mixBuyables(category:any){
 									{#if event[0].shopMode == 'potion shop'}
 										<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
 									{/if}
-									{#if event[0].shopMode != 'none' && event[0].shopMode != 'weaponsmith' && event[0].shopMode != 'armorsmith' && event[0].shopMode != 'spell shop' && event[0].shopMode != 'potion shop'}
+									{#if event[0].shopMode != 'weaponsmith' && event[0].shopMode != 'armorsmith' && event[0].shopMode != 'spell shop' && event[0].shopMode != 'potion shop'}
 										<h3>You're at a local <span class="g-span">Merchant</span></h3>
 									{/if}
 
 									<ul>
 										{#each shop as buyable}
-										<button class="item-button" on:click={()=>console.log("anan: ", buyable.name)} >
-											{#if buyable.damage}
-												<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage</li>
-											{/if}
-											{#if buyable.healing}
-												<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
-											{/if}
-											{#if buyable.armor}
-												<li>{buyable.name} - {buyable.price} gold - {buyable.armor} armor</li>
-											{/if}
-											{#if buyable.mana}
-												<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
-											{/if}
+											<button
+												class="item-button"
+												on:click={() => buyItem(buyable)}
+											>
+												{#if buyable.damage}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage</li>
+												{/if}
+												{#if buyable.healing}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
+												{/if}
+												{#if buyable.armor}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.armor} armor</li>
+												{/if}
+												{#if buyable.mana}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
+												{/if}
 											</button>
 										{/each}
 									</ul>
@@ -826,13 +768,37 @@ function mixBuyables(category:any){
 										<img src="images/buy.svg" alt="" />
 									</button>
 								</div>
-								<button
-									disabled={loading}
-									transition:fade={{ ...getDelayTime(), duration: 700 }}
-									class="choice choiceCombat"
-									style="opacity: {choices.length ? '1' : '0'}; transition:1.5s;"
-									on:click={() => giveYourAnswer('Leave the shop')}>Leave the Shop</button
-								>
+							</div>
+						{/if}
+						{#if choices.length >= 2}
+							<div class="stats">
+								<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
+									<img class="svg-images" src="images/gold.svg" alt="" />
+									<p>{event[0].gold}</p>
+								</div>
+								{#if event[0].inCombat}
+									<button
+										disabled={loading}
+										transition:fade={{ ...getDelayTime(), duration: 700 }}
+										class="leave-button"
+										style="opacity: {choices.length ? '1' : '0'}; transition:1.5s;"
+										on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
+										>Try to Retreat!</button
+									>
+								{:else if event[0].shopMode}
+									<button
+										disabled={loading}
+										transition:fade={{ ...getDelayTime(), duration: 700 }}
+										class="leave-button"
+										style="opacity: {event[0].shopMode ? '1' : '0'}; transition:1.5s;"
+										on:click={() => giveYourAnswer('Leave the shop')}>Leave the Shop</button
+									>
+								{/if}
+								<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
+									<img class="svg-images" src="images/time.svg" alt="" />
+
+									<p>{placeAndTime[0].time ? placeAndTime[0].time : '00:00'}</p>
+								</div>
 							</div>
 						{/if}
 
@@ -851,98 +817,28 @@ function mixBuyables(category:any){
 					</div>
 
 					<div style="opacity:{choices.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
-						<!-- {#if stats[0] && stats[0].manaPoints} -->
+						<!-- {#if stats[0] && stats[0].mp} -->
 
 						<div class="mp-bar">
-							50/50
+							{stats[0].hp}/{stats[0].maxHp}
 						</div>
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
 							<h3>Spells</h3>
-
-							{#if spells[0]}
+{#each spells as spell}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spells[0])}
+									on:click={() => useItem(spell)}
 									in:fade={{ duration: 600 }}
 									><img
-										on:mousemove={(event) => handleMouseMove(event, spells[0])}
+										on:mousemove={(event) => handleMouseMove(event, spell)}
 										on:mouseleave={hideWindow}
-										src="/images/{spells[0].element}.svg"
+										src="/images/{spell.element}.svg"
 										alt=""
 									/></button
 								>
-							{/if}
-							{#if spells[1]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(spells[1])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, spells[1])}
-										on:mouseleave={hideWindow}
-										src="/images/{spells[1].element}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if spells[2]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(spells[2])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, spells[2])}
-										on:mouseleave={hideWindow}
-										src="/images/{spells[2].element}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if spells[3]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(spells[3])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, spells[3])}
-										on:mouseleave={hideWindow}
-										src="/images/{spells[3].element}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if spells[4]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(spells[4])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, spells[4])}
-										on:mouseleave={hideWindow}
-										src="/images/{spells[4].element}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
-							{#if spells[5]}
-								<button
-									disabled={loading}
-									on:click={() => useItem(spells[5])}
-									in:fade={{ duration: 600 }}
-								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, spells[5])}
-										on:mouseleave={hideWindow}
-										src="/images/{spells[5].element}.svg"
-										alt=""
-									/>
-								</button>
-							{/if}
+								{/each}
+							
 						</div>
 					</div>
 				</div>
@@ -993,7 +889,7 @@ function mixBuyables(category:any){
 			</div>
 			<div class="stats">
 				{#each stats as stats}
-					<p>Health: {stats.healthPoints}</p>
+					<p>Health: {stats.hp}</p>
 					<p>Level: {stats.level}</p>
 					<p>Power Level: {stats.powerLevel}</p>
 					<p>Gold: {stats.gold}</p>
@@ -1142,13 +1038,14 @@ function mixBuyables(category:any){
 	}
 
 	.choices {
-		min-height: 36.9%;
+		/* min-height: 36.9%; */
 		display: flex;
 		justify-content: space-between;
 		flex-direction: column;
 		gap: 0.3rem;
 		width: 100%;
 		margin-inline: auto;
+		padding: 0;
 	}
 	.combat,
 	.shop {
@@ -1183,32 +1080,49 @@ function mixBuyables(category:any){
 		height: 100%;
 		justify-content: space-around;
 		position: relative;
-		padding: 0 0.2rem;
+		padding: 0 0.5rem;
 	}
-	.combat-button img {
-		height: 50%;
-		align-self: center;
-		background-color: rgba(19, 19, 19, 0.725);
-		border-radius: 20rem;
-		padding: 0.7rem 0.8rem 0.6rem 0.7rem;
-	}
+
 	.combat-box img:active {
 		animation: button-pop 0.3s ease-out;
 	}
 
 	.combat-box ul,
 	.shop-box ul {
-		padding-bottom: 0.7rem;
-
-		padding-left: 0.4rem;
 		width: 60%;
 		font-size: 1rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
 	}
+
+	.combat-box ul,
+	.shop-box ul,
+	.buy-button,
+	.combat-button {
+		/* margin-bottom:7%; */
+		margin-bottom: 1.5rem;
+	}
+	.leave-button {
+		border: none;
+		background-color: gray;
+	}
+	.combat-button {
+		border: none;
+		background-color: rgba(19, 19, 19, 0.525);
+		border-radius: 0.6rem;
+		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
+	}
+	.combat-button img,
+	.buy-button img {
+		width: 3.5rem;
+	}
+
 	.combat-box ul li,
 	.shop-box ul li {
 		color: #bbb;
 		padding-left: 0.4rem;
-		margin-bottom: 0.4rem;
+		text-align: start;
 	}
 
 	.combat-box ul li:nth-child(1) {
@@ -1219,31 +1133,26 @@ function mixBuyables(category:any){
 	}
 	.combat-box ul li:nth-child(3) {
 		list-style-type: '🔮';
-		line-height: 1.2;
 		font-size: 0.8rem;
 		padding-left: 0.6rem;
 		margin-left: -0.15rem;
-		margin-top: 0.6rem;
+		/* margin-top: 0.6rem; */
 
 		color: #aaa;
 	}
 	.buy-button {
 		border: none;
-		align-self: flex-end;
-		margin-bottom: 1.4rem;
 		background-color: rgba(19, 19, 19, 0.525);
 		border-radius: 0.6rem;
 		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
 	}
-	.buy-button img {
-		width: 3.5rem;
-	}
+
 	.buy-button:active {
 		animation: button-pop 0.3s ease-out;
 	}
-	.item-button{
-		border:none;
-		background-color:transparent;
+	.item-button {
+		border: none;
+		background-color: transparent;
 	}
 
 	.shop-box ul li {
@@ -1304,6 +1213,8 @@ function mixBuyables(category:any){
 		background-color: #1f1f1fc8;
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
+		height: 100%;
 	}
 
 	.choiceInput input {
@@ -1334,16 +1245,6 @@ function mixBuyables(category:any){
 	}
 	.choice:hover:not(:last-child) {
 		background-color: #372b2b;
-	}
-	.choiceCombat:hover {
-		background-color: #372b2b;
-	}
-
-	.choice form {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		height: 100%;
 	}
 
 	* {

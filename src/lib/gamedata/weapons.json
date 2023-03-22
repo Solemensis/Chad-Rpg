@@ -3,180 +3,210 @@
 	"name": "Bronze Sword",
 	"damage": 4,
 	"price": 35,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 	},
 	{
 	"name": "Silver Dagger",
 	"damage": 5,
 	"price": 55,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"dagger"
 },
 {
 	"name": "Wooden Bow",
 	"damage": 4,
 	"price": 35,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"bow"
 },
 {
 	"name": "Iron Mace",
 	"damage": 4,
 	"price": 35,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"mace"
 },
 {
 	"name": "Steel Longsword",
 	"damage": 13,
 	"price": 420,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 },
 {
 	"name": "Bronze Spear",
 	"damage": 9,
 	"price": 220,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"spear"
 },
 {
 	"name": "Iron Battle Axe",
 	"damage": 4,
 	"price": 35,
-	"type": "weapon"
+	"type": "axe"
 },
 {
 	"name": "Steel Halberd",
 	"damage": 6,
 	"price": 85,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"halberd"
 },
 {
 	"name": "Copper Flail",
 	"damage": 4,
 	"price": 35,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"flail"
 },
 {
 	"name": "Iron Warhammer",
 	"damage": 5,
 	"price": 55,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"axe"
 },
 {
 	"name": "Bronze Shortsword",
 	"damage": 5,
 	"price": 55,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 },
 {
 	"name": "Silver Shortbow",
 	"damage": 5,
 	"price": 55,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"bow"
 },
 {
 	"name": "Steel Dagger",
 	"damage": 6,
 	"price": 85,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"dagger"
 },
 {
 	"name": "Iron Lance",
 	"damage": 6,
 	"price": 85,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"lance"
 },
 {
 	"name": "Bronze Battle Axe",
 	"damage": 6,
 	"price": 85,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"axe"
 },
 {
 	"name": "Steel Mace",
 	"damage": 7,
 	"price": 110,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"mace"
 },
 {
 	"name": "Iron Shortsword",
 	"damage": 7,
 	"price": 110,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 },
 {
 	"name": "Copper Spear",
 	"damage": 7,
 	"price": 110,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"spear"
 },
 {
 	"name": "Silver Rapier",
 	"damage": 8,
 	"price": 160,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 },
 {
 	"name": "Bronze Halberd",
 	"damage": 8,
 	"price": 160,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"halberd"
 },
 {
 	"name": "Iron Flail",
 	"damage": 8,
 	"price": 160,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"flail"
 },
 {
 	"name": "Steel Shortsword",
 	"damage": 9,
 	"price": 220,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 },
 {
 	"name": "Copper Shortbow",
 	"damage": 9,
 	"price": 220,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"bow"
 },
 {
 	"name": "Bronze Dagger",
 	"damage": 10,
 	"price": 270,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"dagger"
 },
 {
 	"name": "Iron Longsword",
 	"damage": 10,
 	"price": 270,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 },
 {
 	"name": "Steel Spear",
 	"damage": 11,
 	"price": 330,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"spear"
 },
 {
 	"name": "Copper Battle Axe",
 	"damage": 12,
 	"price": 370,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"axe"
 },
 {
 	"name": "Bronze Mace",
 	"damage": 13,
 	"price": 420,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"mace"
 },
 {
 	"name": "Iron Rapier",
 	"damage": 14,
 	"price": 460,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"sword"
 },
 {
 	"name": "Steel Shortbow",
 	"damage": 15,
 	"price": 500,
-	"type": "weapon"
+	"type": "weapon",
+	"class":"bow"
+
 }
 ]
