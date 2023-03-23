@@ -89,7 +89,7 @@
 		"price": 130,
 		"manaCost": 30,
 		"type": "destruction spell",
-		"element":"electric"
+		"element":"lightning"
 	},
 	{
 		"name": "Divine Judgement",
@@ -105,7 +105,7 @@
 		"price": 80,
 		"manaCost": 25,
 		"type": "destruction spell",
-		"element":"dark"
+		"element":"toxic"
 	},
 	{
 		"name": "Ice Blast",
@@ -121,7 +121,7 @@
 		"price": 80,
 		"manaCost": 25,
 		"type": "destruction spell",
-		"element":"dark"
+		"element":"toxic"
 	},
 	{
 		"name": "Inferno Burst",
@@ -137,7 +137,7 @@
 		"price": 65,
 		"manaCost": 20,
 		"type": "destruction spell",
-		"element":"electric"
+		"element":"lightning"
 	},
 	{
 		"name": "Spectral Blade",

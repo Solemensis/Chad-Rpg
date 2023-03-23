@@ -129,7 +129,7 @@
 			damage: 3,
 			price: 10,
 			type: 'weapon',
-			class: 'sword'
+			weaponClass: 'sword'
 		}
 	]
 
@@ -201,8 +201,8 @@
 			;[items[i], items[j]] = [items[j], items[i]]
 		}
 
-		// Return the first three shuffled items
-		return items.slice(0, 3)
+		// Return the first four shuffled items
+		return items.slice(0, 4)
 	}
 
 	function mixBuyables(category: any) {
@@ -283,8 +283,11 @@
 		return damage * dice
 	}
 
-	let combatChoice: { name: string; damage: any; prompt: string; combatScore: any; healing: any } =
-		{ name: '', damage: '', prompt: '', combatScore: undefined, healing: '' }
+	// let combatChoice: { name: string; damage: any; prompt: string; combatScore: any; healing: any } =
+	// 	{ name: '', damage: '', prompt: '', combatScore: undefined, healing: '' }
+	const combatChoice: any = {
+  
+};
 
 	function throwDice(combatEvent: any) {
 		if (!combatEvent.name) return console.log('you need to choose a weapon or spell.')
@@ -306,9 +309,14 @@
 	}
 
 	function useItem(item: any) {
+		if(!event[0].inCombat) return;
+		
 		const { type, name, damage, manaCost, healing, mana } = item
 		const { mp, maxMp, hp, maxHp } = stats[0]
 		const { inCombat } = event[0]
+
+		
+
 
 		if (type === 'weapon') {
 			if (!inCombat) return console.log('you are not in combat.')
@@ -424,13 +432,34 @@
 	if (item.type=="weapon" || item.type =="potion"){
 	inventory.push(item)
 	inventory=inventory
+
+
+let newArray:any=shop.filter(shopItem=>shopItem !=item)
+shop=newArray
 	return console.log("buyout succesful!")
 }else if (item.type=="destruction spell" || item.type=="healing spell"||item.type=="utility spell"){
 	spells.push(item)
 	spells=spells
 
+
+let newArray:any=shop.filter(shopItem=>shopItem !=item)
+shop=newArray
 	return console.log("buyout succesful!")
+
+
 }
+
+	}
+
+	function sellItem(item:any){
+		if(!event[0].shopMode) return;
+
+		event[0].gold += item.price
+
+		let newArray:any=inventory.filter(obj=>obj.name !==item.name);
+		inventory=newArray
+
+		hideWindow()
 	}
 
 	function giveYourAnswer(choice: any) {
@@ -508,6 +537,9 @@
 		healing = undefined
 		armor = undefined
 		element = undefined
+		weaponClass = undefined
+		manaCost = undefined
+		price = undefined
 
 		name = item && item.name ? item.name : undefined
 		damage = item && item.damage ? item.damage : undefined
@@ -515,6 +547,9 @@
 		healing = item && item.healing ? item.healing : undefined
 		armor = item && item.armor ? item.armor : undefined
 		element = item && item.element ? item.element : undefined
+		weaponClass = item && item.weaponClass ? item.weaponClass: undefined
+		manaCost = item && item.manaCost ? item.manaCost: undefined
+		price = item && item.price ? item.price : undefined
 	}
 
 	let name: any
@@ -523,6 +558,9 @@
 	let healing: any
 	let armor: any
 	let element: any
+	let weaponClass: any
+	let manaCost: any
+	let price: any
 
 	function hideWindow() {
 		displayItemWindow = 'none'
@@ -550,24 +588,36 @@
 	<!-- {/if} -->
 	<div class="description-window" style="left:{x}px; top:{y}px; display:{displayItemWindow}">
 		<h5 class="desc-name">{name}</h5>
-		{#if type}
-			<p class="desc-type">type: {type}</p>
-		{/if}
-		{#if element}
-			<p class="desc-element">element: {element}</p>
-		{/if}
 		{#if damage}
-			<p class="desc-damage">damage: x{damage}</p>
+			<p class="desc-all">damage: x{damage}</p>
 		{/if}
-		{#if healing && type == 'healing'}
-			<p class="desc-healing">healing: x{healing}</p>
+		{#if healing && type == 'healing spell'}
+			<p class="desc-all">healing: x{healing}</p>
 		{/if}
 		{#if healing && type == 'potion'}
-			<p class="desc-healing">healing: {healing}</p>
+			<p class="desc-all">healing: +{healing}</p>
 		{/if}
+		
 		{#if armor}
-			<p class="desc-armor">armor: {armor}</p>
+			<p class="desc-all">armor: x{armor}</p>
 		{/if}
+		{#if element}
+			<p class="desc-all">element: {element}</p>
+		{/if}
+		{#if type}
+			<p class="desc-all">type: {type}</p>
+		{/if}
+		{#if weaponClass}
+			<p class="desc-all">class: {weaponClass}</p>
+		{/if}
+		
+		{#if price}
+			<p class="desc-all">price: {price}</p>
+		{/if}
+		{#if manaCost}
+			<p class="desc-all">mana cost: -{manaCost}</p>
+		{/if}
+		
 	</div>
 
 	<div class="whole-content">
@@ -631,13 +681,13 @@
 							{#each inventory as item }
 								<button
 									disabled={loading}
-									on:click={() => useItem(item)}
+									on:click={() => {useItem(item); sellItem(item)}}
 									in:fade={{ duration: 600 }}
 								>
 									<img
 										on:mousemove={(event) => handleMouseMove(event, item)}
 										on:mouseleave={hideWindow}
-										src="/images/{item.class}.svg"
+										src="/images/{item.weaponClass}.svg"
 										alt=""
 									/>
 								</button>
@@ -749,24 +799,30 @@
 												class="item-button"
 												on:click={() => buyItem(buyable)}
 											>
-												{#if buyable.damage}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage</li>
+												{#if buyable.type=="weapon"}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass} class</li>
 												{/if}
-												{#if buyable.healing}
+												{#if buyable.element && buyable.healing}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element} element</li>
+												{/if}
+												{#if buyable.element && buyable.damage}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.element} element</li>
+												{/if}
+												<!-- {#if buyable.element && buyable.utility}
 													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
 												{/if}
 												{#if buyable.armor}
 													<li>{buyable.name} - {buyable.price} gold - {buyable.armor} armor</li>
 												{/if}
-												{#if buyable.mana}
+												{#if buyable.type=="potion"}
 													<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
-												{/if}
+												{/if} -->
 											</button>
 										{/each}
 									</ul>
-									<button class="buy-button">
+									<!-- <button class="buy-button">
 										<img src="images/buy.svg" alt="" />
-									</button>
+									</button> -->
 								</div>
 							</div>
 						{/if}
@@ -820,7 +876,7 @@
 						<!-- {#if stats[0] && stats[0].mp} -->
 
 						<div class="mp-bar">
-							{stats[0].hp}/{stats[0].maxHp}
+							{stats[0].mp}/{stats[0].maxMp}
 						</div>
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
@@ -828,7 +884,8 @@
 {#each spells as spell}
 								<button
 									disabled={loading}
-									on:click={() => useItem(spell)}
+									on:click={() => {useItem(spell); sellItem(spell)}}
+
 									in:fade={{ duration: 600 }}
 									><img
 										on:mousemove={(event) => handleMouseMove(event, spell)}
@@ -902,22 +959,24 @@
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300;400;500&display=swap');
 
+	/* @font-face {
+    font-family: 'medieval';
+    src: url('/fonts/medieval.ttf') format('ttf');
+  } */
+
 	.desc-name {
-		color: violet;
+		color: orange;
 		font-size: 1rem;
+		font-weight:500;
 	}
-	.desc-type,
-	.desc-damage,
-	.desc-healing,
-	.desc-armor,
-	.desc-element {
+	.desc-all {
 		font-size: 0.9rem;
 	}
 
 	.description-window {
 		position: absolute;
 		min-width: 10rem;
-		background-color: rgba(59, 35, 35, 0.381);
+		background-color: rgba(56, 40, 112, 0.766);
 		padding: 0.4rem;
 		border-radius: 0.5rem;
 		z-index: 100;
@@ -1011,6 +1070,8 @@
 		font-weight: 400;
 		font-size: 1.4rem;
 		color: #3fcf8e;
+		/* font-family:"medieval" !important; */
+
 	}
 	.spells img,
 	.inventory img {
@@ -1089,7 +1150,7 @@
 
 	.combat-box ul,
 	.shop-box ul {
-		width: 60%;
+		width: 85%;
 		font-size: 1rem;
 		display: flex;
 		flex-direction: column;
