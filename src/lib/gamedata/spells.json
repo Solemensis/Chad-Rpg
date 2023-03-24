@@ -5,7 +5,8 @@
 		"price": 50,
 		"manaCost": 20,
 		"type": "healing spell",
-"element":"light"
+		"element": "light",
+		"cooldown": 3
 	},
 	{
 		"name": "Nature's Grace",
@@ -13,8 +14,8 @@
 		"price": 80,
 		"manaCost": 25,
 		"type": "healing spell",
-		"element":"light"
-
+		"element": "light",
+		"cooldown": 3
 	},
 	{
 		"name": "Renewed Vigor",
@@ -22,8 +23,8 @@
 		"price": 150,
 		"manaCost": 35,
 		"type": "healing spell",
-		"element":"light"
-
+		"element": "light",
+		"cooldown": 3
 	},
 	{
 		"name": "Healing Light",
@@ -31,7 +32,8 @@
 		"price": 250,
 		"manaCost": 50,
 		"type": "healing spell",
-		"element":"light"
+		"element": "light",
+		"cooldown": 3
 	},
 	{
 		"name": "Breath of Life",
@@ -39,8 +41,8 @@
 		"price": 350,
 		"manaCost": 70,
 		"type": "healing spell",
-		"element":"light"
-
+		"element": "light",
+		"cooldown": 3
 	},
 
 	{
@@ -49,7 +51,8 @@
 		"price": 400,
 		"manaCost": 65,
 		"type": "destruction spell",
-		"element":"fire"
+		"element": "fire",
+		"cooldown": 3
 	},
 	{
 		"name": "Shadow Lance",
@@ -57,7 +60,8 @@
 		"price": 250,
 		"manaCost": 50,
 		"type": "destruction spell",
-		"element":"dark"
+		"element": "dark",
+		"cooldown": 3
 	},
 	{
 		"name": "Frostbite Blast",
@@ -65,7 +69,8 @@
 		"price": 200,
 		"manaCost": 40,
 		"type": "destruction spell",
-		"element":"ice"
+		"element": "ice",
+		"cooldown": 3
 	},
 	{
 		"name": "Death's Embrace",
@@ -73,7 +78,8 @@
 		"price": 350,
 		"manaCost": 60,
 		"type": "destruction spell",
-		"element":"dark"
+		"element": "dark",
+		"cooldown": 3
 	},
 	{
 		"name": "Solar Flare",
@@ -81,7 +87,8 @@
 		"price": 130,
 		"manaCost": 30,
 		"type": "destruction spell",
-		"element":"fire"
+		"element": "fire",
+		"cooldown": 3
 	},
 	{
 		"name": "Thundering Tempest",
@@ -89,7 +96,8 @@
 		"price": 130,
 		"manaCost": 30,
 		"type": "destruction spell",
-		"element":"lightning"
+		"element": "lightning",
+		"cooldown": 3
 	},
 	{
 		"name": "Divine Judgement",
@@ -97,7 +105,8 @@
 		"price": 500,
 		"manaCost": 70,
 		"type": "destruction spell",
-		"element":"light"
+		"element": "light",
+		"cooldown": 3
 	},
 	{
 		"name": "Poisonous Cloud",
@@ -105,7 +114,8 @@
 		"price": 80,
 		"manaCost": 25,
 		"type": "destruction spell",
-		"element":"toxic"
+		"element": "toxic",
+		"cooldown": 3
 	},
 	{
 		"name": "Ice Blast",
@@ -113,7 +123,8 @@
 		"price": 300,
 		"manaCost": 55,
 		"type": "destruction spell",
-		"element":"ice"
+		"element": "ice",
+		"cooldown": 3
 	},
 	{
 		"name": "Acid Rain",
@@ -121,7 +132,8 @@
 		"price": 80,
 		"manaCost": 25,
 		"type": "destruction spell",
-		"element":"toxic"
+		"element": "toxic",
+		"cooldown": 3
 	},
 	{
 		"name": "Inferno Burst",
@@ -129,7 +141,8 @@
 		"price": 80,
 		"manaCost": 25,
 		"type": "destruction spell",
-		"element":"fire"
+		"element": "fire",
+		"cooldown": 3
 	},
 	{
 		"name": "Storm Surge",
@@ -137,7 +150,8 @@
 		"price": 65,
 		"manaCost": 20,
 		"type": "destruction spell",
-		"element":"lightning"
+		"element": "lightning",
+		"cooldown": 3
 	},
 	{
 		"name": "Spectral Blade",
@@ -145,7 +159,8 @@
 		"price": 200,
 		"manaCost": 40,
 		"type": "destruction spell",
-		"element":"dark"
+		"element": "dark",
+		"cooldown": 3
 	},
 	{
 		"name": "Necrotic Touch",
@@ -153,7 +168,8 @@
 		"price": 65,
 		"manaCost": 20,
 		"type": "destruction spell",
-		"element":"dark"
+		"element": "dark",
+		"cooldown": 3
 	},
 	{
 		"name": "Soul Drain",
@@ -161,6 +177,24 @@
 		"price": 65,
 		"manaCost": 20,
 		"type": "destruction spell",
-		"element":"dark"
+		"element": "dark",
+		"cooldown": 3
+	},
+
+	{
+		"name": "Teleportation",
+		"price": 150,
+		"manaCost": 20,
+		"type": "unique spell",
+		"element": "unique",
+		"cooldown": 3
+	},
+	{
+		"name": "Telekinetic Cut",
+		"price": 350,
+		"manaCost": 50,
+		"type": "unique spell",
+		"element": "unique",
+		"cooldown": 3
 	}
 ]

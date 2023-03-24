@@ -29,8 +29,6 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		let tokenCount = 0
 
-		
-
 		const moderationRes = await fetch('https://api.openai.com/v1/moderations', {
 			headers: {
 				'Content-Type': 'application/json',

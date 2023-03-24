@@ -112,7 +112,8 @@
 			price: 15,
 			manaCost: 12,
 			type: 'destruction spell',
-			element: 'fire'
+			element: 'fire',
+			cooldown: 2
 		},
 		{
 			name: 'Light Heal',
@@ -120,7 +121,8 @@
 			price: 10,
 			manaCost: 12,
 			type: 'healing spell',
-			element: 'light'
+			element: 'light',
+			cooldown: 2
 		}
 	]
 	let inventory: any[] = [
@@ -208,6 +210,7 @@
 	function mixBuyables(category: any) {
 		if (category == 'weaponsmith') shop = shuffleItems(buyWeapons)
 		if (category == 'spell shop') shop = shuffleItems(buySpells)
+		if (category) shop = shuffleItems(buySpells)
 		console.log(shop)
 		return
 	}
@@ -235,8 +238,7 @@
 
 		if (eventMatch) {
 			event = JSON.parse(eventMatch[1])
-			console.log('matched')
-			if (event[0].shopMode) {
+			if (event[0].shopMode && shop.length != 4) {
 				mixBuyables(event[0].shopMode)
 			}
 		}
@@ -285,20 +287,20 @@
 
 	// let combatChoice: { name: string; damage: any; prompt: string; combatScore: any; healing: any } =
 	// 	{ name: '', damage: '', prompt: '', combatScore: undefined, healing: '' }
-	const combatChoice: any = {
-  
-};
+	const combatChoice: any = {}
 
 	function throwDice(combatEvent: any) {
-		if (!combatEvent.name) return console.log('you need to choose a weapon or spell.')
+		if (!combatEvent.name) return (ingameErrorMessage = 'You need to choose a weapon or spell.')
 
 		if (coolDowns[combatEvent.name]) {
-			coolDowns[combatEvent.name] = 1
+			coolDowns[combatEvent.name] = 0
 		}
 		//zar numarasını bi süre göstermek için 1-2 saniyelik bi timeout
 		//içine alıncak giveYourAnswer
 		console.log(combatEvent.prompt)
 		giveYourAnswer(combatEvent.prompt)
+
+		event[0].inCombat = !event[0].inCombat
 
 		//empty the object after
 		combatChoice.name = ''
@@ -309,17 +311,13 @@
 	}
 
 	function useItem(item: any) {
-		if(!event[0].inCombat) return;
-		
-		const { type, name, damage, manaCost, healing, mana } = item
+		const { type, name, damage, manaCost, healing, mana, cooldown } = item
 		const { mp, maxMp, hp, maxHp } = stats[0]
-		const { inCombat } = event[0]
-
-		
-
+		const { inCombat, shopMode } = event[0]
 
 		if (type === 'weapon') {
-			if (!inCombat) return console.log('you are not in combat.')
+			if (shopMode) return
+			if (!inCombat) return (ingameErrorMessage = 'You are not in a combat.')
 			combatChoice.combatScore = randomNumber1_20(damage)
 
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
@@ -346,15 +344,18 @@
 			combatChoice.damage = damage
 			combatChoice.healing = undefined
 			console.log(combatChoice)
-
 			return
 		}
 
 		if (type === 'destruction spell') {
-			if (!inCombat) return console.log('you are not in combat.')
-			if (mp < manaCost) return console.log('you have not enough mana.')
-			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
-			coolDowns[name] = 3
+			if (shopMode) return
+
+			if (!inCombat) return (ingameErrorMessage = 'You are not in a combat.')
+			if (mp < manaCost) return (ingameErrorMessage = 'You have not enough mana.')
+			if (coolDowns[name] && coolDowns[name] < cooldown)
+				return (ingameErrorMessage =
+					'This skill is on cooldown.' + coolDowns[name] + '/' + cooldown)
+			coolDowns[name] = cooldown
 			combatChoice.combatScore = randomNumber1_20(damage)
 
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
@@ -386,15 +387,17 @@
 		}
 
 		if (type === 'healing spell') {
-			if (hp >= maxHp) return console.log("you're at full health.")
-			if (mp < manaCost) return console.log('you have not enough mana.')
-			if (coolDowns[name] && coolDowns[name] < 3) return console.log('on cooldown')
+			if (shopMode) return
+
+			if (hp >= maxHp) return (ingameErrorMessage = "You're at full health.")
+			if (mp < manaCost) return (ingameErrorMessage = 'You have not enough mana.')
+			if (coolDowns[name] && coolDowns[name] < cooldown) return (ingameErrorMessage = 'On cooldown')
 			if (!inCombat)
 				return giveYourAnswer(
 					`Heal myself with ${name} spell by ${randomNumber1_20(healing)} amount.)`
 				)
 
-			coolDowns[name] = 3
+			coolDowns[name] = cooldown
 			combatChoice.combatScore = randomNumber1_20(healing)
 
 			combatChoice.prompt = `Heal myself with ${name} spell by ${combatChoice.combatScore} amount.`
@@ -405,18 +408,23 @@
 
 			return
 		}
+		if (type === 'unique spell') {
+			if (shopMode) return
+		}
 
 		if (type === 'potion') {
-			if (healing && hp >= maxHp) return console.log("you're at full health.")
-			if (inCombat) return console.log("you can't drink in combat.")
+			if (shopMode) return
+
+			if (healing && hp >= maxHp) return (ingameErrorMessage = "You're at full health.")
+			if (inCombat) return (ingameErrorMessage = "You can't drink in combat.")
 
 			if (healing && hp < maxHp) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
 				)
 			}
-			if (mp && mp >= maxMp) return console.log("you're at full mana.")
-			if (inCombat) return console.log("you can't drink in combat.")
+			if (mp && mp >= maxMp) return (ingameErrorMessage = "You're at full mana.")
+			if (inCombat) return (ingameErrorMessage = "You can't drink in combat.")
 			if (mp && mp < maxMp) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
@@ -425,39 +433,43 @@
 		}
 	}
 
-	function buyItem(item:any){
-	if (event[0].gold < item.price) return console.log("not enough gold.")
+	function buyItem(item: any) {
+		if (event[0].gold < item.price) return (ingameErrorMessage = 'Not enough gold.')
 
-	event[0].gold -= item.price
-	if (item.type=="weapon" || item.type =="potion"){
-	inventory.push(item)
-	inventory=inventory
+		event[0].gold -= item.price
+		if (item.type == 'weapon' || item.type == 'potion') {
+			inventory.push(item)
+			inventory = inventory
 
+			let newArray: any = shop.filter((shopItem) => shopItem != item)
+			shop = newArray
+			// return ingameErrorMessage='Buyout succesful!'
+		} else if (
+			item.type == 'destruction spell' ||
+			item.type == 'healing spell' ||
+			item.type == 'utility spell'
+		) {
+			spells.push(item)
+			spells = spells
 
-let newArray:any=shop.filter(shopItem=>shopItem !=item)
-shop=newArray
-	return console.log("buyout succesful!")
-}else if (item.type=="destruction spell" || item.type=="healing spell"||item.type=="utility spell"){
-	spells.push(item)
-	spells=spells
-
-
-let newArray:any=shop.filter(shopItem=>shopItem !=item)
-shop=newArray
-	return console.log("buyout succesful!")
-
-
-}
-
+			let newArray: any = shop.filter((shopItem) => shopItem != item)
+			shop = newArray
+			// return ingameErrorMessage='Buyout succesful!'
+		}
 	}
 
-	function sellItem(item:any){
-		if(!event[0].shopMode) return;
+	function sellItem(item: any) {
+		if (!event[0].shopMode) return
 
 		event[0].gold += item.price
 
-		let newArray:any=inventory.filter(obj=>obj.name !==item.name);
-		inventory=newArray
+		if (!item.element) {
+			let newArray: any = inventory.filter((obj) => obj.name !== item.name)
+			inventory = newArray
+		} else {
+			let newArray: any = spells.filter((obj) => obj.name !== item.name)
+			spells = newArray
+		}
 
 		hideWindow()
 	}
@@ -547,8 +559,8 @@ shop=newArray
 		healing = item && item.healing ? item.healing : undefined
 		armor = item && item.armor ? item.armor : undefined
 		element = item && item.element ? item.element : undefined
-		weaponClass = item && item.weaponClass ? item.weaponClass: undefined
-		manaCost = item && item.manaCost ? item.manaCost: undefined
+		weaponClass = item && item.weaponClass ? item.weaponClass : undefined
+		manaCost = item && item.manaCost ? item.manaCost : undefined
 		price = item && item.price ? item.price : undefined
 	}
 
@@ -564,6 +576,26 @@ shop=newArray
 
 	function hideWindow() {
 		displayItemWindow = 'none'
+	}
+
+	let ingameErrorMessage: string = ''
+	let askBuy: string = ''
+	let askSell: string = ''
+
+	let eventfulItem: any = {}
+
+	function handleBuy(prompt: any, item: any) {
+		if (event[0].shopMode) {
+			eventfulItem = item
+			askBuy = prompt
+		} else return
+	}
+
+	function handleSell(prompt: any, item: any) {
+		if (event[0].shopMode) {
+			eventfulItem = item
+			askSell = prompt
+		} else return
 	}
 </script>
 
@@ -586,6 +618,104 @@ shop=newArray
 		style="opacity:{!img1active && !img2active ? '1' : '0'}; transition:opacity 2s;"
 	/>
 	<!-- {/if} -->
+
+	<!-- başlangıç ekranı: -->
+	{#if !gameStarted}
+		<div transition:fade={{ duration: 1000 }} class="starting-screen">
+			<div class="heading-box">
+				<h1>Welcome to <span class="g-span">Chad-Rpg!</span></h1>
+				<button>What is That?</button>
+			</div>
+			<div class="game-starters">
+				<div class="game-starter">
+					<img src="images/game-starter.svg" alt="" />
+					<div class="game-explanation">
+						<h3>FRPG Starter</h3>
+						<p>
+							Start as a fairly new adventurer at a town center in a fantasy role playing world.
+						</p>
+						<button
+							on:click={() => {
+								giveYourAnswer(
+									`Story starts in a peaceful town of Azeroth, and player is a fairly new adventurer. You can use World of Warcraft mmorpg as the dataset, quests and storyline.`
+								)
+							}}>Play</button
+						>
+					</div>
+				</div>
+				<div class="game-starter">
+					<img src="images/game-starter.svg" alt="" />
+
+					<div class="game-explanation">
+						<h3>Cyberpunk Starter</h3>
+						<p>Start as a capable human being at a neon city in a Cyberpunk world.</p>
+						<button>Play</button>
+					</div>
+				</div>
+
+				<div class="game-starter">
+					<img src="images/game-starter.svg" alt="" />
+
+					<div class="game-explanation">
+						<h3>Random Starter</h3>
+						<p>Start the game at a random place, in a random world, while on a random event.</p>
+						<button>Play</button>
+					</div>
+				</div>
+				<div class="game-starter">
+					<img src="images/game-starter.svg" alt="" />
+
+					<div class="game-explanation">
+						<h3>Custom Starter</h3>
+						<p>Start your own unique adventure as your own character, in your own world!</p>
+						<button>Configure game settings</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+	{#if ingameErrorMessage}
+		<div transition:fade={{ duration: 300 }} class="notification-window">
+			<p>
+				{ingameErrorMessage}
+			</p>
+			<button on:click={() => (ingameErrorMessage = '')}>Got it</button>
+		</div>
+	{/if}
+
+	{#if askBuy}
+		<div transition:fade={{ duration: 300 }} class="notification-window">
+			<p>
+				{askBuy}
+			</p>
+			<div class="dual-button">
+				<button
+					on:click={() => {
+						buyItem(eventfulItem)
+						askBuy = ''
+					}}>Yes</button
+				>
+				<button on:click={() => (askBuy = '')}>Cancel</button>
+			</div>
+		</div>
+	{/if}
+	{#if askSell}
+		<div transition:fade={{ duration: 300 }} class="notification-window">
+			<p>
+				{askSell}
+			</p>
+			<div class="dual-button">
+				<button
+					on:click={() => {
+						sellItem(eventfulItem)
+						askSell = ''
+					}}>Yes</button
+				>
+				<button on:click={() => (askSell = '')}>Cancel</button>
+			</div>
+		</div>
+	{/if}
+
 	<div class="description-window" style="left:{x}px; top:{y}px; display:{displayItemWindow}">
 		<h5 class="desc-name">{name}</h5>
 		{#if damage}
@@ -597,73 +727,29 @@ shop=newArray
 		{#if healing && type == 'potion'}
 			<p class="desc-all">healing: +{healing}</p>
 		{/if}
-		
+
 		{#if armor}
 			<p class="desc-all">armor: x{armor}</p>
 		{/if}
 		{#if element}
 			<p class="desc-all">element: {element}</p>
 		{/if}
-		{#if type}
-			<p class="desc-all">type: {type}</p>
-		{/if}
 		{#if weaponClass}
 			<p class="desc-all">class: {weaponClass}</p>
 		{/if}
-		
+		{#if type}
+			<p class="desc-all">type: {type}</p>
+		{/if}
+
 		{#if price}
 			<p class="desc-all">price: {price}</p>
 		{/if}
 		{#if manaCost}
 			<p class="desc-all">mana cost: -{manaCost}</p>
 		{/if}
-		
 	</div>
 
 	<div class="whole-content">
-		<div class="game-starters">
-			<h5>loading: {loading}</h5>
-			<!-- <button on:click={downimg}>down</button> -->
-
-			<h5>gamestarted: {gameStarted}</h5>
-
-			<button on:click={() => giveYourAnswer(randomize(frpgStarter))}
-				>at a random place in Medieval World</button
-			>
-			<button
-				on:click={() => {
-					giveYourAnswer(
-						`Story starts in a peaceful town of Azeroth, and player is a fairly new adventurer. You can use World of Warcraft mmorpg as the dataset, quests and storyline.`
-					)
-				}}>at a tavern in Medieval World</button
-			>
-			<!-- <h3>stats: {stats[0]}</h3> -->
-			<!-- <img src="images/dice.webp" /> -->
-			<!-- <button
-				on:click={() =>
-					giveYourAnswer(
-						`In this game with a medieval role playing game theme (like world of warcraft), the player will visit a grand library located in a city to research ancient texts. As the player, you will immerse yourself in the atmosphere of the medieval world, surrounded by the scent of old books and the quiet murmurs of fellow scholars. Your objective is to conduct research and uncover information about ancient texts that could reveal important insights into the history and culture of this fascinating time period.`
-					)}>at a grand library in Medieval World</button
-			>
-			<button
-				on:click={() =>
-					giveYourAnswer(
-						'In this game with a theme inspired by the Harry Potter world, the player will receive a letter via owl delivered to their window in their room. The letter is an invitation to attend Hogwarts, a magical school. As the player, you will experience the excitement of receiving this invitation and begin your journey into the world of magic and wizardry'
-					)}>hari potr</button
-			>
-			<button
-				on:click={() =>
-					giveYourAnswer(
-						'Player as a powerful warlock, seeks to summon a powerful demon to do his bidding, but must first gather rare ingredients and perform a dangerous ritual.'
-					)}>deneysel</button
-			>
-			<button
-				on:click={() =>
-					giveYourAnswer(
-						'A group of adventurers must navigate the treacherous waters of the Great Sea to find a lost island rumored to be home to a powerful artifact.'
-					)}>deneysel2</button
-			> -->
-		</div>
 		{#if gameStarted}
 			<div class="main-game">
 				<div transition:fade={{ duration: 1000 }} class="game-master">
@@ -678,10 +764,13 @@ shop=newArray
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
 							<h3>Inventory</h3>
-							{#each inventory as item }
+							{#each inventory as item}
 								<button
 									disabled={loading}
-									on:click={() => {useItem(item); sellItem(item)}}
+									on:click={() => {
+										useItem(item)
+										handleSell(`You sure to sell ${item.name}?`, item)
+									}}
 									in:fade={{ duration: 600 }}
 								>
 									<img
@@ -691,10 +780,8 @@ shop=newArray
 										alt=""
 									/>
 								</button>
-								{/each}
-							</div>
-							
-						
+							{/each}
+						</div>
 					</div>
 					<div class="ui-mid">
 						{#if event[0] && !event[0].shopMode && !event[0].inCombat}
@@ -740,7 +827,7 @@ shop=newArray
 							{/if}
 						{:else if event[0] && event[0].inCombat}
 							<!-- combat ui -->
-							<div class="combat">
+							<div transition:fade={{ duration: 1000 }} class="combat">
 								<div class="combat-box">
 									<h3>You are now in <span class="span-heading">Combat!</span></h3>
 
@@ -775,7 +862,7 @@ shop=newArray
 							</div>
 							<!-- shop ui -->
 						{:else if event[0] && event[0].shopMode}
-							<div class="shop">
+							<div transition:fade={{ duration: 1000 }} class="shop">
 								<div class="shop-box">
 									{#if event[0].shopMode == 'weaponsmith'}
 										<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
@@ -797,16 +884,25 @@ shop=newArray
 										{#each shop as buyable}
 											<button
 												class="item-button"
-												on:click={() => buyItem(buyable)}
+												on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
 											>
-												{#if buyable.type=="weapon"}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass} class</li>
+												{#if buyable.type == 'weapon'}
+													<li>
+														{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
+														class
+													</li>
 												{/if}
 												{#if buyable.element && buyable.healing}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element} element</li>
+													<li>
+														{buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
+														element
+													</li>
 												{/if}
 												{#if buyable.element && buyable.damage}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.element} element</li>
+													<li>
+														{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.element}
+														element
+													</li>
 												{/if}
 												<!-- {#if buyable.element && buyable.utility}
 													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
@@ -826,31 +922,31 @@ shop=newArray
 								</div>
 							</div>
 						{/if}
-						{#if choices.length >= 2}
-							<div class="stats">
-								<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
+						{#if choices.length >= 2 || event[0].inCombat || event[0].shopMode}
+							<div transition:fade={{ duration: 700 }} class="stats">
+								<div class="stat">
 									<img class="svg-images" src="images/gold.svg" alt="" />
 									<p>{event[0].gold}</p>
 								</div>
 								{#if event[0].inCombat}
 									<button
 										disabled={loading}
-										transition:fade={{ ...getDelayTime(), duration: 700 }}
 										class="leave-button"
 										style="opacity: {choices.length ? '1' : '0'}; transition:1.5s;"
-										on:click={() => giveYourAnswer('Try To Retreat! (with 60% chance')}
-										>Try to Retreat!</button
+										on:click={() => giveYourAnswer('Retreat')}>Retreat.</button
 									>
 								{:else if event[0].shopMode}
 									<button
 										disabled={loading}
-										transition:fade={{ ...getDelayTime(), duration: 700 }}
 										class="leave-button"
 										style="opacity: {event[0].shopMode ? '1' : '0'}; transition:1.5s;"
-										on:click={() => giveYourAnswer('Leave the shop')}>Leave the Shop</button
+										on:click={() => {
+											giveYourAnswer('Leave the shop')
+											event[0].shopMode = null
+										}}>Leave the Shop</button
 									>
 								{/if}
-								<div transition:fade={{ delay: 600, duration: 700 }} class="stat">
+								<div class="stat">
 									<img class="svg-images" src="images/time.svg" alt="" />
 
 									<p>{placeAndTime[0].time ? placeAndTime[0].time : '00:00'}</p>
@@ -881,11 +977,13 @@ shop=newArray
 						<!-- {/if} -->
 						<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
 							<h3>Spells</h3>
-{#each spells as spell}
+							{#each spells as spell}
 								<button
 									disabled={loading}
-									on:click={() => {useItem(spell); sellItem(spell)}}
-
+									on:click={() => {
+										useItem(spell)
+										handleSell(`You sure to sell ${spell.name}?`, spell)
+									}}
 									in:fade={{ duration: 600 }}
 									><img
 										on:mousemove={(event) => handleMouseMove(event, spell)}
@@ -894,8 +992,7 @@ shop=newArray
 										alt=""
 									/></button
 								>
-								{/each}
-							
+							{/each}
 						</div>
 					</div>
 				</div>
@@ -967,7 +1064,7 @@ shop=newArray
 	.desc-name {
 		color: orange;
 		font-size: 1rem;
-		font-weight:500;
+		font-weight: 500;
 	}
 	.desc-all {
 		font-size: 0.9rem;
@@ -1002,18 +1099,7 @@ shop=newArray
 		color: #eee;
 		overflow: auto;
 	}
-	.game-starters {
-		position: absolute;
-		left: 0.5rem;
-		display: flex;
-		flex-direction: column;
-		top: 50%;
-		transform: translateY(-50%);
-		gap: 2rem;
-	}
-	.game-starters * {
-		width: 8rem;
-	}
+
 	.game-controls {
 		display: flex;
 		width: 70%;
@@ -1051,6 +1137,7 @@ shop=newArray
 		grid-template-columns: 1fr 1fr 1fr;
 		grid-template-rows: 1fr 1fr 1fr 1fr;
 		background-color: #362525bc;
+
 		border-radius: 0.2rem;
 		min-height: 25vh;
 		border-top-left-radius: 0;
@@ -1071,7 +1158,6 @@ shop=newArray
 		font-size: 1.4rem;
 		color: #3fcf8e;
 		/* font-family:"medieval" !important; */
-
 	}
 	.spells img,
 	.inventory img {
@@ -1088,7 +1174,7 @@ shop=newArray
 	}
 	.spells button,
 	.inventory button {
-		background-color: rgba(115, 115, 115, 0.267);
+		background-color: rgb(128 128 128 / 29%);
 		border: none;
 		border-radius: 0.4rem;
 		width: 85%;
@@ -1122,11 +1208,6 @@ shop=newArray
 
 	.combat-box h3,
 	.shop-box h3 {
-		position: absolute;
-		top: 0.9rem;
-		left: 50%;
-		width: 100%;
-		transform: translateX(-50%);
 		text-align: center;
 		font-weight: 300;
 		font-size: 1.5rem;
@@ -1137,10 +1218,9 @@ shop=newArray
 		background-color: rgba(31, 31, 31, 0.841);
 		border-radius: 0.5rem;
 		display: flex;
-		align-items: flex-end;
+		flex-direction: column;
 		height: 100%;
 		justify-content: space-around;
-		position: relative;
 		padding: 0 0.5rem;
 	}
 
@@ -1150,20 +1230,21 @@ shop=newArray
 
 	.combat-box ul,
 	.shop-box ul {
-		width: 85%;
 		font-size: 1rem;
 		display: flex;
+		justify-content: center;
 		flex-direction: column;
 		gap: 0.4rem;
 	}
-
-	.combat-box ul,
-	.shop-box ul,
-	.buy-button,
-	.combat-button {
-		/* margin-bottom:7%; */
-		margin-bottom: 1.5rem;
+	.combat-box ul {
+		width: 60%;
 	}
+	.shop-box ul {
+		width: 80%;
+		height: 50%;
+		margin-inline: auto;
+	}
+
 	.leave-button {
 		border: none;
 		background-color: gray;
@@ -1174,8 +1255,7 @@ shop=newArray
 		border-radius: 0.6rem;
 		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
 	}
-	.combat-button img,
-	.buy-button img {
+	.combat-button img {
 		width: 3.5rem;
 	}
 
@@ -1184,6 +1264,11 @@ shop=newArray
 		color: #bbb;
 		padding-left: 0.4rem;
 		text-align: start;
+		transition: 0.2s;
+	}
+	.shop-box ul li:hover {
+		cursor: pointer;
+		color: #3fcf8e;
 	}
 
 	.combat-box ul li:nth-child(1) {
@@ -1201,16 +1286,7 @@ shop=newArray
 
 		color: #aaa;
 	}
-	.buy-button {
-		border: none;
-		background-color: rgba(19, 19, 19, 0.525);
-		border-radius: 0.6rem;
-		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
-	}
 
-	.buy-button:active {
-		animation: button-pop 0.3s ease-out;
-	}
 	.item-button {
 		border: none;
 		background-color: transparent;
@@ -1369,5 +1445,174 @@ shop=newArray
 		100% {
 			transform: scale(1);
 		}
+	}
+
+	/* başlangıç ekranı: */
+
+	.starting-screen {
+		background-color: #333333aa;
+		width: 60%;
+		height: 60%;
+		border-radius: 1rem;
+		backdrop-filter: blur(4px);
+
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	.heading-box {
+		position: absolute;
+		top: 1.8rem;
+		left: 50%;
+		transform: translateX(-50%);
+
+		display: flex;
+		flex-direction: column;
+	}
+	h1 {
+		font-size: 2.3rem;
+	}
+	.heading-box button {
+		margin-top: 0.8rem;
+		align-self: end;
+		border: none;
+		background-color: rgba(239, 102, 52, 0.349);
+		color: #eee;
+		padding: 0.2rem 0.5rem;
+		border-radius: 0.3rem;
+		transition: 0.2s;
+	}
+	.heading-box button:hover {
+		background-color: rgba(239, 102, 52, 0.549);
+
+		cursor: pointer;
+	}
+
+	.game-starters img {
+		width: 5rem;
+	}
+	.game-starters {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 1rem;
+		grid-row-gap: 2rem;
+		justify-items: center;
+		height: 60%;
+		align-items: start;
+
+		position: absolute;
+		bottom: 0.8rem;
+	}
+	.game-starter {
+		display: flex;
+		gap: 1rem;
+		width: 80%;
+		align-items: start;
+	}
+	.game-explanation {
+		display: flex;
+		flex-direction: column;
+	}
+	.game-explanation h3 {
+		margin-bottom: 0.3rem;
+		color: orange;
+		font-weight: 500;
+	}
+	.game-explanation p {
+		line-height: 1.1;
+		font-size: 0.9rem;
+		color: #ddd;
+	}
+	.game-explanation button {
+		margin-top: 1rem;
+		align-self: end;
+
+		border: none;
+		background-color: rgb(180, 46, 224, 0.5);
+		color: #eee;
+		padding: 0.2rem 0.5rem;
+		border-radius: 0.3rem;
+		transition: 0.2s;
+	}
+	.game-explanation button:hover {
+		background-color: rgb(180, 46, 224, 0.8);
+		cursor: pointer;
+	}
+
+	.game-starter:nth-child(2),
+	.game-starter:nth-child(3),
+	.game-starter:nth-child(4) {
+		filter: grayscale(1);
+		opacity: 0.5;
+	}
+	.game-starter:nth-child(2) button,
+	.game-starter:nth-child(3) button,
+	.game-starter:nth-child(4) button {
+		cursor: not-allowed;
+	}
+	.game-starter:nth-child(2) button:hover,
+	.game-starter:nth-child(3) button:hover,
+	.game-starter:nth-child(4) button:hover {
+		background-color: rgb(180, 46, 224, 0.5);
+	}
+
+	/* ingame error window */
+	/* .dark-overlay{
+		width:100vw;
+		height:100vh;
+		background-color:rgba(23, 23, 23, 0.688);
+
+		position:absolute;
+		left:0;
+		top:0;
+
+		z-index:999;
+		
+	} */
+	.notification-window {
+		background-color: rgb(33, 33, 33, 0.7);
+		backdrop-filter: blur(4px);
+		padding: 2rem 4rem;
+		border-radius: 1rem;
+
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		gap: 1rem;
+
+		z-index: 999;
+	}
+
+	.notification-window button {
+		border: 2px solid green;
+		background-color: transparent;
+		border-radius: 2px;
+		border-radius: 0.5rem;
+		padding: 0.4rem 1rem;
+		transition: 0.2s;
+
+		display: flex;
+		justify-content: center;
+	}
+	.notification-window button:hover {
+		transform: translateY(-3%);
+	}
+	.dual-button {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+	}
+	.dual-button button:nth-child(1) {
+		border: 2px solid green;
+	}
+	.dual-button button:nth-child(2) {
+		border: 2px solid rgb(111, 30, 0);
 	}
 </style>
