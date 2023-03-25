@@ -49,11 +49,10 @@
 					console.log(event)
 
 					//to handle token limitation of gpt
-					if (chatMessages.length >= 18) {
+					if (chatMessages.length >= 16) {
 						chatMessages.splice(1, 2)
 					}
 
-					// console.log('chatMessages: ' + JSON.stringify(chatMessages))
 
 					//choice transition delay reset for every new conversation
 					delay = -300
@@ -300,6 +299,11 @@
 		console.log(combatEvent.prompt)
 		giveYourAnswer(combatEvent.prompt)
 
+	if (combatEvent.manaCost){
+stats[0].mp -= combatEvent.manaCost
+	}
+
+
 		event[0].inCombat = !event[0].inCombat
 
 		//empty the object after
@@ -308,6 +312,7 @@
 		combatChoice.healing = undefined
 		combatChoice.prompt = ''
 		combatChoice.combatScore = undefined
+		combatChoice.manaCost = 0
 	}
 
 	function useItem(item: any) {
@@ -322,6 +327,7 @@
 
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
 				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player taking some serious hits and lose some huge health from enemy attacks, losing combat advantage aswell. End the combat with a failure, give a scenario where player barely escapes.)`
+				stats[0].hp-=20
 			}
 			if (combatChoice.combatScore >= 10 && combatChoice.combatScore < 20) {
 				combatChoice.prompt = `Attack with ${name}! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
@@ -354,7 +360,7 @@
 			if (mp < manaCost) return (ingameErrorMessage = 'You have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < cooldown)
 				return (ingameErrorMessage =
-					'This skill is on cooldown.' + coolDowns[name] + '/' + cooldown)
+					'This skill is on cooldown. ' + coolDowns[name] + '/' + cooldown)
 			coolDowns[name] = cooldown
 			combatChoice.combatScore = randomNumber1_20(damage)
 
@@ -381,6 +387,7 @@
 			combatChoice.name = name
 			combatChoice.damage = damage
 			combatChoice.healing = undefined
+			combatChoice.manaCost = manaCost
 			console.log(combatChoice)
 
 			return
@@ -404,6 +411,7 @@
 			combatChoice.name = name
 			combatChoice.healing = healing
 			combatChoice.damage = undefined
+			combatChoice.manaCost = manaCost
 			console.log(combatChoice)
 
 			return
@@ -597,7 +605,15 @@
 			askSell = prompt
 		} else return
 	}
+
+	let mapOn:any;
+
+	$:hpPercentage=stats[0].hp/stats[0].maxHp *100
+	$:mpPercentage=stats[0].mp/stats[0].maxMp *100
+
+
 </script>
+
 
 <div>
 	<img
@@ -749,6 +765,24 @@
 		{/if}
 	</div>
 
+
+
+	<div class="map-and-places">
+		<img on:click={()=>mapOn=!mapOn} src="images/map-svgs/2.svg" alt=""/>
+		{#if mapOn}
+		<div class="places-to-go">
+		<img on:click={()=>giveYourAnswer("I'll go to nearest Woods.")} transition:fade={{ duration: 100 }}  src="images/landscape-svgs/1.svg" alt=""/>
+		<p transition:fade={{ duration: 100 }}>Woods</p>
+		<img on:click={()=>giveYourAnswer("I'll go to nearest Harbor.")} transition:fade={{delay:100, duration: 100 }} src="images/landscape-svgs/2.svg" alt=""/>
+		<p transition:fade={{delay:100, duration: 100 }}>Harbor</p>
+		<img on:click={()=>giveYourAnswer("I'll go to nearest Town.")} transition:fade={{delay:200, duration: 100 }} src="images/landscape-svgs/3.svg" alt=""/>
+		<p transition:fade={{delay:200, duration: 100 }}>Town</p>
+		</div>
+		{/if}
+	</div>
+
+	<img class="game-info-button" src="images/info.svg" alt=""/>
+
 	<div class="whole-content">
 		{#if gameStarted}
 			<div class="main-game">
@@ -756,9 +790,10 @@
 					<ChatMessage type="assistant" message={story ? story : dotty} />
 				</div>
 				<div transition:fade={{ duration: 2000 }} class="game-controls">
-					<div style="opacity:{choices.length ? '1' : '0'}; transition:1.5s;" class="ui-left">
+					<div style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
 						<!-- {#if stats[0] && stats[0].hp} -->
-						<div class="hp-bar">
+						<div class="hp-bar" style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8);"
+		>
 							{stats[0].hp}/{stats[0].maxHp}
 						</div>
 						<!-- {/if} -->
@@ -830,7 +865,7 @@
 							<div transition:fade={{ duration: 1000 }} class="combat">
 								<div class="combat-box">
 									<h3>You are now in <span class="span-heading">Combat!</span></h3>
-
+<div class="combat-but-and-info">
 									<ul>
 										{#if !combatChoice.name}
 											<li>
@@ -858,6 +893,7 @@
 									<button class="combat-button">
 										<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
 									</button>
+								</div>
 								</div>
 							</div>
 							<!-- shop ui -->
@@ -932,14 +968,14 @@
 									<button
 										disabled={loading}
 										class="leave-button"
-										style="opacity: {choices.length ? '1' : '0'}; transition:1.5s;"
+										style="opacity: {choices.length ? '1' : '0'};"
 										on:click={() => giveYourAnswer('Retreat')}>Retreat.</button
 									>
 								{:else if event[0].shopMode}
 									<button
 										disabled={loading}
 										class="leave-button"
-										style="opacity: {event[0].shopMode ? '1' : '0'}; transition:1.5s;"
+										style="opacity: {event[0].shopMode ? '1' : '0'};"
 										on:click={() => {
 											giveYourAnswer('Leave the shop')
 											event[0].shopMode = null
@@ -968,10 +1004,10 @@
 									{/if} -->
 					</div>
 
-					<div style="opacity:{choices.length ? '1' : '0'}; transition:1.5s;" class="ui-right">
+					<div style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-right">
 						<!-- {#if stats[0] && stats[0].mp} -->
 
-						<div class="mp-bar">
+						<div class="mp-bar" style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8);">
 							{stats[0].mp}/{stats[0].maxMp}
 						</div>
 						<!-- {/if} -->
@@ -1143,12 +1179,7 @@
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
 	}
-	.hp-bar {
-		background-color: #b02863aa;
-	}
-	.mp-bar {
-		background-color: #76399caa;
-	}
+	
 	.spells h3,
 	.inventory h3 {
 		grid-column-start: 1;
@@ -1223,6 +1254,13 @@
 		justify-content: space-around;
 		padding: 0 0.5rem;
 	}
+	.combat-but-and-info{
+		display:flex;
+		align-items:center;
+		justify-content:center;
+		gap:2rem;
+	}
+	
 
 	.combat-box img:active {
 		animation: button-pop 0.3s ease-out;
@@ -1247,7 +1285,17 @@
 
 	.leave-button {
 		border: none;
-		background-color: gray;
+		background-color: rgba(49, 49, 49, 0.73);
+		padding:0.3rem 2rem;
+		border-radius:0.3rem;
+		font-size:1rem;
+		transition:background-color 0.3s, opacity 1.5s;
+
+		backdrop-filter:blur(3px)
+	}
+	.leave-button:hover{
+		background-color: rgba(49, 49, 49, 0.83);
+
 	}
 	.combat-button {
 		border: none;
@@ -1265,6 +1313,7 @@
 		padding-left: 0.4rem;
 		text-align: start;
 		transition: 0.2s;
+		line-height:1.2;
 	}
 	.shop-box ul li:hover {
 		cursor: pointer;
@@ -1336,6 +1385,8 @@
 	}
 
 	.choice {
+		/* background-color: rgba(49, 49, 49, 0.83); */
+
 		background-color: #362525;
 		border-radius: 0.5rem;
 		font-size: 1.4rem;
@@ -1503,7 +1554,7 @@
 		align-items: start;
 
 		position: absolute;
-		bottom: 0.8rem;
+		bottom: 1rem;
 	}
 	.game-starter {
 		display: flex;
@@ -1576,7 +1627,7 @@
 		backdrop-filter: blur(4px);
 		padding: 2rem 4rem;
 		border-radius: 1rem;
-
+		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 		position: absolute;
 		left: 50%;
 		top: 50%;
@@ -1591,7 +1642,7 @@
 	}
 
 	.notification-window button {
-		border: 2px solid green;
+		border: 2px solid rgb(65, 124, 65);
 		background-color: transparent;
 		border-radius: 2px;
 		border-radius: 0.5rem;
@@ -1614,5 +1665,41 @@
 	}
 	.dual-button button:nth-child(2) {
 		border: 2px solid rgb(111, 30, 0);
+	}
+
+
+	/* map and places */
+
+	.map-and-places{
+		position:absolute;
+		left:1.5rem;
+		top:1.5rem;
+		display:flex;
+		flex-direction:column;
+		gap:1rem;
+	}
+	.map-and-places img{
+cursor:pointer;
+		width:3.5rem;
+
+	}
+	.map-and-places img:active,.game-info-button:active{
+		animation: button-pop 0.3s ease-out;
+
+	}
+	.game-info-button{
+		cursor:pointer;
+		position:absolute;
+		width:3.5rem;
+		right:1.5rem;
+		bottom:1.5rem;
+
+	}
+	
+	.places-to-go{
+		display:grid;
+		grid-template-columns: 1fr 1fr;
+		align-items:center;
+		gap:0.7rem;
 	}
 </style>

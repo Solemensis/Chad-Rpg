@@ -7,7 +7,7 @@
 		"weaponClass": "sword"
 	},
 	{
-		"name": "Silver Dagger",
+		"name": "Bronze Dagger",
 		"damage": 5,
 		"price": 55,
 		"type": "weapon",
@@ -48,11 +48,11 @@
 		"type": "axe"
 	},
 	{
-		"name": "Steel Halberd",
+		"name": "Steel Axe",
 		"damage": 6,
 		"price": 85,
 		"type": "weapon",
-		"weaponClass": "halberd"
+		"weaponClass": "axe"
 	},
 	{
 		"name": "Copper Flail",
@@ -132,11 +132,11 @@
 		"weaponClass": "sword"
 	},
 	{
-		"name": "Bronze Halberd",
+		"name": "Silver Dagger",
 		"damage": 8,
 		"price": 160,
 		"type": "weapon",
-		"weaponClass": "halberd"
+		"weaponClass": "dagger"
 	},
 	{
 		"name": "Iron Flail",
@@ -160,7 +160,7 @@
 		"weaponClass": "bow"
 	},
 	{
-		"name": "Bronze Dagger",
+		"name": "Golden Dagger",
 		"damage": 10,
 		"price": 270,
 		"type": "weapon",
