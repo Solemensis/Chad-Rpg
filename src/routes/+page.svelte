@@ -53,7 +53,6 @@
 						chatMessages.splice(1, 2)
 					}
 
-
 					//choice transition delay reset for every new conversation
 					delay = -300
 
@@ -102,6 +101,7 @@
 	let placeAndTime: any[] = []
 
 	let event: any[] = [{ inCombat: false, shopMode: null, gold: 15 }]
+	let enemy: any[] = []
 
 	let stats: any[] = [{ hp: 80, maxHp: 80, mp: 60, maxMp: 60 }]
 	let spells: any[] = [
@@ -218,10 +218,12 @@
 		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
 		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
 		const eventRegex: any = /@event:\s*(\[[^\]]*\])/
+		const enemyRegex: any = /@enemy:\s*(\[[^\]]*\])/
 
 		const placeAndTimeMatch: any = text.match(placeAndTimeRegex)
 		const choiceMatch: any = text.match(choiceRegex)
 		const eventMatch: any = text.match(eventRegex)
+		const enemyMatch: any = text.match(enemyRegex)
 
 		if (placeAndTimeMatch) {
 			placeAndTime = JSON.parse(placeAndTimeMatch[1])
@@ -233,6 +235,11 @@
 
 				logged = true
 			}
+		}
+
+		if (enemyMatch) {
+			enemy = JSON.parse(enemyMatch[1])
+			console.log(enemy)
 		}
 
 		if (eventMatch) {
@@ -263,16 +270,6 @@
 		return str.slice(startIndex, endIndex).trim()
 	}
 
-	// function getHpMp(inputString: any) {
-	// 	const parts = inputString.split('/')
-	// 	return parts[0]
-	// }
-
-	// function isHpOrMpFull(s: any) {
-	// 	const [left, right] = s.split('/')
-	// 	return left === right
-	// }
-
 	let coolDowns: any = {}
 
 	function randomNumber1_20(damage: any) {
@@ -299,10 +296,9 @@
 		console.log(combatEvent.prompt)
 		giveYourAnswer(combatEvent.prompt)
 
-	if (combatEvent.manaCost){
-stats[0].mp -= combatEvent.manaCost
-	}
-
+		if (combatEvent.manaCost) {
+			stats[0].mp -= combatEvent.manaCost
+		}
 
 		event[0].inCombat = !event[0].inCombat
 
@@ -327,7 +323,7 @@ stats[0].mp -= combatEvent.manaCost
 
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
 				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player taking some serious hits and lose some huge health from enemy attacks, losing combat advantage aswell. End the combat with a failure, give a scenario where player barely escapes.)`
-				stats[0].hp-=20
+				stats[0].hp -= 20
 			}
 			if (combatChoice.combatScore >= 10 && combatChoice.combatScore < 20) {
 				combatChoice.prompt = `Attack with ${name}! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
@@ -371,7 +367,9 @@ stats[0].mp -= combatEvent.manaCost
 				combatChoice.prompt = `Attack with ${name} spell! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
 			}
 			if (combatChoice.combatScore >= 20 && combatChoice.combatScore < 50) {
-				combatChoice.prompt = `Attack with ${name} spell! (give a medi-ocre @story where player lands a decent attack, which leads to an okayish scenario in combat for now.)`
+				// combatChoice.prompt = `Attack with ${name} spell! (give a medi-ocre @story where player lands a decent attack, which leads to an okayish scenario in combat for now.)`
+				combatChoice.prompt = `Attack with ${name} spell! (give an okay scenario which gives 20 damage to enemy)`
+				enemy[0].enemyHp -=20
 			}
 			if (combatChoice.combatScore >= 50 && combatChoice.combatScore < 80) {
 				combatChoice.prompt = `Attack with ${name} spell! (Tell a thrilling @story where player lands a great attack, dealing significant damage to the enemy and gaining an advantage in combat.)`
@@ -606,16 +604,14 @@ stats[0].mp -= combatEvent.manaCost
 		} else return
 	}
 
-	let mapOn:any;
+	let mapOn: any
 
-	$:hpPercentage=stats[0].hp/stats[0].maxHp *100
-	$:mpPercentage=stats[0].mp/stats[0].maxMp *100
-
-
+	$: hpPercentage = (stats[0].hp / stats[0].maxHp) * 100
+	$: mpPercentage = (stats[0].mp / stats[0].maxMp) * 100
 </script>
 
-
 <div>
+	<!-- background images (out of ui)-->
 	<img
 		class="fetched-bg"
 		src={fetchedBg1}
@@ -628,14 +624,13 @@ stats[0].mp -= combatEvent.manaCost
 		style="opacity:{img2active ? '1' : '0'}; transition:opacity 2s;"
 		alt=""
 	/>
-	<!-- {#if !backgroundImg} -->
 	<div
 		class="main-bg"
 		style="opacity:{!img1active && !img2active ? '1' : '0'}; transition:opacity 2s;"
 	/>
-	<!-- {/if} -->
+	<!-- background images -->
 
-	<!-- başlangıç ekranı: -->
+	<!-- başlangıç ekranı (out of ui) -->
 	{#if !gameStarted}
 		<div transition:fade={{ duration: 1000 }} class="starting-screen">
 			<div class="heading-box">
@@ -690,6 +685,9 @@ stats[0].mp -= combatEvent.manaCost
 			</div>
 		</div>
 	{/if}
+	<!-- başlangıç ekranı: -->
+
+	<!-- ingame notification window (out of ui) -->
 	{#if ingameErrorMessage}
 		<div transition:fade={{ duration: 300 }} class="notification-window">
 			<p>
@@ -698,7 +696,9 @@ stats[0].mp -= combatEvent.manaCost
 			<button on:click={() => (ingameErrorMessage = '')}>Got it</button>
 		</div>
 	{/if}
+	<!-- ingame notification window ends here -->
 
+	<!-- askbuy window (out of ui) -->
 	{#if askBuy}
 		<div transition:fade={{ duration: 300 }} class="notification-window">
 			<p>
@@ -715,6 +715,9 @@ stats[0].mp -= combatEvent.manaCost
 			</div>
 		</div>
 	{/if}
+	<!-- askbuy window -->
+
+	<!-- asksell window (out of ui) -->
 	{#if askSell}
 		<div transition:fade={{ duration: 300 }} class="notification-window">
 			<p>
@@ -731,7 +734,9 @@ stats[0].mp -= combatEvent.manaCost
 			</div>
 		</div>
 	{/if}
+	<!-- asksell window -->
 
+	<!-- item description window (out of ui) -->
 	<div class="description-window" style="left:{x}px; top:{y}px; display:{displayItemWindow}">
 		<h5 class="desc-name">{name}</h5>
 		{#if damage}
@@ -764,108 +769,149 @@ stats[0].mp -= combatEvent.manaCost
 			<p class="desc-all">mana cost: -{manaCost}</p>
 		{/if}
 	</div>
+	<!-- item description window  -->
 
-
-
+	<!-- map and places buttons (out of ui) -->
 	<div class="map-and-places">
-		<img on:click={()=>mapOn=!mapOn} src="images/map-svgs/2.svg" alt=""/>
+		<img on:click={() => (mapOn = !mapOn)} src="images/map-svgs/2.svg" alt="" />
 		{#if mapOn}
-		<div class="places-to-go">
-		<img on:click={()=>giveYourAnswer("I'll go to nearest Woods.")} transition:fade={{ duration: 100 }}  src="images/landscape-svgs/1.svg" alt=""/>
-		<p transition:fade={{ duration: 100 }}>Woods</p>
-		<img on:click={()=>giveYourAnswer("I'll go to nearest Harbor.")} transition:fade={{delay:100, duration: 100 }} src="images/landscape-svgs/2.svg" alt=""/>
-		<p transition:fade={{delay:100, duration: 100 }}>Harbor</p>
-		<img on:click={()=>giveYourAnswer("I'll go to nearest Town.")} transition:fade={{delay:200, duration: 100 }} src="images/landscape-svgs/3.svg" alt=""/>
-		<p transition:fade={{delay:200, duration: 100 }}>Town</p>
-		</div>
+			<div class="places-to-go">
+				<img
+					on:click={() => giveYourAnswer("I'll go to nearest Woods.")}
+					transition:fade={{ duration: 100 }}
+					src="images/landscape-svgs/1.svg"
+					alt=""
+				/>
+				<p transition:fade={{ duration: 100 }}>Woods</p>
+				<img
+					on:click={() => giveYourAnswer("I'll go to nearest Harbor.")}
+					transition:fade={{ delay: 100, duration: 100 }}
+					src="images/landscape-svgs/2.svg"
+					alt=""
+				/>
+				<p transition:fade={{ delay: 100, duration: 100 }}>Harbor</p>
+				<img
+					on:click={() => giveYourAnswer("I'll go to nearest Town.")}
+					transition:fade={{ delay: 200, duration: 100 }}
+					src="images/landscape-svgs/3.svg"
+					alt=""
+				/>
+				<p transition:fade={{ delay: 200, duration: 100 }}>Town</p>
+			</div>
 		{/if}
 	</div>
+	<!-- map and places buttons -->
 
-	<img class="game-info-button" src="images/info.svg" alt=""/>
+	<!-- game info button (out of ui) -->
+	<img class="game-info-button" src="images/info.svg" alt="" />
+	<!-- game info button -->
 
-	<div class="whole-content">
-		{#if gameStarted}
-			<div class="main-game">
-				<div transition:fade={{ duration: 1000 }} class="game-master">
-					<ChatMessage type="assistant" message={story ? story : dotty} />
+	<!-- game ui starts here -->
+	{#if gameStarted}
+		<div class="main-game">
+			<!-- top game ui -->
+			<div transition:fade={{ duration: 1000 }} class="game-master">
+				<ChatMessage type="assistant" message={story ? story : dotty} />
+			</div>
+			<!-- top game ui ends-->
+
+			<!-- bottom game ui starts here-->
+			<div transition:fade={{ duration: 2000 }} class="game-controls">
+				<!-- ui left -->
+				<div style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
+					<div
+						class="hp-bar"
+						style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8);"
+					>
+					HP {stats[0].hp}/{stats[0].maxHp}
+					</div>
+					<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
+						<h3>Inventory</h3>
+						{#each inventory as item}
+							<button
+								disabled={loading}
+								on:click={() => {
+									useItem(item)
+									handleSell(`You sure to sell ${item.name}?`, item)
+								}}
+								in:fade={{ duration: 600 }}
+							>
+								<img
+									on:mousemove={(event) => handleMouseMove(event, item)}
+									on:mouseleave={hideWindow}
+									src="/images/{item.weaponClass}.svg"
+									alt=""
+								/>
+							</button>
+						{/each}
+					</div>
 				</div>
-				<div transition:fade={{ duration: 2000 }} class="game-controls">
-					<div style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
-						<!-- {#if stats[0] && stats[0].hp} -->
-						<div class="hp-bar" style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8);"
-		>
-							{stats[0].hp}/{stats[0].maxHp}
-						</div>
-						<!-- {/if} -->
-						<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
-							<h3>Inventory</h3>
-							{#each inventory as item}
+				<!-- ui left ends here -->
+
+				<!-- ui bottom mid starts here -->
+				<div class="ui-mid">
+					{#if event[0] && !event[0].shopMode && !event[0].inCombat}
+						<!-- choices ui starts here -->
+						<div class="choices">
+							{#each choices as choice}
 								<button
 									disabled={loading}
-									on:click={() => {
-										useItem(item)
-										handleSell(`You sure to sell ${item.name}?`, item)
-									}}
-									in:fade={{ duration: 600 }}
+									transition:fade={{ ...getDelayTime(), duration: 700 }}
+									class="choice"
+									on:click={() => giveYourAnswer(choice)}>{choice}</button
 								>
-									<img
-										on:mousemove={(event) => handleMouseMove(event, item)}
-										on:mouseleave={hideWindow}
-										src="/images/{item.weaponClass}.svg"
-										alt=""
-									/>
-								</button>
 							{/each}
-						</div>
-					</div>
-					<div class="ui-mid">
-						{#if event[0] && !event[0].shopMode && !event[0].inCombat}
-							<div class="choices">
-								{#each choices as choice}
-									<button
-										disabled={loading}
-										transition:fade={{ ...getDelayTime(), duration: 700 }}
-										class="choice"
-										on:click={() => giveYourAnswer(choice)}>{choice}</button
-									>
-								{/each}
-								{#if choices.length >= 2}
-									<div
-										transition:fade={{ ...getDelayTime(), duration: 400 }}
-										class="choice choiceInput"
-									>
-										<input
-											placeholder="Go to local Inn, find someone to talk to"
-											type="text"
-											bind:value={query}
-										/>
-										<button disabled={!query} on:click={() => giveYourAnswer(query)}>Answer</button>
-									</div>
-								{/if}
-							</div>
-
-							{#if handleErr}
-								<div transition:fade={{ duration: 700 }} class="choice choiceInput">
+							{#if choices.length >= 2}
+								<div
+									transition:fade={{ ...getDelayTime(), duration: 400 }}
+									class="choice choiceInput"
+								>
 									<input
-										placeholder="Please input your answer again."
+										placeholder="Go to local Inn, find someone to talk to"
 										type="text"
 										bind:value={query}
 									/>
-									<button
-										disabled={!query}
-										on:click={() => {
-											giveYourAnswer(query)
-											handleErr = !handleErr
-										}}>Answer</button
-									>
+									<button disabled={!query} on:click={() => giveYourAnswer(query)}>Answer</button>
 								</div>
 							{/if}
-						{:else if event[0] && event[0].inCombat}
-							<!-- combat ui -->
-							<div transition:fade={{ duration: 1000 }} class="combat">
-								<div class="combat-box">
+						</div>
+						<!-- choices ui ends here -->
+
+						<!-- client side error handling -->
+						{#if handleErr}
+							<div transition:fade={{ duration: 700 }} class="choice choiceInput">
+								<input
+									placeholder="Please input your answer again."
+									type="text"
+									bind:value={query}
+								/>
+								<button
+									disabled={!query}
+									on:click={() => {
+										giveYourAnswer(query)
+										handleErr = !handleErr
+									}}>Answer</button
+								>
+							</div>
+						{/if}
+						<!-- client side error handling -->
+
+						<!-- combat ui -->
+					{:else if event[0] && event[0].inCombat}
+						<div transition:fade={{ duration: 1000 }} class="combat">
+							<div class="combat-box">
+								<div class="heading-and-enemy">
 									<h3>You are now in <span class="span-heading">Combat!</span></h3>
-<div class="combat-but-and-info">
+									{#if enemy[0]}
+										<div class="enemy">
+											<h5>{enemy[0].enemyName}</h5>
+											<p 
+						style="background-image: linear-gradient(to right, #E1683C {mpPercentage}%, #1f1f1fc8);"
+						>{enemy[0].enemyHp} HP</p>
+										</div>
+									{/if}
+								</div>
+								<div class="combat-but-and-info">
 									<ul>
 										{#if !combatChoice.name}
 											<li>
@@ -886,61 +932,64 @@ stats[0].mp -= combatEvent.manaCost
 
 										<li>Then, press the <span class="g-span">dice</span> to learn your fate!</li>
 										<li>
-											Your fighting scenario will be calculated based on these and some element of
-											surprise.
+											<!-- Your fighting scenario will be calculated based on these and some element of
+											surprise. -->
+											Or, just try to <span class="red-span">Retreat!</span>
 										</li>
 									</ul>
 									<button class="combat-button">
 										<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
 									</button>
 								</div>
-								</div>
 							</div>
-							<!-- shop ui -->
-						{:else if event[0] && event[0].shopMode}
-							<div transition:fade={{ duration: 1000 }} class="shop">
-								<div class="shop-box">
-									{#if event[0].shopMode == 'weaponsmith'}
-										<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
-									{/if}
-									{#if event[0].shopMode == 'armorsmith'}
-										<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
-									{/if}
-									{#if event[0].shopMode == 'spell shop'}
-										<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
-									{/if}
-									{#if event[0].shopMode == 'potion shop'}
-										<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
-									{/if}
-									{#if event[0].shopMode != 'weaponsmith' && event[0].shopMode != 'armorsmith' && event[0].shopMode != 'spell shop' && event[0].shopMode != 'potion shop'}
-										<h3>You're at a local <span class="g-span">Merchant</span></h3>
-									{/if}
+						</div>
+						<!-- combat ui ends here-->
 
-									<ul>
-										{#each shop as buyable}
-											<button
-												class="item-button"
-												on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
-											>
-												{#if buyable.type == 'weapon'}
-													<li>
-														{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
-														class
-													</li>
-												{/if}
-												{#if buyable.element && buyable.healing}
-													<li>
-														{buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
-														element
-													</li>
-												{/if}
-												{#if buyable.element && buyable.damage}
-													<li>
-														{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.element}
-														element
-													</li>
-												{/if}
-												<!-- {#if buyable.element && buyable.utility}
+						<!-- shop ui -->
+					{:else if event[0] && event[0].shopMode}
+						<div transition:fade={{ duration: 1000 }} class="shop">
+							<div class="shop-box">
+								{#if event[0].shopMode == 'weaponsmith'}
+									<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
+								{/if}
+								{#if event[0].shopMode == 'armorsmith'}
+									<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
+								{/if}
+								{#if event[0].shopMode == 'spell shop'}
+									<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
+								{/if}
+								{#if event[0].shopMode == 'potion shop'}
+									<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
+								{/if}
+								{#if event[0].shopMode != 'weaponsmith' && event[0].shopMode != 'armorsmith' && event[0].shopMode != 'spell shop' && event[0].shopMode != 'potion shop'}
+									<h3>You're at a local <span class="g-span">Merchant</span></h3>
+								{/if}
+
+								<ul>
+									{#each shop as buyable}
+										<button
+											class="item-button"
+											on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
+										>
+											{#if buyable.type == 'weapon'}
+												<li>
+													{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
+													class
+												</li>
+											{/if}
+											{#if buyable.element && buyable.healing}
+												<li>
+													{buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
+													element
+												</li>
+											{/if}
+											{#if buyable.element && buyable.damage}
+												<li>
+													{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.element}
+													element
+												</li>
+											{/if}
+											<!-- {#if buyable.element && buyable.utility}
 													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
 												{/if}
 												{#if buyable.armor}
@@ -949,144 +998,86 @@ stats[0].mp -= combatEvent.manaCost
 												{#if buyable.type=="potion"}
 													<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
 												{/if} -->
-											</button>
-										{/each}
-									</ul>
-									<!-- <button class="buy-button">
-										<img src="images/buy.svg" alt="" />
-									</button> -->
-								</div>
+										</button>
+									{/each}
+								</ul>
 							</div>
-						{/if}
-						{#if choices.length >= 2 || event[0].inCombat || event[0].shopMode}
-							<div transition:fade={{ duration: 700 }} class="stats">
-								<div class="stat">
-									<img class="svg-images" src="images/gold.svg" alt="" />
-									<p>{event[0].gold}</p>
-								</div>
-								{#if event[0].inCombat}
-									<button
-										disabled={loading}
-										class="leave-button"
-										style="opacity: {choices.length ? '1' : '0'};"
-										on:click={() => giveYourAnswer('Retreat')}>Retreat.</button
-									>
-								{:else if event[0].shopMode}
-									<button
-										disabled={loading}
-										class="leave-button"
-										style="opacity: {event[0].shopMode ? '1' : '0'};"
-										on:click={() => {
-											giveYourAnswer('Leave the shop')
-											event[0].shopMode = null
-										}}>Leave the Shop</button
-									>
-								{/if}
-								<div class="stat">
-									<img class="svg-images" src="images/time.svg" alt="" />
-
-									<p>{placeAndTime[0].time ? placeAndTime[0].time : '00:00'}</p>
-								</div>
-							</div>
-						{/if}
-
-						<!-- {if }
-						<div  class="choice">
-										<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-											<input
-												placeholder="Go to a nearby Tavern | Speak about Magic"
-												type="text"
-												bind:value={query}
-											/>
-											<button type="submit">Answer</button>
-										</form>
-									</div>
-									{/if} -->
-					</div>
-
-					<div style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-right">
-						<!-- {#if stats[0] && stats[0].mp} -->
-
-						<div class="mp-bar" style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8);">
-							{stats[0].mp}/{stats[0].maxMp}
 						</div>
-						<!-- {/if} -->
-						<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
-							<h3>Spells</h3>
-							{#each spells as spell}
+					{/if}
+					<!-- shop ui ends here -->
+
+					<!-- gold&time and reject choices -->
+					{#if choices.length >= 2 || event[0].inCombat || event[0].shopMode}
+						<div transition:fade={{ duration: 700 }} class="stats">
+							<div class="stat">
+								<img class="svg-images" src="images/gold.svg" alt="" />
+								<p>{event[0].gold}</p>
+							</div>
+							{#if event[0].inCombat}
 								<button
 									disabled={loading}
-									on:click={() => {
-										useItem(spell)
-										handleSell(`You sure to sell ${spell.name}?`, spell)
-									}}
-									in:fade={{ duration: 600 }}
-									><img
-										on:mousemove={(event) => handleMouseMove(event, spell)}
-										on:mouseleave={hideWindow}
-										src="/images/{spell.element}.svg"
-										alt=""
-									/></button
+									class="leave-button"
+									style="opacity: {choices.length ? '1' : '0'};"
+									on:click={() => giveYourAnswer('Retreat')}>Retreat.</button
 								>
-							{/each}
+							{:else if event[0].shopMode}
+								<button
+									disabled={loading}
+									class="leave-button"
+									style="opacity: {event[0].shopMode ? '1' : '0'};"
+									on:click={() => {
+										giveYourAnswer('Leave the shop')
+										event[0].shopMode = null
+									}}>Leave the Shop</button
+								>
+							{/if}
+							<div class="stat">
+								<img class="svg-images" src="images/time.svg" alt="" />
+
+								<p>{placeAndTime[0].time ? placeAndTime[0].time : '00:00'}</p>
+							</div>
 						</div>
+					{/if}
+					<!-- gold&time and reject choices ends here -->
+				</div>
+				<!-- ui bottom mid ends here -->
+				<!-- ui right starts here -->
+				<div
+					style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;"
+					class="ui-right"
+				>
+					<div
+						class="mp-bar"
+						style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8);"
+					>
+					MP {stats[0].mp}/{stats[0].maxMp}
+					</div>
+					<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
+						<h3>Spells</h3>
+						{#each spells as spell}
+							<button
+								disabled={loading}
+								on:click={() => {
+									useItem(spell)
+									handleSell(`You sure to sell ${spell.name}?`, spell)
+								}}
+								in:fade={{ duration: 600 }}
+								><img
+									on:mousemove={(event) => handleMouseMove(event, spell)}
+									on:mouseleave={hideWindow}
+									src="/images/{spell.element}.svg"
+									alt=""
+								/></button
+							>
+						{/each}
 					</div>
 				</div>
-				<!-- {:else} -->
-
-				<!-- {#if !choices2
-				 <div class="choices">
-				.length && loading}
-					<div in:fade={{ delay: 10000, duration: 700 }} class="choice">
-						<form on:submit|preventDefault={() => giveYourAnswer(query)}>
-							<input
-								placeholder="No conversation generated. Please write your own action."
-								type="text"
-								bind:value={query}
-							/>
-							<button type="submit">Answer</button>
-						</form>
-					</div>
-				-->
+				<!-- ui right ends here -->
 			</div>
-		{/if}
-
-		<!-- <div class="left-part">
-			<div class="inventory">
-				{#each inventory as item}
-					<h5>{item.name}</h5>
-					{#if item.damage}
-						<p>Damage: {item.damage}</p>
-					{/if}
-					{#if item.armor}
-						<p>Armor: {item.armor}</p>
-					{/if}
-					{#if item.healing}
-						<p>Healing: {item.healing}</p>
-					{/if}
-				{/each}
-			</div>
-			<div class="spells">
-				{#each spells as spell}
-					<h5>{spell.name}</h5>
-					{#if spell.damage}
-						<p>Damage: {spell.damage}</p>
-					{/if}
-					{#if spell.healing}
-						<p>Healing: {spell.healing}</p>
-					{/if}
-				{/each}
-			</div>
-			<div class="stats">
-				{#each stats as stats}
-					<p>Health: {stats.hp}</p>
-					<p>Level: {stats.level}</p>
-					<p>Power Level: {stats.powerLevel}</p>
-					<p>Gold: {stats.gold}</p>
-				{/each}
-			</div>
-		</div> -->
-	</div>
+			<!-- bottom game ui ends here-->
+		</div>
+	{/if}
+	<!-- game ui ends here -->
 </div>
 
 <style>
@@ -1179,7 +1170,7 @@ stats[0].mp -= combatEvent.manaCost
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
 	}
-	
+
 	.spells h3,
 	.inventory h3 {
 		grid-column-start: 1;
@@ -1254,13 +1245,13 @@ stats[0].mp -= combatEvent.manaCost
 		justify-content: space-around;
 		padding: 0 0.5rem;
 	}
-	.combat-but-and-info{
-		display:flex;
-		align-items:center;
-		justify-content:center;
-		gap:2rem;
+
+	.combat-but-and-info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 2rem;
 	}
-	
 
 	.combat-box img:active {
 		animation: button-pop 0.3s ease-out;
@@ -1274,35 +1265,37 @@ stats[0].mp -= combatEvent.manaCost
 		flex-direction: column;
 		gap: 0.4rem;
 	}
+
 	.combat-box ul {
 		width: 60%;
 	}
+
 	.shop-box ul {
 		width: 80%;
 		height: 50%;
 		margin-inline: auto;
 	}
-
 	.leave-button {
 		border: none;
 		background-color: rgba(49, 49, 49, 0.73);
-		padding:0.3rem 2rem;
-		border-radius:0.3rem;
-		font-size:1rem;
-		transition:background-color 0.3s, opacity 1.5s;
-
-		backdrop-filter:blur(3px)
+		padding: 0.3rem 2rem;
+		border-radius: 0.3rem;
+		font-size: 1rem;
+		transition: background-color 0.3s, opacity 1.5s;
+		backdrop-filter: blur(3px);
 	}
-	.leave-button:hover{
+
+	.leave-button:hover {
 		background-color: rgba(49, 49, 49, 0.83);
-
 	}
+
 	.combat-button {
 		border: none;
 		background-color: rgba(19, 19, 19, 0.525);
 		border-radius: 0.6rem;
 		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
 	}
+
 	.combat-button img {
 		width: 3.5rem;
 	}
@@ -1313,7 +1306,7 @@ stats[0].mp -= combatEvent.manaCost
 		padding-left: 0.4rem;
 		text-align: start;
 		transition: 0.2s;
-		line-height:1.2;
+		line-height: 1.2;
 	}
 	.shop-box ul li:hover {
 		cursor: pointer;
@@ -1328,10 +1321,10 @@ stats[0].mp -= combatEvent.manaCost
 	}
 	.combat-box ul li:nth-child(3) {
 		list-style-type: '🔮';
-		font-size: 0.8rem;
-		padding-left: 0.6rem;
-		margin-left: -0.15rem;
-		/* margin-top: 0.6rem; */
+		font-size: 0.9rem;
+		 padding-left: 0.5rem;
+		 margin-left: -0.08rem; 
+		
 
 		color: #aaa;
 	}
@@ -1351,7 +1344,9 @@ stats[0].mp -= combatEvent.manaCost
 	.g-span {
 		color: #3fcf8e;
 	}
-
+.red-span{
+	color: rgb(228, 55, 55);
+}
 	.stats {
 		width: 100%;
 		display: flex;
@@ -1667,39 +1662,59 @@ stats[0].mp -= combatEvent.manaCost
 		border: 2px solid rgb(111, 30, 0);
 	}
 
-
 	/* map and places */
 
-	.map-and-places{
-		position:absolute;
-		left:1.5rem;
-		top:1.5rem;
+	.map-and-places {
+		position: absolute;
+		left: 1.5rem;
+		top: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.map-and-places img {
+		cursor: pointer;
+		width: 3.5rem;
+	}
+	.map-and-places img:active,
+	.game-info-button:active {
+		animation: button-pop 0.3s ease-out;
+	}
+	.game-info-button {
+		cursor: pointer;
+		position: absolute;
+		width: 3.5rem;
+		right: 1.5rem;
+		bottom: 1.5rem;
+	}
+
+	.places-to-go {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: center;
+		gap: 0.7rem;
+	}
+
+	.heading-and-enemy {
+		display: flex;
+		justify-content: space-evenly;
+	}
+
+	.enemy {
 		display:flex;
 		flex-direction:column;
-		gap:1rem;
-	}
-	.map-and-places img{
-cursor:pointer;
-		width:3.5rem;
-
-	}
-	.map-and-places img:active,.game-info-button:active{
-		animation: button-pop 0.3s ease-out;
-
-	}
-	.game-info-button{
-		cursor:pointer;
-		position:absolute;
-		width:3.5rem;
-		right:1.5rem;
-		bottom:1.5rem;
-
-	}
-	
-	.places-to-go{
-		display:grid;
-		grid-template-columns: 1fr 1fr;
+		gap:0.2rem;
 		align-items:center;
-		gap:0.7rem;
+	}
+
+	.enemy h5 {
+		font-weight:400;
+	}
+	.enemy p {
+		border-radius:100rem;
+		font-size:0.8rem;
+		text-align:center;
+		width:8rem;
+		height:1rem;
 	}
 </style>

@@ -62,7 +62,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		
 		
 		Do not start the fight before turning "inCombat" to true! Don't just start and end the combat with one @story, let player use some skills or weapons to fight. Say something like "you are now in battle!", and then change "inCombat" to true.
-		if "inCombat" is true, fill the @enemy array. But fill it only with 1 enemy object even if there are more than 1 enemy, just increase the hp parameter instead.
+		if "inCombat" is true, fill the @enemy array. But fill it only with 1 enemy object even if there are more than 1 enemy, just increase the hp parameter instead and give it an "s" letter in the end, so if the enemy is "goblin" but a group of goblins, make the enemy name "goblins". 
 
 		If player starts talking with a seller npc about buying things, switch "shopMode" to a specific shop name from null. 
        "shopMode" can only be null, 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation in @story and @choices.
@@ -70,10 +70,12 @@ export const POST: RequestHandler = async ({ request }) => {
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!
 
+you are forgetting to put "@story" at the beginning of the story you tell. Put "@story" to the beginning of the story always.
+
 if there is a weapon or a spell from loot, put it into the @lootedItems array. Do not put any other thing, just weapons or spells.
 lootedItems array will be empty before and after the loot!
 
-		Here's the exact format for the @placeAndTime, @story, @event and @choices. Do it with the exact data structures shown: -- @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "gold":1115, "shopMode":this will be null when there's no gold spend potential, but will be 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop' if there's currently a conversation with an npc about selling-buying something."}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootedItems: [{
+		Here's the exact format for the @placeAndTime, @story, @event, @choices, @enemy and @lootedItems Do it with the exact data structures shown: -- @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "gold":1115, "shopMode":this will be null when there's no gold spend potential, but will be 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop' if there's currently a conversation with an npc about selling-buying something."}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootedItems: [{
 			"name": "Bronze Battle Axe",
 			"damage": 6,
 			"price": 85,
@@ -96,7 +98,7 @@ lootedItems array will be empty before and after the loot!
 			tokenCount += tokens
 			console.log('tokencount: ' + tokenCount)
 		})
-
+		
 		if (tokenCount >= 4000) {
 			throw new Error('Query too large')
 		}
@@ -137,3 +139,7 @@ lootedItems array will be empty before and after the loot!
 		return json({ error: 'There was an error processing your request' }, { status: 500 })
 	}
 }
+
+
+
+
