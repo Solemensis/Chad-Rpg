@@ -48,6 +48,16 @@
 					console.log(answer)
 					console.log(event)
 
+
+				// 	if (lootBox[0]){
+				// 	lootBox[0].forEach(loot:any=> inventory.push(loot))
+				// }
+
+
+// 					if (!event[0].inCombat){
+// enemy =[]
+// 					}
+
 					//to handle token limitation of gpt
 					if (chatMessages.length >= 16) {
 						chatMessages.splice(1, 2)
@@ -101,9 +111,11 @@
 	let placeAndTime: any[] = []
 
 	let event: any[] = [{ inCombat: false, shopMode: null, gold: 15 }]
-	let enemy: any[] = []
 
-	let stats: any[] = [{ hp: 80, maxHp: 80, mp: 60, maxMp: 60 }]
+	let enemy: any[] = []
+	let lootBox: any[] =[]
+
+	let stats: any[] = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90}]
 	let spells: any[] = [
 		{
 			name: 'Fireball',
@@ -207,23 +219,25 @@
 	}
 
 	function mixBuyables(category: any) {
-		if (category == 'weaponsmith') shop = shuffleItems(buyWeapons)
-		if (category == 'spell shop') shop = shuffleItems(buySpells)
-		if (category) shop = shuffleItems(buySpells)
-		console.log(shop)
-		return
+		if (category == 'weaponsmith') return shop = shuffleItems(buyWeapons) 
+		if (category == 'spell shop') return shop = shuffleItems(buySpells) 
+		if (category) return shop =  shuffleItems(buySpells) 
 	}
 
+
+	// let enemyParseDone:any=false;
 	function parseText(text: string) {
 		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
 		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
 		const eventRegex: any = /@event:\s*(\[[^\]]*\])/
 		const enemyRegex: any = /@enemy:\s*(\[[^\]]*\])/
+		const lootBoxRegex: any = /@lootBox:\s*(\[[^\]]*\])/
 
 		const placeAndTimeMatch: any = text.match(placeAndTimeRegex)
 		const choiceMatch: any = text.match(choiceRegex)
 		const eventMatch: any = text.match(eventRegex)
 		const enemyMatch: any = text.match(enemyRegex)
+		const lootBoxMatch: any = text.match(lootBoxRegex)
 
 		if (placeAndTimeMatch) {
 			placeAndTime = JSON.parse(placeAndTimeMatch[1])
@@ -238,8 +252,17 @@
 		}
 
 		if (enemyMatch) {
+			
+			// if(enemy) return;
 			enemy = JSON.parse(enemyMatch[1])
 			console.log(enemy)
+		}
+
+		if (lootBoxMatch) {
+			
+		
+			lootBox = JSON.parse(lootBoxMatch[1])
+			console.log(lootBox)
 		}
 
 		if (eventMatch) {
@@ -368,8 +391,9 @@
 			}
 			if (combatChoice.combatScore >= 20 && combatChoice.combatScore < 50) {
 				// combatChoice.prompt = `Attack with ${name} spell! (give a medi-ocre @story where player lands a decent attack, which leads to an okayish scenario in combat for now.)`
-				combatChoice.prompt = `Attack with ${name} spell! (give an okay scenario which gives 20 damage to enemy)`
-				enemy[0].enemyHp -=20
+				// combatChoice.prompt = `Attack with ${name} spell! (give an okay scenario which gives 20 damage to enemy)`
+				combatChoice.prompt = `Give a fascinating scenario where player defeats the enemy with ease. (then, change 'inCombat' to false and clear the @enemy array.)`
+				// enemy[0].enemyHp -=20 (burda verilmez bu)
 			}
 			if (combatChoice.combatScore >= 50 && combatChoice.combatScore < 80) {
 				combatChoice.prompt = `Attack with ${name} spell! (Tell a thrilling @story where player lands a great attack, dealing significant damage to the enemy and gaining an advantage in combat.)`
@@ -453,7 +477,7 @@
 		} else if (
 			item.type == 'destruction spell' ||
 			item.type == 'healing spell' ||
-			item.type == 'utility spell'
+			item.type == 'unique spell'
 		) {
 			spells.push(item)
 			spells = spells
@@ -463,6 +487,34 @@
 			// return ingameErrorMessage='Buyout succesful!'
 		}
 	}
+	function lootItem(item: any) {
+		if (item.type == 'weapon' || item.type == 'potion') {
+			inventory.push(item)
+			inventory = inventory
+		} else if (
+			item.type == 'destruction spell' ||
+			item.type == 'healing spell' ||
+			item.type == 'unique spell'
+		) {
+			spells.push(item)
+			spells = spells
+		}
+		let newArray: any = lootBox.filter((lootItem) => lootItem.name !== item.name)
+			lootBox = newArray
+
+			if (!lootBox.length){
+				giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+			}
+	}
+function lootAll(){
+
+//some logic here
+
+	if (!lootBox.length){
+				giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+			}
+}
+
 
 	function sellItem(item: any) {
 		if (!event[0].shopMode) return
@@ -496,6 +548,8 @@
 		displayItemWindow = 'none'
 
 		choices = []
+		shop=[]
+
 
 		query = choice
 		answer = ''
@@ -521,6 +575,12 @@
 
 		return { delay }
 	}
+
+
+	// capitalize first letter
+	function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 	//message loading animation logic
 	let dotty: any = '.'
@@ -608,6 +668,7 @@
 
 	$: hpPercentage = (stats[0].hp / stats[0].maxHp) * 100
 	$: mpPercentage = (stats[0].mp / stats[0].maxMp) * 100
+	// $: enemyHpPercentage =  (stats[0].mp / stats[0].maxMp) * 100
 </script>
 
 <div>
@@ -648,7 +709,7 @@
 						<button
 							on:click={() => {
 								giveYourAnswer(
-									`Story starts in a peaceful town of Azeroth, and player is a fairly new adventurer. You can use World of Warcraft mmorpg as the dataset, quests and storyline.`
+									`Story starts in a peaceful town, and player is a fairly new adventurer. You can use World of Warcraft mmorpg as the dataset; so quests, items, spells, mobs, npcs and storyline.`
 								)
 							}}>Play</button
 						>
@@ -686,6 +747,15 @@
 		</div>
 	{/if}
 	<!-- başlangıç ekranı: -->
+
+	<div style="position:absolute;
+	left:5%;
+	top:50%;
+	display:flex;
+	flex-direction:column;
+	transform:translate(-50%,-50%);"><button on:click={()=>giveYourAnswer("go woods, find some goblins to hunt")}>kill goblins</button>
+		<button on:click={()=>giveYourAnswer("go to a weaponsmith")}>go weaponsmith</button>
+		</div>
 
 	<!-- ingame notification window (out of ui) -->
 	{#if ingameErrorMessage}
@@ -850,7 +920,7 @@
 
 				<!-- ui bottom mid starts here -->
 				<div class="ui-mid">
-					{#if event[0] && !event[0].shopMode && !event[0].inCombat}
+					{#if event[0] && !event[0].shopMode && !event[0].inCombat  &&!lootBox.length}
 						<!-- choices ui starts here -->
 						<div class="choices">
 							{#each choices as choice}
@@ -901,13 +971,13 @@
 						<div transition:fade={{ duration: 1000 }} class="combat">
 							<div class="combat-box">
 								<div class="heading-and-enemy">
-									<h3>You are now in <span class="span-heading">Combat!</span></h3>
+									<h3>You are now in <span class="span-heading">Combat</span> against:</h3>
 									{#if enemy[0]}
 										<div class="enemy">
-											<h5>{enemy[0].enemyName}</h5>
+											<h5>{capitalizeFirstLetter(enemy[0].enemyName)}</h5>
 											<p 
 						style="background-image: linear-gradient(to right, #E1683C {mpPercentage}%, #1f1f1fc8);"
-						>{enemy[0].enemyHp} HP</p>
+						>{enemy[0].enemyHp} <span class="hp-mp-text">HP</span></p>
 										</div>
 									{/if}
 								</div>
@@ -965,30 +1035,30 @@
 									<h3>You're at a local <span class="g-span">Merchant</span></h3>
 								{/if}
 
-								<ul>
+								<div class="buyables-box">
 									{#each shop as buyable}
 										<button
 											class="item-button"
 											on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
+											on:mousemove={(event) => handleMouseMove(event, buyable)}
+											on:mouseleave={hideWindow}
 										>
 											{#if buyable.type == 'weapon'}
-												<li>
-													{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
-													class
-												</li>
+											
+													<img class="buyable-img" src="images/{buyable.weaponClass}.svg"/>
+													<!-- {buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
+													class -->
+												
 											{/if}
-											{#if buyable.element && buyable.healing}
-												<li>
-													{buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
-													element
-												</li>
+											{#if buyable.element}
+												
+													<img class="buyable-img" src="images/{buyable.element}.svg"/>
+
+													<!-- {buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
+													element -->
+												
 											{/if}
-											{#if buyable.element && buyable.damage}
-												<li>
-													{buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.element}
-													element
-												</li>
-											{/if}
+									
 											<!-- {#if buyable.element && buyable.utility}
 													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
 												{/if}
@@ -1000,11 +1070,61 @@
 												{/if} -->
 										</button>
 									{/each}
-								</ul>
+								</div>
+								
+							</div>
+						</div>
+					
+					<!-- shop ui ends here -->
+
+					<!-- loot ui-->
+					{:else if lootBox && lootBox.length}
+						<div transition:fade={{ duration: 1000 }} class="shop">
+							<div class="shop-box">
+									<h3>You're <span class="g-span">looting.</span></h3>
+									
+								<div class="buyables-box">
+									{#each lootBox as item}
+										<button
+											class="item-button"
+											on:click={() => lootItem(item)}
+											on:mousemove={(event) => handleMouseMove(event, item)}
+											on:mouseleave={hideWindow}
+										>
+											{#if item.type == 'weapon'}
+											
+													<img class="buyable-img" src="images/{item.weaponClass}.svg"/>
+													<!-- {buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
+													class -->
+												
+											{/if}
+											{#if item.element}
+												
+													<img class="buyable-img" src="images/{item.element}.svg"/>
+
+													<!-- {buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
+													element -->
+												
+											{/if}
+									
+											<!-- {#if buyable.element && buyable.utility}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
+												{/if}
+												{#if buyable.armor}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.armor} armor</li>
+												{/if}
+												{#if buyable.type=="potion"}
+													<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
+												{/if} -->
+										</button>
+									{/each}
+									<button>Loot All</button>
+								</div>
+								
 							</div>
 						</div>
 					{/if}
-					<!-- shop ui ends here -->
+					<!-- loot ui ends here -->
 
 					<!-- gold&time and reject choices -->
 					{#if choices.length >= 2 || event[0].inCombat || event[0].shopMode}
@@ -1030,6 +1150,13 @@
 										event[0].shopMode = null
 									}}>Leave the Shop</button
 								>
+							{:else if lootBox.length}
+							<button
+							disabled={loading}
+							class="leave-button"
+							style="opacity: {lootBox.length ? '1' : '0'};"
+							on:click={() => giveYourAnswer('Leave the loot.')}>Leave it.</button
+						>
 							{/if}
 							<div class="stat">
 								<img class="svg-images" src="images/time.svg" alt="" />
@@ -1050,7 +1177,7 @@
 						class="mp-bar"
 						style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8);"
 					>
-					MP {stats[0].mp}/{stats[0].maxMp}
+					<span class="hp-mp-text">MP </span>{stats[0].mp}/{stats[0].maxMp}
 					</div>
 					<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
 						<h3>Spells</h3>
@@ -1078,6 +1205,7 @@
 		</div>
 	{/if}
 	<!-- game ui ends here -->
+	
 </div>
 
 <style>
@@ -1232,7 +1360,7 @@
 	.shop-box h3 {
 		text-align: center;
 		font-weight: 300;
-		font-size: 1.5rem;
+		font-size: 1.3rem;
 	}
 
 	.combat-box,
@@ -1244,6 +1372,11 @@
 		height: 100%;
 		justify-content: space-around;
 		padding: 0 0.5rem;
+	}
+	.shop-box{
+		align-items:center;
+		padding-bottom:1rem;
+
 	}
 
 	.combat-but-and-info {
@@ -1275,6 +1408,8 @@
 		height: 50%;
 		margin-inline: auto;
 	}
+
+	
 	.leave-button {
 		border: none;
 		background-color: rgba(49, 49, 49, 0.73);
@@ -1698,17 +1833,20 @@
 	.heading-and-enemy {
 		display: flex;
 		justify-content: space-evenly;
+		align-items:center;
 	}
 
 	.enemy {
 		display:flex;
 		flex-direction:column;
-		gap:0.2rem;
+		gap:0.3rem;
 		align-items:center;
 	}
 
 	.enemy h5 {
 		font-weight:400;
+		font-size:1rem;
+
 	}
 	.enemy p {
 		border-radius:100rem;
@@ -1717,4 +1855,29 @@
 		width:8rem;
 		height:1rem;
 	}
+
+	.buyables-box{
+		display:flex;
+		gap:1rem;
+
+	}
+	.shop-box button{
+		background-color: rgb(128 128 128 / 29%);
+		border: none;
+		width:3.5rem;
+		height:3.5rem;
+		border-radius: 0.4rem;
+
+		display:flex;
+		align-items:center;
+		justify-content:center;
+
+	}
+	.buyable-img{
+		width:65%;
+		height:65%;
+
+	
+	}
+	
 </style>

@@ -196,5 +196,13 @@
 		"type": "unique spell",
 		"element": "unique",
 		"cooldown": 3
+	},
+	{
+		"name": "Summon",
+		"price": 600,
+		"manaCost": 50,
+		"type": "unique spell",
+		"element": "unique",
+		"cooldown": 5
 	}
 ]
