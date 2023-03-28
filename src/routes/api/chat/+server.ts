@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		make your responses only 1 paragraph! you are making them too long.
 		
 		
-		Player will start with 1115 gold.
+		
 		
 		Player can't just ask for "heal myself" or "fill my health points" type of conversation. If player tries that, alert the player by @story.
 		
@@ -70,27 +70,40 @@ export const POST: RequestHandler = async ({ request }) => {
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!
 
+do not give these choices: "Check your inventory", "Drink a potion".
+
 you are forgetting to put "@story" at the beginning of the story you tell. Put "@story" to the beginning of the story always.
 you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is not enemy to fight.
 
-if there are any loot as a quest reward or a combat reward, put it into the @lootBox array. Then, clear the @lootBox with "[]" array in the next response.
+if player decides to check a loot, and if there are any weapon, gold, potion or spell; put them into the @lootBox "[]". Then, empty the @lootBox "[]" in the next response. Only put weapons, spells, gold and potions.
 
+do not end the game by yourself and give @choices always.
 
-		Here's the exact format for the @placeAndTime, @story, @event, @choices, @enemy and @lootBox Do it with the exact data structures shown: -- @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "gold":1115, "shopMode":"this will be null when there's no gold spend potential, but will be 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop' if there's currently a conversation with an npc about selling-buying something."}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
+fill @lootBox only if player DECIDES to check a loot! 
+do not fill @lootBox after inCombat turns to false!
+understand the example format of the json objects of lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
+
+		Here's the exact format for the @placeAndTime, @story, @event, @choices, @enemy and @lootBox Do it with the exact data structures shown: -- @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null when there's no gold spend potential, but will be 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop' if there's currently a conversation with an npc about selling-buying something.", "lootMode":"this will be true if user chooses to explore a loot, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
 			"name": "Bronze Battle Axe",
-			"damage": 6,
+			"damage": 4,
 			"price": 85,
 			"type": "weapon",
 			"weaponClass": "axe"
 		}, 	{
 			"name": "Solar Flare",
-			"damage": 7,
+			"damage": 5,
 			"price": 130,
-			"manaCost": 30,
+			"manaCost": 20,
 			"type": "destruction spell",
 			"element": "fire",
 			"cooldown": 3
-		}]`
+		}, {"name":"gold",
+			"type":"currency",
+			"amount":"50"},
+			{"name":"healing potion",
+			"type":"potion",
+			"price":"30",
+			"healing":"50"}]`
 
 		tokenCount += getTokens(prompt)
 
@@ -99,7 +112,7 @@ if there are any loot as a quest reward or a combat reward, put it into the @loo
 			tokenCount += tokens
 			console.log('tokencount: ' + tokenCount)
 		})
-		
+
 		if (tokenCount >= 4000) {
 			throw new Error('Query too large')
 		}
@@ -140,7 +153,3 @@ if there are any loot as a quest reward or a combat reward, put it into the @loo
 		return json({ error: 'There was an error processing your request' }, { status: 500 })
 	}
 }
-
-
-
-

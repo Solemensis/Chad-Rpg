@@ -9,6 +9,9 @@
 	import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 	import buyWeapons from '$lib/gamedata/weapons.json'
 	import buySpells from '$lib/gamedata/spells.json'
+	import buyPotions from '$lib/gamedata/potions.json'
+
+	// import buyArmors from '$lib/gamedata/armors.json'
 
 	let query: string = ''
 	let answer: string = ''
@@ -45,18 +48,22 @@
 					loading = false
 					logged = false
 
+					//if combat is over, reset the cooldowns of spells
+					if (!event[0].inCombat) {
+						for (let key in coolDowns) {
+							coolDowns[key] = 50
+						}
+					}
 					console.log(answer)
 					console.log(event)
 
+					// 	if (lootBox[0]){
+					// 	lootBox[0].forEach(loot:any=> inventory.push(loot))
+					// }
 
-				// 	if (lootBox[0]){
-				// 	lootBox[0].forEach(loot:any=> inventory.push(loot))
-				// }
-
-
-// 					if (!event[0].inCombat){
-// enemy =[]
-// 					}
+					// 					if (!event[0].inCombat){
+					// enemy =[]
+					// 					}
 
 					//to handle token limitation of gpt
 					if (chatMessages.length >= 16) {
@@ -110,12 +117,12 @@
 	let shop: any[] = []
 	let placeAndTime: any[] = []
 
-	let event: any[] = [{ inCombat: false, shopMode: null, gold: 15 }]
+	let event: any[] = [{ inCombat: false, shopMode: null }]
 
 	let enemy: any[] = []
-	let lootBox: any[] =[]
+	let lootBox: any[] = []
 
-	let stats: any[] = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90}]
+	let stats: any[] = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
 	let spells: any[] = [
 		{
 			name: 'Fireball',
@@ -145,6 +152,7 @@
 			weaponClass: 'sword'
 		}
 	]
+	let gold: number = 1500
 
 	// function to get a random number from imgs.length
 	function getRandomNumber(num: any) {
@@ -219,11 +227,10 @@
 	}
 
 	function mixBuyables(category: any) {
-		if (category == 'weaponsmith') return shop = shuffleItems(buyWeapons) 
-		if (category == 'spell shop') return shop = shuffleItems(buySpells) 
-		if (category) return shop =  shuffleItems(buySpells) 
+		if (category == 'weaponsmith') return (shop = shuffleItems(buyWeapons))
+		if (category == 'spell shop') return (shop = shuffleItems(buySpells))
+		if (category == 'potion shop') return (shop = shuffleItems(buyPotions))
 	}
-
 
 	// let enemyParseDone:any=false;
 	function parseText(text: string) {
@@ -252,17 +259,12 @@
 		}
 
 		if (enemyMatch) {
-			
 			// if(enemy) return;
 			enemy = JSON.parse(enemyMatch[1])
-			console.log(enemy)
 		}
 
 		if (lootBoxMatch) {
-			
-		
 			lootBox = JSON.parse(lootBoxMatch[1])
-			console.log(lootBox)
 		}
 
 		if (eventMatch) {
@@ -314,6 +316,7 @@
 		if (coolDowns[combatEvent.name]) {
 			coolDowns[combatEvent.name] = 0
 		}
+
 		//zar numarasını bi süre göstermek için 1-2 saniyelik bi timeout
 		//içine alıncak giveYourAnswer
 		console.log(combatEvent.prompt)
@@ -323,7 +326,7 @@
 			stats[0].mp -= combatEvent.manaCost
 		}
 
-		event[0].inCombat = !event[0].inCombat
+		// event[0].inCombat = !event[0].inCombat
 
 		//empty the object after
 		combatChoice.name = ''
@@ -464,9 +467,9 @@
 	}
 
 	function buyItem(item: any) {
-		if (event[0].gold < item.price) return (ingameErrorMessage = 'Not enough gold.')
+		if (gold < item.price) return (ingameErrorMessage = 'Not enough gold.')
 
-		event[0].gold -= item.price
+		gold -= item.price
 		if (item.type == 'weapon' || item.type == 'potion') {
 			inventory.push(item)
 			inventory = inventory
@@ -498,28 +501,47 @@
 		) {
 			spells.push(item)
 			spells = spells
+		} else if (item.type == 'currency') {
+			gold += parseInt(item.amount)
 		}
+
 		let newArray: any = lootBox.filter((lootItem) => lootItem.name !== item.name)
-			lootBox = newArray
+		lootBox = newArray
 
-			if (!lootBox.length){
-				giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
-			}
+		if (!lootBox.length) {
+			giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+			event[0].lootMode = false
+		}
 	}
-function lootAll(){
-
-//some logic here
-
-	if (!lootBox.length){
-				giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+	function lootAll() {
+		lootBox.forEach((item) => {
+			if (item.type == 'weapon' || item.type == 'potion') {
+				inventory.push(item)
+				inventory = inventory
+			} else if (
+				item.type == 'destruction spell' ||
+				item.type == 'healing spell' ||
+				item.type == 'unique spell'
+			) {
+				spells.push(item)
+				spells = spells
+			} else if (item.type == 'currency') {
+				gold += parseInt(item.amount)
 			}
-}
+		})
+		
+		lootBox =[]
 
+		if (!lootBox.length) {
+			giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+			event[0].lootMode = false
+		}
+	}
 
 	function sellItem(item: any) {
 		if (!event[0].shopMode) return
 
-		event[0].gold += item.price
+		gold += item.price
 
 		if (!item.element) {
 			let newArray: any = inventory.filter((obj) => obj.name !== item.name)
@@ -548,8 +570,7 @@ function lootAll(){
 		displayItemWindow = 'none'
 
 		choices = []
-		shop=[]
-
+		shop = []
 
 		query = choice
 		answer = ''
@@ -576,11 +597,10 @@ function lootAll(){
 		return { delay }
 	}
 
-
 	// capitalize first letter
-	function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+	function capitalizeFirstLetter(str: any) {
+		return str.charAt(0).toUpperCase() + str.slice(1)
+	}
 
 	//message loading animation logic
 	let dotty: any = '.'
@@ -618,6 +638,7 @@ function lootAll(){
 		weaponClass = undefined
 		manaCost = undefined
 		price = undefined
+		amount = undefined
 
 		name = item && item.name ? item.name : undefined
 		damage = item && item.damage ? item.damage : undefined
@@ -628,6 +649,7 @@ function lootAll(){
 		weaponClass = item && item.weaponClass ? item.weaponClass : undefined
 		manaCost = item && item.manaCost ? item.manaCost : undefined
 		price = item && item.price ? item.price : undefined
+		amount = item && item.amount ? item.amount : undefined
 	}
 
 	let name: any
@@ -639,6 +661,7 @@ function lootAll(){
 	let weaponClass: any
 	let manaCost: any
 	let price: any
+	let amount: any
 
 	function hideWindow() {
 		displayItemWindow = 'none'
@@ -669,6 +692,17 @@ function lootAll(){
 	$: hpPercentage = (stats[0].hp / stats[0].maxHp) * 100
 	$: mpPercentage = (stats[0].mp / stats[0].maxMp) * 100
 	// $: enemyHpPercentage =  (stats[0].mp / stats[0].maxMp) * 100
+
+	function calculateRetreat() {
+		let number = Math.floor(Math.random() * 6) + 1
+
+		if (number <= 3) {
+			giveYourAnswer("You got hit while trying to escape, couldn't escape and lost 20 health.")
+			//lose 20 health here
+		} else {
+			giveYourAnswer('You have escaped succesfully!')
+		}
+	}
 </script>
 
 <div>
@@ -748,14 +782,19 @@ function lootAll(){
 	{/if}
 	<!-- başlangıç ekranı: -->
 
-	<div style="position:absolute;
+	<div
+		style="position:absolute;
 	left:5%;
 	top:50%;
 	display:flex;
 	flex-direction:column;
-	transform:translate(-50%,-50%);"><button on:click={()=>giveYourAnswer("go woods, find some goblins to hunt")}>kill goblins</button>
-		<button on:click={()=>giveYourAnswer("go to a weaponsmith")}>go weaponsmith</button>
-		</div>
+	transform:translate(-50%,-50%);"
+	>
+		<button on:click={() => giveYourAnswer('go woods, find some goblins to hunt')}
+			>kill goblins</button
+		>
+		<button on:click={() => giveYourAnswer('go to a weaponsmith')}>go weaponsmith</button>
+	</div>
 
 	<!-- ingame notification window (out of ui) -->
 	{#if ingameErrorMessage}
@@ -835,6 +874,9 @@ function lootAll(){
 		{#if price}
 			<p class="desc-all">price: {price}</p>
 		{/if}
+		{#if amount}
+			<p class="desc-all">amount: {amount}</p>
+		{/if}
 		{#if manaCost}
 			<p class="desc-all">mana cost: -{manaCost}</p>
 		{/if}
@@ -843,30 +885,31 @@ function lootAll(){
 
 	<!-- map and places buttons (out of ui) -->
 	<div class="map-and-places">
-		<img on:click={() => (mapOn = !mapOn)} src="images/map-svgs/2.svg" alt="" />
+		<button on:click={() => (mapOn = !mapOn)}>
+			<img src="images/map-svgs/2.svg" alt="" />
+		</button>
 		{#if mapOn}
 			<div class="places-to-go">
-				<img
+				<button
 					on:click={() => giveYourAnswer("I'll go to nearest Woods.")}
 					transition:fade={{ duration: 100 }}
-					src="images/landscape-svgs/1.svg"
-					alt=""
-				/>
-				<p transition:fade={{ duration: 100 }}>Woods</p>
-				<img
+					><img src="images/landscape-svgs/1.svg" alt="" />
+					<p transition:fade={{ duration: 100 }}>Woods</p></button
+				>
+
+				<button
 					on:click={() => giveYourAnswer("I'll go to nearest Harbor.")}
 					transition:fade={{ delay: 100, duration: 100 }}
-					src="images/landscape-svgs/2.svg"
-					alt=""
-				/>
-				<p transition:fade={{ delay: 100, duration: 100 }}>Harbor</p>
-				<img
+					><img src="images/landscape-svgs/2.svg" alt="" />
+					<p transition:fade={{ delay: 100, duration: 100 }}>Harbor</p></button
+				>
+
+				<button
 					on:click={() => giveYourAnswer("I'll go to nearest Town.")}
 					transition:fade={{ delay: 200, duration: 100 }}
-					src="images/landscape-svgs/3.svg"
-					alt=""
-				/>
-				<p transition:fade={{ delay: 200, duration: 100 }}>Town</p>
+					><img src="images/landscape-svgs/3.svg" alt="" />
+					<p transition:fade={{ delay: 200, duration: 100 }}>Town</p></button
+				>
 			</div>
 		{/if}
 	</div>
@@ -893,7 +936,7 @@ function lootAll(){
 						class="hp-bar"
 						style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8);"
 					>
-					HP {stats[0].hp}/{stats[0].maxHp}
+						{stats[0].hp}/{stats[0].maxHp}
 					</div>
 					<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
 						<h3>Inventory</h3>
@@ -906,12 +949,21 @@ function lootAll(){
 								}}
 								in:fade={{ duration: 600 }}
 							>
-								<img
-									on:mousemove={(event) => handleMouseMove(event, item)}
-									on:mouseleave={hideWindow}
-									src="/images/{item.weaponClass}.svg"
-									alt=""
-								/>
+								{#if item.type == 'weapon'}
+									<img
+										on:mousemove={(event) => handleMouseMove(event, item)}
+										on:mouseleave={hideWindow}
+										src="/images/{item.weaponClass}.svg"
+										alt=""
+									/>
+								{:else if item.type == 'potion'}
+									<img
+										on:mousemove={(event) => handleMouseMove(event, item)}
+										on:mouseleave={hideWindow}
+										src="/images/{item.type}.svg"
+										alt=""
+									/>
+								{/if}
 							</button>
 						{/each}
 					</div>
@@ -920,7 +972,7 @@ function lootAll(){
 
 				<!-- ui bottom mid starts here -->
 				<div class="ui-mid">
-					{#if event[0] && !event[0].shopMode && !event[0].inCombat  &&!lootBox.length}
+					{#if event[0] && !event[0].shopMode && !event[0].inCombat && !event[0].lootMode}
 						<!-- choices ui starts here -->
 						<div class="choices">
 							{#each choices as choice}
@@ -973,11 +1025,14 @@ function lootAll(){
 								<div class="heading-and-enemy">
 									<h3>You are now in <span class="span-heading">Combat</span> against:</h3>
 									{#if enemy[0]}
-										<div class="enemy">
+										<div
+											style="background-image: linear-gradient(to right, #E1683Caa {mpPercentage}%, #1f1f1fc8);"
+											class="enemy"
+										>
 											<h5>{capitalizeFirstLetter(enemy[0].enemyName)}</h5>
-											<p 
-						style="background-image: linear-gradient(to right, #E1683C {mpPercentage}%, #1f1f1fc8);"
-						>{enemy[0].enemyHp} <span class="hp-mp-text">HP</span></p>
+											<p>
+												{enemy[0].enemyHp} <span class="hp-mp-text">HP</span>
+											</p>
 										</div>
 									{/if}
 								</div>
@@ -1007,8 +1062,8 @@ function lootAll(){
 											Or, just try to <span class="red-span">Retreat!</span>
 										</li>
 									</ul>
-									<button class="combat-button">
-										<img on:click={() => throwDice(combatChoice)} src="images/dice.webp" alt="" />
+									<button on:click={() => throwDice(combatChoice)} class="combat-button">
+										<img src="images/dice.webp" alt="" />
 									</button>
 								</div>
 							</div>
@@ -1044,83 +1099,52 @@ function lootAll(){
 											on:mouseleave={hideWindow}
 										>
 											{#if buyable.type == 'weapon'}
-											
-													<img class="buyable-img" src="images/{buyable.weaponClass}.svg"/>
-													<!-- {buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
-													class -->
-												
+												<img class="buyable-img" src="images/{buyable.weaponClass}.svg" alt="" />
+											{:else if buyable.type == 'potion'}
+												<img class="buyable-img" src="images/{buyable.type}.svg" alt="" />
 											{/if}
 											{#if buyable.element}
-												
-													<img class="buyable-img" src="images/{buyable.element}.svg"/>
-
-													<!-- {buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
-													element -->
-												
+												<img class="buyable-img" src="images/{buyable.element}.svg" alt="" />
 											{/if}
-									
-											<!-- {#if buyable.element && buyable.utility}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
-												{/if}
-												{#if buyable.armor}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.armor} armor</li>
-												{/if}
-												{#if buyable.type=="potion"}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
-												{/if} -->
 										</button>
 									{/each}
 								</div>
-								
 							</div>
 						</div>
-					
-					<!-- shop ui ends here -->
 
-					<!-- loot ui-->
-					{:else if lootBox && lootBox.length}
+						<!-- shop ui ends here -->
+
+						<!-- loot ui-->
+					{:else if event[0].lootMode}
 						<div transition:fade={{ duration: 1000 }} class="shop">
 							<div class="shop-box">
-									<h3>You're <span class="g-span">looting.</span></h3>
-									
-								<div class="buyables-box">
-									{#each lootBox as item}
-										<button
-											class="item-button"
-											on:click={() => lootItem(item)}
-											on:mousemove={(event) => handleMouseMove(event, item)}
-											on:mouseleave={hideWindow}
-										>
-											{#if item.type == 'weapon'}
-											
-													<img class="buyable-img" src="images/{item.weaponClass}.svg"/>
-													<!-- {buyable.name} - {buyable.price} gold - {buyable.damage} damage - {buyable.weaponClass}
-													class -->
-												
-											{/if}
-											{#if item.element}
-												
-													<img class="buyable-img" src="images/{item.element}.svg"/>
+								<h3>You're <span class="g-span">looting.</span></h3>
 
-													<!-- {buyable.name} - {buyable.price} gold - {buyable.healing} healing - {buyable.element}
-													element -->
-												
-											{/if}
-									
-											<!-- {#if buyable.element && buyable.utility}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.healing} healing</li>
+								<div class="buyables-box">
+									{#if !lootBox.length}
+										<p>loading...</p>
+									{:else}
+										{#each lootBox as item}
+											<button
+												class="item-button"
+												on:click={() => lootItem(item)}
+												on:mousemove={(event) => handleMouseMove(event, item)}
+												on:mouseleave={hideWindow}
+											>
+												{#if item.type == 'weapon'}
+													<img class="buyable-img" src="images/{item.weaponClass}.svg" alt="" />
 												{/if}
-												{#if buyable.armor}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.armor} armor</li>
+												{#if item.element}
+													<img class="buyable-img" src="images/{item.element}.svg" alt="" />
 												{/if}
-												{#if buyable.type=="potion"}
-													<li>{buyable.name} - {buyable.price} gold - {buyable.mana} mana</li>
-												{/if} -->
-										</button>
-									{/each}
-									<button>Loot All</button>
+												{#if item.type == 'potion' || item.type == 'currency'}
+													<img class="buyable-img" src="images/{item.type}.svg" alt="" />
+												{/if}
+											</button>
+										{/each}
+										<button on:click={()=>lootAll()}>Loot All</button>
+									{/if}
 								</div>
-								
 							</div>
 						</div>
 					{/if}
@@ -1131,14 +1155,14 @@ function lootAll(){
 						<div transition:fade={{ duration: 700 }} class="stats">
 							<div class="stat">
 								<img class="svg-images" src="images/gold.svg" alt="" />
-								<p>{event[0].gold}</p>
+								<p>{gold}</p>
 							</div>
 							{#if event[0].inCombat}
 								<button
 									disabled={loading}
 									class="leave-button"
 									style="opacity: {choices.length ? '1' : '0'};"
-									on:click={() => giveYourAnswer('Retreat')}>Retreat.</button
+									on:click={() => calculateRetreat()}>Retreat.</button
 								>
 							{:else if event[0].shopMode}
 								<button
@@ -1151,12 +1175,12 @@ function lootAll(){
 									}}>Leave the Shop</button
 								>
 							{:else if lootBox.length}
-							<button
-							disabled={loading}
-							class="leave-button"
-							style="opacity: {lootBox.length ? '1' : '0'};"
-							on:click={() => giveYourAnswer('Leave the loot.')}>Leave it.</button
-						>
+								<button
+									disabled={loading}
+									class="leave-button"
+									style="opacity: {lootBox.length ? '1' : '0'};"
+									on:click={() => giveYourAnswer('Leave the loot.')}>Leave it.</button
+								>
 							{/if}
 							<div class="stat">
 								<img class="svg-images" src="images/time.svg" alt="" />
@@ -1177,7 +1201,7 @@ function lootAll(){
 						class="mp-bar"
 						style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8);"
 					>
-					<span class="hp-mp-text">MP </span>{stats[0].mp}/{stats[0].maxMp}
+						{stats[0].mp}/{stats[0].maxMp}
 					</div>
 					<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
 						<h3>Spells</h3>
@@ -1205,7 +1229,6 @@ function lootAll(){
 		</div>
 	{/if}
 	<!-- game ui ends here -->
-	
 </div>
 
 <style>
@@ -1331,7 +1354,8 @@ function lootAll(){
 		height: 85%;
 	}
 	button {
-		background-color: gray;
+		background-color: transparent;
+		border: none;
 	}
 
 	.choices {
@@ -1373,10 +1397,9 @@ function lootAll(){
 		justify-content: space-around;
 		padding: 0 0.5rem;
 	}
-	.shop-box{
-		align-items:center;
-		padding-bottom:1rem;
-
+	.shop-box {
+		align-items: center;
+		padding-bottom: 1rem;
 	}
 
 	.combat-but-and-info {
@@ -1390,8 +1413,7 @@ function lootAll(){
 		animation: button-pop 0.3s ease-out;
 	}
 
-	.combat-box ul,
-	.shop-box ul {
+	.combat-box ul {
 		font-size: 1rem;
 		display: flex;
 		justify-content: center;
@@ -1403,13 +1425,6 @@ function lootAll(){
 		width: 60%;
 	}
 
-	.shop-box ul {
-		width: 80%;
-		height: 50%;
-		margin-inline: auto;
-	}
-
-	
 	.leave-button {
 		border: none;
 		background-color: rgba(49, 49, 49, 0.73);
@@ -1457,9 +1472,8 @@ function lootAll(){
 	.combat-box ul li:nth-child(3) {
 		list-style-type: '🔮';
 		font-size: 0.9rem;
-		 padding-left: 0.5rem;
-		 margin-left: -0.08rem; 
-		
+		padding-left: 0.5rem;
+		margin-left: -0.08rem;
 
 		color: #aaa;
 	}
@@ -1479,9 +1493,9 @@ function lootAll(){
 	.g-span {
 		color: #3fcf8e;
 	}
-.red-span{
-	color: rgb(228, 55, 55);
-}
+	.red-span {
+		color: rgb(228, 55, 55);
+	}
 	.stats {
 		width: 100%;
 		display: flex;
@@ -1807,11 +1821,13 @@ function lootAll(){
 		flex-direction: column;
 		gap: 1rem;
 	}
-	.map-and-places img {
+	.map-and-places button {
 		cursor: pointer;
+	}
+	.map-and-places img {
 		width: 3.5rem;
 	}
-	.map-and-places img:active,
+	.map-and-places button:active,
 	.game-info-button:active {
 		animation: button-pop 0.3s ease-out;
 	}
@@ -1825,7 +1841,7 @@ function lootAll(){
 
 	.places-to-go {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr;
 		align-items: center;
 		gap: 0.7rem;
 	}
@@ -1833,51 +1849,55 @@ function lootAll(){
 	.heading-and-enemy {
 		display: flex;
 		justify-content: space-evenly;
-		align-items:center;
+		align-items: center;
 	}
 
 	.enemy {
-		display:flex;
-		flex-direction:column;
-		gap:0.3rem;
-		align-items:center;
+		display: flex;
+
+		gap: 0.05rem;
+		align-items: center;
+		justify-content: space-around;
+		width: 8rem;
+		height: 1rem;
+		border-radius: 0.3rem;
+
+		padding: 0.7rem 0;
 	}
 
 	.enemy h5 {
-		font-weight:400;
-		font-size:1rem;
-
+		font-weight: 400;
+		font-size: 0.9rem;
+		color: #ccc;
 	}
 	.enemy p {
-		border-radius:100rem;
-		font-size:0.8rem;
-		text-align:center;
-		width:8rem;
-		height:1rem;
+		font-size: 0.9rem;
+		text-align: center;
+		color: #ccc;
+	}
+	.enemy span {
+		font-size: 0.9rem;
+
+		color: #ccc;
 	}
 
-	.buyables-box{
-		display:flex;
-		gap:1rem;
-
+	.buyables-box {
+		display: flex;
+		gap: 1rem;
 	}
-	.shop-box button{
+	.shop-box button {
 		background-color: rgb(128 128 128 / 29%);
 		border: none;
-		width:3.5rem;
-		height:3.5rem;
+		width: 3.5rem;
+		height: 3.5rem;
 		border-radius: 0.4rem;
 
-		display:flex;
-		align-items:center;
-		justify-content:center;
-
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
-	.buyable-img{
-		width:65%;
-		height:65%;
-
-	
+	.buyable-img {
+		width: 65%;
+		height: 65%;
 	}
-	
 </style>
