@@ -71,7 +71,9 @@ shopMode will stay null at "Tavern"! You sometimes change shopMode to "potion sh
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!
 
-do NOT give "Check your inventory" and "Drink a potion" choices in @choices ever. 
+put everything story related and conversation related into @story.
+
+do NOT put "Check your inventory" and "Drink a potion" choices in @choices ever. These are out of concept responses for the game.
 
 There are 2 potions in the game. "health potion" and "mana potion".
 There are no accessory or armor in the game as lootable. There are just weapons, spells, potions and currencies.

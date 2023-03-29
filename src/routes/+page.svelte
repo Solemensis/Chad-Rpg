@@ -2,6 +2,10 @@
 	import ChatMessage from '$lib/components/ChatMessage.svelte'
 	import MapAndPlaces from '$lib/components/MapAndPlaces.svelte'
 	import GameStartWindow from '$lib/components/GameStartWindow.svelte'
+	import GonnaDeleteThis from '$lib/components/GonnaDeleteThis.svelte'
+
+	import { character } from '../stores.js';
+	import { game } from '../stores.js';
 
 
 	import type { ChatCompletionRequestMessage } from 'openai'
@@ -28,7 +32,7 @@
 			return
 		}
 
-		choices = []
+		$game.choices = []
 
 		loading = true
 		chatMessages = [...chatMessages, { role: 'user', content: query }]
@@ -53,7 +57,7 @@
 					logged = false
 
 					//if combat is over, reset the cooldowns of spells
-					if (!event[0].inCombat) {
+					if (!$game.event[0].inCombat) {
 						for (let key in coolDowns) {
 							coolDowns[key] = 50
 						}
@@ -61,12 +65,12 @@
 					console.log(answer)
 					console.log(event)
 
-					// 					if (!event[0].inCombat){
+					// 					if (!$game.event[0].inCombat){
 					// enemy =[]
 					// 					}
 
-					if (event[0].lootMode && !lootBox.length) {
-						lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
+					if ($game.event[0].lootMode && !$game.lootBox.length) {
+						$game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
 					}
 
 					//to handle token limitation of gpt
@@ -76,11 +80,11 @@
 
 					//heal player if currently in Tavern or Inn
 					if (fetchThisBg == 'Inn' || fetchThisBg == 'Tavern') {
-						if (stats[0].hp < stats[0].maxHp) {
-							stats[0].hp += 25
+						if ($character.stats[0].hp < $character.stats[0].maxHp) {
+							$character.stats[0].hp += 25
 						}
-						if (stats[0].mp < stats[0].maxMp) {
-							stats[0].mp += 20
+						if ($character.stats[0].mp < $character.stats[0].maxMp) {
+							$character.stats[0].mp += 20
 						}
 					}
 
@@ -127,46 +131,48 @@
 		return null
 	}
 
-	let choices: any[] = []
-	let shop: any[] = []
-	let placeAndTime: any[] = []
+	// let choices: any[] = []
+	// let shop: any[] = []
+	// let placeAndTime: any[] = []
 
-	let event: any[] = [{ inCombat: false, shopMode: null }]
+	// let event: any[] = [{ inCombat: false, shopMode: null }]
 
-	let enemy: any[] = []
-	let lootBox: any[] = []
+	// let enemy: any[] = []
+	// let lootBox: any[] = []
 
-	let stats: any[] = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
-	let spells: any[] = [
-		{
-			name: 'Fireball',
-			damage: 4,
-			price: 15,
-			manaCost: 12,
-			type: 'destruction spell',
-			element: 'fire',
-			cooldown: 2
-		},
-		{
-			name: 'Light Heal',
-			healing: 2,
-			price: 10,
-			manaCost: 12,
-			type: 'healing spell',
-			element: 'light',
-			cooldown: 2
-		}
-	]
-	let inventory: any[] = [
-		{
-			name: 'Wooden Sword',
-			damage: 3,
-			price: 10,
-			type: 'weapon',
-			weaponClass: 'sword'
-		}
-	]
-	let gold: number = 1500
+	// let stats: any[] = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
+// let gold: number = 15
+	
+	// let spells: any[] = [
+	// 	{
+	// 		name: 'Fireball',
+	// 		damage: 4,
+	// 		price: 15,
+	// 		manaCost: 12,
+	// 		type: 'destruction spell',
+	// 		element: 'fire',
+	// 		cooldown: 2
+	// 	},
+	// 	{
+	// 		name: 'Light Heal',
+	// 		healing: 2,
+	// 		price: 10,
+	// 		manaCost: 12,
+	// 		type: 'healing spell',
+	// 		element: 'light',
+	// 		cooldown: 2
+	// 	}
+	// ]
+	// let inventory: any[] = [
+	// 	{
+	// 		name: 'Wooden Sword',
+	// 		damage: 3,
+	// 		price: 10,
+	// 		type: 'weapon',
+	// 		weaponClass: 'sword'
+	// 	}
+	// ]
+	
 
 	// function to get a random number from imgs.length
 	function getRandomNumber(num: any) {
@@ -182,7 +188,7 @@
 
 	let currentImg:string="";
 	async function fetchImg() {
-		if(placeAndTime[0].place==currentImg) return;
+		if($game.placeAndTime[0][0].place==currentImg) return;
 		// check if place is the same
 
 
@@ -249,10 +255,12 @@
 	}
 
 	function mixBuyables(category: any) {
-		if (category == 'weaponsmith') return (shop = shuffleItems(buyWeapons))
-		if (category == 'spell shop') return (shop = shuffleItems(buySpells))
-		if (category == 'potion shop') return (shop = shuffleItems(buyPotions))
+		if (category == 'weaponsmith') return ($game.shop = shuffleItems(buyWeapons))
+		if (category == 'spell shop') return ($game.shop = shuffleItems(buySpells))
+		if (category == 'potion shop') return ($game.shop = shuffleItems(buyPotions))
 	}
+
+
 
 	// let enemyParseDone:any=false;
 	function parseText(text: string) {
@@ -269,36 +277,38 @@
 		const lootBoxMatch: any = text.match(lootBoxRegex)
 
 		if (placeAndTimeMatch) {
-			placeAndTime = JSON.parse(placeAndTimeMatch[1])
+			$game.placeAndTime[0] = JSON.parse(placeAndTimeMatch[1])
 
 			if (!logged) {
-				fetchThisBg = checkWordsForImg(placeAndTime[0].place)
-				time = placeAndTime[0].time
+				fetchThisBg = checkWordsForImg($game.placeAndTime[0][0].place)
+				time = $game.placeAndTime[0][0].time
 				fetchImg()
 
 				logged = true
 			}
 		}
 
+		
 		if (enemyMatch) {
 			// if(enemy) return;
-			enemy = JSON.parse(enemyMatch[1])
+			$game.enemy = JSON.parse(enemyMatch[1])
+			
 		}
 
 		if (lootBoxMatch) {
-			lootBox = JSON.parse(lootBoxMatch[1])
+			$game.lootBox = JSON.parse(lootBoxMatch[1])
 		}
 
 		if (eventMatch) {
 			event = JSON.parse(eventMatch[1])
-			if (event[0].shopMode && shop.length != 4) {
-				mixBuyables(event[0].shopMode)
+			if ($game.event[0].shopMode && $game.shop.length != 4) {
+				mixBuyables($game.event[0].shopMode)
 			}
 		}
 		if (choiceMatch) {
 			//bunlar çat çat çat yazılıyo galiba. tek 1 kere yazılcak şekilde optimize et
 
-			choices = JSON.parse(choiceMatch[1])
+			$game.choices = JSON.parse(choiceMatch[1])
 		}
 
 		return
@@ -345,13 +355,13 @@
 		giveYourAnswer(combatEvent.prompt)
 
 		if (combatEvent.manaCost) {
-			stats[0].mp -= combatEvent.manaCost
+			$character.stats[0].mp -= combatEvent.manaCost
 		}
 
-		stats[0].hp -= decreaseHp
+		$character.stats[0].hp -= decreaseHp
 		decreaseHp = 0
 
-		// event[0].inCombat = !event[0].inCombat
+		// $game.event[0].inCombat = !$game.event[0].inCombat
 
 		//empty the object after
 		combatChoice.name = ''
@@ -365,8 +375,8 @@
 	let decreaseHp: number = 0
 	function useItem(item: any) {
 		const { type, name, damage, manaCost, healing, mana, cooldown } = item
-		const { mp, maxMp, hp, maxHp } = stats[0]
-		const { inCombat, shopMode } = event[0]
+		const { mp, maxMp, hp, maxHp } = $character.stats[0]
+		const { inCombat, shopMode } = $game.event[0]
 
 		if (type === 'weapon') {
 			if (shopMode) return
@@ -374,7 +384,7 @@
 			combatChoice.combatScore = randomNumber1_20(damage)
 
 			//this is just the dice number we threw
-			decreaseHp = Math.floor(enemy[0].enemyHp / (combatChoice.combatScore / damage))
+			decreaseHp = Math.floor($game.enemy[0].enemyHp / (combatChoice.combatScore / damage))
 
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
 				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${decreaseHp} damage and giving ${Math.floor(
@@ -497,88 +507,88 @@
 	}
 
 	function buyItem(item: any) {
-		if (gold < item.price) return (ingameErrorMessage = 'Not enough gold.')
+		if ($character.gold < item.price) return (ingameErrorMessage = 'Not enough gold.')
 
-		gold -= item.price
+		$character.gold -= item.price
 		if (item.type == 'weapon' || item.type == 'potion') {
-			inventory.push(item)
-			inventory = inventory
+			$character.inventory.push(item)
+			$character.inventory = $character.inventory
 
-			let newArray: any = shop.filter((shopItem) => shopItem != item)
-			shop = newArray
+			let newArray: any = $game.shop.filter((shopItem) => shopItem != item)
+			$game.shop = newArray
 			// return ingameErrorMessage='Buyout succesful!'
 		} else if (
 			item.type == 'destruction spell' ||
 			item.type == 'healing spell' ||
 			item.type == 'unique spell'
 		) {
-			spells.push(item)
-			spells = spells
+			$character.spells.push(item)
+			$character.spells = $character.spells
 
-			let newArray: any = shop.filter((shopItem) => shopItem != item)
-			shop = newArray
+			let newArray: any = $game.shop.filter((shopItem) => shopItem != item)
+			$game.shop = newArray
 			// return ingameErrorMessage='Buyout succesful!'
 		}
 	}
 	function lootItem(item: any) {
 		if (item.type == 'weapon' || item.type == 'potion') {
-			inventory.push(item)
-			inventory = inventory
+			$character.inventory.push(item)
+			$character.inventory = $character.inventory
 		} else if (
 			item.type == 'destruction spell' ||
 			item.type == 'healing spell' ||
 			item.type == 'unique spell'
 		) {
-			spells.push(item)
-			spells = spells
+			$character.spells.push(item)
+			$character.spells = $character.spells
 		} else if (item.type == 'currency') {
-			gold += parseInt(item.amount)
+			$character.gold += parseInt(item.amount)
 		}
 
-		let newArray: any = lootBox.filter((lootItem) => lootItem.name !== item.name)
-		lootBox = newArray
+		let newArray: any = $game.lootBox.filter((lootItem) => lootItem.name !== item.name)
+		$game.lootBox = newArray
 
-		if (!lootBox.length) {
+		if (!$game.lootBox.length) {
 			giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
-			event[0].lootMode = false
+			$game.event[0].lootMode = false
 		}
 	}
 	function lootAll() {
-		lootBox.forEach((item) => {
+		$game.lootBox.forEach((item) => {
 			if (item.type == 'weapon' || item.type == 'potion') {
-				inventory.push(item)
-				inventory = inventory
+				$character.inventory.push(item)
+				$character.inventory = $character.inventory
 			} else if (
 				item.type == 'destruction spell' ||
 				item.type == 'healing spell' ||
 				item.type == 'unique spell'
 			) {
-				spells.push(item)
-				spells = spells
+				$character.spells.push(item)
+				$character.spells = $character.spells
 			} else if (item.type == 'currency') {
-				gold += parseInt(item.amount)
+				$character.gold += parseInt(item.amount)
 			}
 		})
 
-		lootBox = []
+		$game.lootBox = []
 
-		if (!lootBox.length) {
+		if (!$game.lootBox.length) {
 			giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
-			event[0].lootMode = false
+			$game.event[0].lootMode = false
 		}
 	}
 
 	function sellItem(item: any) {
-		if (!event[0].shopMode) return
+		if (!$game.event[0].shopMode) return
 
-		gold += item.price
+		$character.gold += item.price
 
 		if (!item.element) {
-			let newArray: any = inventory.filter((obj) => obj.name !== item.name)
-			inventory = newArray
+			let newArray: any = $character.inventory.filter((obj) => obj.name !== item.name)
+			$character.inventory = newArray
 		} else {
-			let newArray: any = spells.filter((obj) => obj.name !== item.name)
-			spells = newArray
+			let newArray: any = $character.spells.filter((obj) => obj.name !== item.name)
+			$character.spells = newArray
 		}
 
 		hideWindow()
@@ -599,8 +609,8 @@
 
 		displayItemWindow = 'none'
 
-		choices = []
-		shop = []
+		$game.choices = []
+		$game.shop = []
 
 		query = choice
 		answer = ''
@@ -704,14 +714,14 @@
 	let eventfulItem: any = {}
 
 	function handleBuy(prompt: any, item: any) {
-		if (event[0].shopMode) {
+		if ($game.event[0].shopMode) {
 			eventfulItem = item
 			askBuy = prompt
 		} else return
 	}
 
 	function handleSell(prompt: any, item: any) {
-		if (event[0].shopMode) {
+		if ($game.event[0].shopMode) {
 			eventfulItem = item
 			askSell = prompt
 		} else return
@@ -719,9 +729,9 @@
 
 
 
-	$: hpPercentage = (stats[0].hp / stats[0].maxHp) * 100
-	$: mpPercentage = (stats[0].mp / stats[0].maxMp) * 100
-	// $: enemyHpPercentage =  (stats[0].mp / stats[0].maxMp) * 100
+	$: hpPercentage = ($character.stats[0].hp / $character.stats[0].maxHp) * 100
+	$: mpPercentage = ($character.stats[0].mp / $character.stats[0].maxMp) * 100
+	// $: enemyHpPercentage =  ($character.stats[0].mp / $character.stats[0].maxMp) * 100
 
 	function calculateRetreat() {
 		let number = Math.floor(Math.random() * 6) + 1
@@ -739,6 +749,13 @@
 	function handleEmittedAnswer(event:any){
 giveYourAnswer(event.detail.answer)
 	}
+
+
+	
+
+	// $count.name = 32
+
+	// console.log($count.name)
 </script>
 
 <div>
@@ -761,26 +778,14 @@ giveYourAnswer(event.detail.answer)
 	/>
 	<!-- background images -->
 
-	<!-- başlangıç ekranı (out of ui) -->
+	
 	{#if !gameStarted}
 		<GameStartWindow on:emittedAnswer={handleEmittedAnswer}/>
 	{/if}
-	<!-- başlangıç ekranı: -->
+	
 
-	<div
-		style="position:absolute;
-	left:5%;
-	top:50%;
-	display:flex;
-	flex-direction:column;
-	transform:translate(-50%,-50%);"
-	>
-		<button on:click={() => giveYourAnswer('go woods, find some goblins to hunt')}
-			>kill goblins</button
-		>
-		<button on:click={() => giveYourAnswer('go to a weaponsmith')}>go weaponsmith</button>
-		<button on:click={() => giveYourAnswer("I'll have a drink and sit at a table in this beautiful tavern.")}>I'll have a drink and sit at a table in this beautiful tavern.</button>
-	</div>
+	<GonnaDeleteThis on:emittedAnswer={handleEmittedAnswer} />
+	
 
 	<!-- ingame notification window (out of ui) -->
 	{#if ingameErrorMessage}
@@ -886,16 +891,16 @@ giveYourAnswer(event.detail.answer)
 			<!-- bottom game ui starts here-->
 			<div transition:fade={{ duration: 2000 }} class="game-controls">
 				<!-- ui left -->
-				<div style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
+				<div style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
 					<div
 						class="hp-bar"
 						style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8);"
 					>
-						{stats[0].hp}/{stats[0].maxHp}
+						{$character.stats[0].hp}/{$character.stats[0].maxHp}
 					</div>
 					<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
 						<h3>Inventory</h3>
-						{#each inventory as item}
+						{#each $character.inventory as item}
 							<button
 								disabled={loading}
 								on:click={() => {
@@ -927,10 +932,10 @@ giveYourAnswer(event.detail.answer)
 
 				<!-- ui bottom mid starts here -->
 				<div class="ui-mid">
-					{#if event[0] && !event[0].shopMode && !event[0].inCombat && !event[0].lootMode}
+					{#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode}
 						<!-- choices ui starts here -->
 						<div class="choices">
-							{#each choices as choice}
+							{#each $game.choices as choice}
 								<button
 									disabled={loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
@@ -938,7 +943,7 @@ giveYourAnswer(event.detail.answer)
 									on:click={() => giveYourAnswer(choice)}>{choice}</button
 								>
 							{/each}
-							{#if choices.length >= 2}
+							{#if $game.choices.length >= 2}
 								<div
 									transition:fade={{ ...getDelayTime(), duration: 400 }}
 									class="choice choiceInput"
@@ -974,19 +979,19 @@ giveYourAnswer(event.detail.answer)
 						<!-- client side error handling -->
 
 						<!-- combat ui -->
-					{:else if event[0] && event[0].inCombat}
+					{:else if $game.event[0] && $game.event[0].inCombat}
 						<div transition:fade={{ duration: 1000 }} class="combat">
 							<div class="combat-box">
 								<div class="heading-and-enemy">
 									<h3>You are now in <span class="span-heading">Combat</span> against:</h3>
-									{#if enemy[0]}
+									{#if $game.enemy[0]}
 										<div
 											style="background-image: linear-gradient(to right, #E1683Caa {mpPercentage}%, #1f1f1fc8);"
 											class="enemy"
 										>
-											<h5>{capitalizeFirstLetter(enemy[0].enemyName)}</h5>
+											<h5>{capitalizeFirstLetter($game.enemy[0].enemyName)}</h5>
 											<p>
-												{enemy[0].enemyHp} <span class="hp-mp-text">HP</span>
+												{$game.enemy[0].enemyHp} <span class="hp-mp-text">HP</span>
 											</p>
 										</div>
 									{/if}
@@ -1026,27 +1031,27 @@ giveYourAnswer(event.detail.answer)
 						<!-- combat ui ends here-->
 
 						<!-- shop ui -->
-					{:else if event[0] && event[0].shopMode}
+					{:else if $game.event[0] && $game.event[0].shopMode}
 						<div transition:fade={{ duration: 1000 }} class="shop">
 							<div class="shop-box">
-								{#if event[0].shopMode == 'weaponsmith'}
+								{#if $game.event[0].shopMode == 'weaponsmith'}
 									<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
 								{/if}
-								{#if event[0].shopMode == 'armorsmith'}
+								{#if $game.event[0].shopMode == 'armorsmith'}
 									<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
 								{/if}
-								{#if event[0].shopMode == 'spell shop'}
+								{#if $game.event[0].shopMode == 'spell shop'}
 									<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
 								{/if}
-								{#if event[0].shopMode == 'potion shop'}
+								{#if $game.event[0].shopMode == 'potion shop'}
 									<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
 								{/if}
-								{#if event[0].shopMode != 'weaponsmith' && event[0].shopMode != 'armorsmith' && event[0].shopMode != 'spell shop' && event[0].shopMode != 'potion shop'}
+								{#if $game.event[0].shopMode != 'weaponsmith' && $game.event[0].shopMode != 'armorsmith' && $game.event[0].shopMode != 'spell shop' && $game.event[0].shopMode != 'potion shop'}
 									<h3>You're at a local <span class="g-span">Merchant</span></h3>
 								{/if}
 
 								<div class="buyables-box">
-									{#each shop as buyable}
+									{#each $game.shop as buyable}
 										<button
 											class="item-button"
 											on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
@@ -1070,16 +1075,16 @@ giveYourAnswer(event.detail.answer)
 						<!-- shop ui ends here -->
 
 						<!-- loot ui-->
-					{:else if event[0].lootMode}
+					{:else if $game.event[0].lootMode}
 						<div transition:fade={{ duration: 1000 }} class="shop">
 							<div class="shop-box">
 								<h3>You're <span class="g-span">looting.</span></h3>
 
 								<div class="buyables-box">
-									{#if !lootBox.length}
+									{#if !$game.lootBox.length}
 										<p>loading...</p>
 									{:else}
-										{#each lootBox as item}
+										{#each $game.lootBox as item}
 											<button
 												class="item-button"
 												on:click={() => lootItem(item)}
@@ -1106,35 +1111,35 @@ giveYourAnswer(event.detail.answer)
 					<!-- loot ui ends here -->
 
 					<!-- gold&time and reject choices -->
-					{#if choices.length >= 2 || event[0].inCombat || event[0].shopMode}
+					{#if $game.choices.length >= 2 || $game.event[0].inCombat || $game.event[0].shopMode}
 						<div transition:fade={{ duration: 700 }} class="stats">
 							<div class="stat">
 								<img class="svg-images" src="images/gold.svg" alt="" />
-								<p>{gold}</p>
+								<p>{$character.gold}</p>
 							</div>
 
-							{#if event[0].inCombat}
+							{#if $game.event[0].inCombat}
 								<button
 									disabled={loading}
 									class="leave-button"
-									style="opacity: {choices.length ? '1' : '0'};"
+									style="opacity: {$game.choices.length ? '1' : '0'};"
 									on:click={() => calculateRetreat()}>Retreat.</button
 								>
-							{:else if event[0].shopMode}
+							{:else if $game.event[0].shopMode}
 								<button
 									disabled={loading}
 									class="leave-button"
-									style="opacity: {event[0].shopMode ? '1' : '0'};"
+									style="opacity: {$game.event[0].shopMode ? '1' : '0'};"
 									on:click={() => {
 										giveYourAnswer('Leave the shop')
-										event[0].shopMode = null
+										$game.event[0].shopMode = null
 									}}>Leave the Shop</button
 								>
-							{:else if lootBox.length}
+							{:else if $game.lootBox.length}
 								<button
 									disabled={loading}
 									class="leave-button"
-									style="opacity: {lootBox.length ? '1' : '0'};"
+									style="opacity: {$game.lootBox.length ? '1' : '0'};"
 									on:click={() => giveYourAnswer('Leave the loot.')}>Leave it.</button
 								>
 							{:else if extractHours(time) >= 20 && fetchThisBg != 'Town' && fetchThisBg != 'Tavern' && fetchThisBg != 'Inn'}
@@ -1151,7 +1156,7 @@ giveYourAnswer(event.detail.answer)
 							<div class="stat">
 								<img class="svg-images" src="images/time.svg" alt="" />
 
-								<p>{placeAndTime[0].time ? placeAndTime[0].time : '00:00'}</p>
+								<p>{$game.placeAndTime[0][0].time ? $game.placeAndTime[0][0].time : '00:00'}</p>
 							</div>
 						</div>
 					{/if}
@@ -1160,18 +1165,18 @@ giveYourAnswer(event.detail.answer)
 				<!-- ui bottom mid ends here -->
 				<!-- ui right starts here -->
 				<div
-					style="opacity:{choices.length ? '1' : '0'}; transition:opacity 1.5s;"
+					style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;"
 					class="ui-right"
 				>
 					<div
 						class="mp-bar"
 						style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8);"
 					>
-						{stats[0].mp}/{stats[0].maxMp}
+						{$character.stats[0].mp}/{$character.stats[0].maxMp}
 					</div>
 					<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
 						<h3>Spells</h3>
-						{#each spells as spell}
+						{#each $character.spells as spell}
 							<button
 								disabled={loading}
 								on:click={() => {
