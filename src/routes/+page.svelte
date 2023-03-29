@@ -326,6 +326,9 @@
 			stats[0].mp -= combatEvent.manaCost
 		}
 
+		stats[0].hp -= decreaseHp
+		decreaseHp=0;
+
 		// event[0].inCombat = !event[0].inCombat
 
 		//empty the object after
@@ -337,6 +340,8 @@
 		combatChoice.manaCost = 0
 	}
 
+
+	let decreaseHp:number=0;
 	function useItem(item: any) {
 		const { type, name, damage, manaCost, healing, mana, cooldown } = item
 		const { mp, maxMp, hp, maxHp } = stats[0]
@@ -347,9 +352,13 @@
 			if (!inCombat) return (ingameErrorMessage = 'You are not in a combat.')
 			combatChoice.combatScore = randomNumber1_20(damage)
 
+			//this is just the dice number we threw
+			decreaseHp=Math.floor(
+					enemy[0].enemyHp / (combatChoice.combatScore / damage)
+				)
+
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
-				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player taking some serious hits and lose some huge health from enemy attacks, losing combat advantage aswell. End the combat with a failure, give a scenario where player barely escapes.)`
-				stats[0].hp -= 20
+				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${decreaseHp} damage and giving ${Math.floor(combatChoice.combatScore)} damage back.)`
 			}
 			if (combatChoice.combatScore >= 10 && combatChoice.combatScore < 20) {
 				combatChoice.prompt = `Attack with ${name}! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
@@ -529,8 +538,8 @@
 				gold += parseInt(item.amount)
 			}
 		})
-		
-		lootBox =[]
+
+		lootBox = []
 
 		if (!lootBox.length) {
 			giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
@@ -1142,7 +1151,7 @@
 												{/if}
 											</button>
 										{/each}
-										<button on:click={()=>lootAll()}>Loot All</button>
+										<button on:click={() => lootAll()}>Loot All</button>
 									{/if}
 								</div>
 							</div>
@@ -1157,6 +1166,7 @@
 								<img class="svg-images" src="images/gold.svg" alt="" />
 								<p>{gold}</p>
 							</div>
+
 							{#if event[0].inCombat}
 								<button
 									disabled={loading}
@@ -1180,6 +1190,16 @@
 									class="leave-button"
 									style="opacity: {lootBox.length ? '1' : '0'};"
 									on:click={() => giveYourAnswer('Leave the loot.')}>Leave it.</button
+								>
+							{:else if extractHours(time) >= 20 && fetchThisBg != 'Town' && fetchThisBg != 'Tavern' && fetchThisBg != 'Inn'}
+								<button
+									disabled={loading}
+									class="leave-button night-time"
+									style="opacity: {extractHours(time) >= 20 ? '1' : '0'}; "
+									on:click={() =>
+										giveYourAnswer(
+											"It's night time, i'll go back to the town before got caught to monsters."
+										)}>It's night time, go back to inn for safety.</button
 								>
 							{/if}
 							<div class="stat">
@@ -1437,6 +1457,10 @@
 
 	.leave-button:hover {
 		background-color: rgba(49, 49, 49, 0.83);
+	}
+
+	.night-time {
+		background-color: 964B00aa;
 	}
 
 	.combat-button {
