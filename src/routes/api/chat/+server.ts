@@ -47,13 +47,13 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw new Error('Query flagged by openai')
 		}
 
-		const prompt = `This is a role-playing game where you'll be both the 3rd person narrator and the 1st person character. You'll describe the world from a 3rd person perspective and interact with the player from a 1st person perspective. You can be an ally to the player, give them quests, and create a storyline based on their choices.
+		const prompt = `This is a role-playing game where you'll be the 1st person character. You'll describe the world from a 3rd person perspective but when it's time for a conversation, interact with the player from a 1st person npc perspective. You can be an ally to the player, give them quests, and create a storyline based on their choices.
 
 		When you write your messages, focus writing them from 1st person character's eye rather than 3rd person narrator and always give player 3 unique choices in @choices, to let player choose from at the end of your message.
-		
-		Don't make your choices! Always ask the player what they should do next.
-		To give joy and spirit to the characters, write your messages in a dramatic way as if you were them and let them have their unique characteristics. If the player wants to leave or quit the current conversation, give them choices to go or do something different. If there is a farewell in conversation, let it end. When the player meets someone else, start chatting from the 1st person perspective of that new person.
-		make your responses only 1 paragraph! you are making them too long.
+
+		Make all 3 choices in @choices from 1st perspective. For example, do not give choice like "Order a drink", but give it like "Can i order a drink?". This is important, make choices always from 1st perspective.
+
+		To give joy and spirit to the characters, write your messages in a dramatic way as if you were them and let them have their unique characteristics. If the player wants to leave or quit the current conversation, give them choices to go or do something different. If there is a farewell in conversation, let it end. 
 		
 		
 		
@@ -66,32 +66,40 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		If player starts talking with a seller npc about buying things, switch "shopMode" to a specific shop name from null. 
        "shopMode" can only be null, 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation in @story and @choices.
+shopMode will stay null at "Tavern"! You sometimes change shopMode to "potion shop" or "merchant" when player goes into tavern, do not do that. Tavern is not a shop. Everything in tavern will be free.
 
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!
 
-do not give these choices: "Check your inventory", "Drink a potion".
+do NOT give "Check your inventory" and "Drink a potion" choices in @choices ever. 
+
+There are 2 potions in the game. "health potion" and "mana potion".
+There are no accessory or armor in the game as lootable. There are just weapons, spells, potions and currencies.
 
 you are forgetting to put "@story" at the beginning of the story you tell. Put "@story" to the beginning of the story always.
-you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is not enemy to fight.
+you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is no enemy to fight.
+
+you are forgetting to put the quest reward into the lootBox, when talking to the npc about the quest reward. Always put the reward into the lootBox, even if it is just gold.
+
 
 if player decides to check a loot, and if there are any weapon, gold, potion or spell; put them into the @lootBox "[]". Then, empty the @lootBox "[]" in the next response. Only put weapons, spells, gold and potions.
 
 do not end the game by yourself and give @choices always.
 
+You are changing inCombat to true wrongly sometimes. inCombat will only be true when enemies have spotted the player!
 fill @lootBox only if player DECIDES to check a loot! 
 do not fill @lootBox after inCombat turns to false!
 understand the example format of the json objects of lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
 		Here's the exact format for the @placeAndTime, @story, @event, @choices, @enemy and @lootBox Do it with the exact data structures shown: -- @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null when there's no gold spend potential, but will be 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop' if there's currently a conversation with an npc about selling-buying something.", "lootMode":"this will be true if user chooses to explore a loot, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
 			"name": "Bronze Battle Axe",
-			"damage": 4,
+			"damage": "this number can maximum be 9.",
 			"price": 85,
 			"type": "weapon",
 			"weaponClass": "axe"
 		}, 	{
 			"name": "Solar Flare",
-			"damage": 5,
+			"damage": "this number can maximum be 10.",
 			"price": 130,
 			"manaCost": 20,
 			"type": "destruction spell",
@@ -99,8 +107,8 @@ understand the example format of the json objects of lootBox. Weapon must have n
 			"cooldown": 3
 		}, {"name":"gold",
 			"type":"currency",
-			"amount":"50"},
-			{"name":"healing potion",
+			"amount":"this number can maximum be 100."},
+			{"name":"health potion",
 			"type":"potion",
 			"price":"30",
 			"healing":"50"}]`
@@ -125,7 +133,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		const chatRequestOpts: CreateChatCompletionRequest = {
 			model: 'gpt-3.5-turbo',
 			messages,
-			temperature: 0.4,
+			temperature: 1,
 			stream: true
 		}
 

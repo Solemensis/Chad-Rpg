@@ -57,17 +57,27 @@
 					console.log(answer)
 					console.log(event)
 
-					// 	if (lootBox[0]){
-					// 	lootBox[0].forEach(loot:any=> inventory.push(loot))
-					// }
-
 					// 					if (!event[0].inCombat){
 					// enemy =[]
 					// 					}
 
+					if (event[0].lootMode && !lootBox.length) {
+						lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
+					}
+
 					//to handle token limitation of gpt
 					if (chatMessages.length >= 16) {
 						chatMessages.splice(1, 2)
+					}
+
+					//heal player if currently in Tavern or Inn
+					if (fetchThisBg == 'Inn' || fetchThisBg == 'Tavern') {
+						if (stats[0].hp < stats[0].maxHp) {
+							stats[0].hp += 25
+						}
+						if (stats[0].mp < stats[0].maxMp) {
+							stats[0].mp += 20
+						}
 					}
 
 					//choice transition delay reset for every new conversation
@@ -165,7 +175,13 @@
 	let img2active: boolean = false
 
 	let time: string = ''
+
+	let currentImg:string="";
 	async function fetchImg() {
+		if(placeAndTime[0].place==currentImg) return;
+		// check if place is the same
+
+
 		//list imgs
 		const { data: imgs } = await supabase.storage.from('imgs').list(`${fetchThisBg}`, {
 			limit: 100,
@@ -202,6 +218,8 @@
 				img1active = !img2active
 			}
 		}
+
+		currentImg=fetchThisBg
 	}
 
 	function extractHours(timeString: any) {
@@ -327,7 +345,7 @@
 		}
 
 		stats[0].hp -= decreaseHp
-		decreaseHp=0;
+		decreaseHp = 0
 
 		// event[0].inCombat = !event[0].inCombat
 
@@ -340,8 +358,7 @@
 		combatChoice.manaCost = 0
 	}
 
-
-	let decreaseHp:number=0;
+	let decreaseHp: number = 0
 	function useItem(item: any) {
 		const { type, name, damage, manaCost, healing, mana, cooldown } = item
 		const { mp, maxMp, hp, maxHp } = stats[0]
@@ -353,12 +370,12 @@
 			combatChoice.combatScore = randomNumber1_20(damage)
 
 			//this is just the dice number we threw
-			decreaseHp=Math.floor(
-					enemy[0].enemyHp / (combatChoice.combatScore / damage)
-				)
+			decreaseHp = Math.floor(enemy[0].enemyHp / (combatChoice.combatScore / damage))
 
 			if (combatChoice.combatScore >= 1 && combatChoice.combatScore < 10) {
-				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${decreaseHp} damage and giving ${Math.floor(combatChoice.combatScore)} damage back.)`
+				combatChoice.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${decreaseHp} damage and giving ${Math.floor(
+					combatChoice.combatScore
+				)} damage back.)`
 			}
 			if (combatChoice.combatScore >= 10 && combatChoice.combatScore < 20) {
 				combatChoice.prompt = `Attack with ${name}! (give a sad @story where player lands a bad attack, which leads to player takes some hits but giving some little damage back at least.)`
@@ -747,12 +764,12 @@
 					<div class="game-explanation">
 						<h3>FRPG Starter</h3>
 						<p>
-							Start as a fairly new adventurer at a town center in a fantasy role playing world.
+							Start as a new adventurer in a fantasy role-playing world, sitting in a tavern and conversing with the innkeeper.
 						</p>
 						<button
 							on:click={() => {
 								giveYourAnswer(
-									`Story starts in a peaceful town, and player is a fairly new adventurer. You can use World of Warcraft mmorpg as the dataset; so quests, items, spells, mobs, npcs and storyline.`
+									`Start off as a new adventurer in a fantasy role-playing world, sitting in a tavern and conversing with the innkeeper. You can use World of Warcraft mmorpg as the dataset; so quests, items, spells, mobs, npcs and storyline.`
 								)
 							}}>Play</button
 						>
@@ -803,6 +820,7 @@
 			>kill goblins</button
 		>
 		<button on:click={() => giveYourAnswer('go to a weaponsmith')}>go weaponsmith</button>
+		<button on:click={() => giveYourAnswer("I'll have a drink and sit at a table in this beautiful tavern.")}>I'll have a drink and sit at a table in this beautiful tavern.</button>
 	</div>
 
 	<!-- ingame notification window (out of ui) -->
@@ -1722,7 +1740,7 @@
 		align-items: start;
 
 		position: absolute;
-		bottom: 1rem;
+		bottom: 1.5rem;
 	}
 	.game-starter {
 		display: flex;
