@@ -1,6 +1,6 @@
-<!-- <script>
+<script>
 	import '../app.css'
-</script> -->
+</script>
 
 <div>
 	<slot />
