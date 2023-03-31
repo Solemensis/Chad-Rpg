@@ -2,10 +2,16 @@
 	import ChatMessage from '$lib/components/ChatMessage.svelte'
 	import MapAndPlaces from '$lib/components/MapAndPlaces.svelte'
 	import GameStartWindow from '$lib/components/GameStartWindow.svelte'
+	import DescriptionWindow from '$lib/components/DescriptionWindow.svelte'
 	import GonnaDeleteThis from '$lib/components/GonnaDeleteThis.svelte'
+	import ActionBox from '$lib/components/ActionBox.svelte'
 
-	import { character } from '../stores.js';
+
 	import { game } from '../stores.js';
+	import { character } from '../stores.js';
+    import { ui } from '../stores.js';
+	import { selectedItem} from '../stores.js';
+	import { misc } from '../stores.js';
 
 
 	import type { ChatCompletionRequestMessage } from 'openai'
@@ -24,7 +30,7 @@
 	let query: string = ''
 	let answer: string = ''
 	let story: string = ''
-	let loading: boolean = false
+	// let loading: boolean = false
 	let chatMessages: ChatCompletionRequestMessage[] = []
 
 	const handleSubmit = async () => {
@@ -34,7 +40,7 @@
 
 		$game.choices = []
 
-		loading = true
+		$misc.loading = true
 		chatMessages = [...chatMessages, { role: 'user', content: query }]
 
 		const eventSource = new SSE('/api/chat', {
@@ -48,12 +54,12 @@
 
 		eventSource.addEventListener('message', (e) => {
 			try {
-				// loading = false
+				// $misc.loading = false
 				parseText(answer)
 				story = extractStory(answer)
 				if (e.data === '[DONE]') {
 					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
-					loading = false
+					$misc.loading = false
 					logged = false
 
 					//if combat is over, reset the cooldowns of spells
@@ -109,7 +115,7 @@
 
 	let handleErr: boolean = false
 	function handleError<T>(err: T) {
-		// loading = false
+		// $misc.loading = false
 		console.error('error from client: ' + JSON.stringify(err))
 
 		handleErr = true
@@ -300,7 +306,7 @@
 		}
 
 		if (eventMatch) {
-			event = JSON.parse(eventMatch[1])
+			$game.event[0] = JSON.parse(eventMatch[1])
 			if ($game.event[0].shopMode && $game.shop.length != 4) {
 				mixBuyables($game.event[0].shopMode)
 			}
@@ -343,7 +349,7 @@
 	const combatChoice: any = {}
 
 	function throwDice(combatEvent: any) {
-		if (!combatEvent.name) return (ingameErrorMessage = 'You need to choose a weapon or spell.')
+		if (!combatEvent.name) return ($ui.errorWarnMsg = 'You need to choose a weapon or spell.')
 
 		if (coolDowns[combatEvent.name]) {
 			coolDowns[combatEvent.name] = 0
@@ -380,7 +386,7 @@
 
 		if (type === 'weapon') {
 			if (shopMode) return
-			if (!inCombat) return (ingameErrorMessage = 'You are not in a combat.')
+			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
 			combatChoice.combatScore = randomNumber1_20(damage)
 
 			//this is just the dice number we threw
@@ -418,10 +424,10 @@
 		if (type === 'destruction spell') {
 			if (shopMode) return
 
-			if (!inCombat) return (ingameErrorMessage = 'You are not in a combat.')
-			if (mp < manaCost) return (ingameErrorMessage = 'You have not enough mana.')
+			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
+			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
 			if (coolDowns[name] && coolDowns[name] < cooldown)
-				return (ingameErrorMessage =
+				return ($ui.errorWarnMsg =
 					'This skill is on cooldown. ' + coolDowns[name] + '/' + cooldown)
 			coolDowns[name] = cooldown
 			combatChoice.combatScore = randomNumber1_20(damage)
@@ -461,9 +467,9 @@
 		if (type === 'healing spell') {
 			if (shopMode) return
 
-			if (hp >= maxHp) return (ingameErrorMessage = "You're at full health.")
-			if (mp < manaCost) return (ingameErrorMessage = 'You have not enough mana.')
-			if (coolDowns[name] && coolDowns[name] < cooldown) return (ingameErrorMessage = 'On cooldown')
+			if (hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
+			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
+			if (coolDowns[name] && coolDowns[name] < cooldown) return ($ui.errorWarnMsg = 'On cooldown')
 			if (!inCombat)
 				return giveYourAnswer(
 					`Heal myself with ${name} spell by ${randomNumber1_20(healing)} amount.)`
@@ -488,16 +494,16 @@
 		if (type === 'potion') {
 			if (shopMode) return
 
-			if (healing && hp >= maxHp) return (ingameErrorMessage = "You're at full health.")
-			if (inCombat) return (ingameErrorMessage = "You can't drink in combat.")
+			if (healing && hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
+			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 
 			if (healing && hp < maxHp) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
 				)
 			}
-			if (mp && mp >= maxMp) return (ingameErrorMessage = "You're at full mana.")
-			if (inCombat) return (ingameErrorMessage = "You can't drink in combat.")
+			if (mp && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
+			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 			if (mp && mp < maxMp) {
 				return giveYourAnswer(
 					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
@@ -506,30 +512,7 @@
 		}
 	}
 
-	function buyItem(item: any) {
-		if ($character.gold < item.price) return (ingameErrorMessage = 'Not enough gold.')
-
-		$character.gold -= item.price
-		if (item.type == 'weapon' || item.type == 'potion') {
-			$character.inventory.push(item)
-			$character.inventory = $character.inventory
-
-			let newArray: any = $game.shop.filter((shopItem) => shopItem != item)
-			$game.shop = newArray
-			// return ingameErrorMessage='Buyout succesful!'
-		} else if (
-			item.type == 'destruction spell' ||
-			item.type == 'healing spell' ||
-			item.type == 'unique spell'
-		) {
-			$character.spells.push(item)
-			$character.spells = $character.spells
-
-			let newArray: any = $game.shop.filter((shopItem) => shopItem != item)
-			$game.shop = newArray
-			// return ingameErrorMessage='Buyout succesful!'
-		}
-	}
+	
 	function lootItem(item: any) {
 		if (item.type == 'weapon' || item.type == 'potion') {
 			$character.inventory.push(item)
@@ -545,7 +528,7 @@
 			$character.gold += parseInt(item.amount)
 		}
 
-		let newArray: any = $game.lootBox.filter((lootItem) => lootItem.name !== item.name)
+		let newArray: any = $game.lootBox.filter((lootItem:any) => lootItem.name !== item.name)
 		$game.lootBox = newArray
 
 		if (!$game.lootBox.length) {
@@ -554,7 +537,7 @@
 		}
 	}
 	function lootAll() {
-		$game.lootBox.forEach((item) => {
+		$game.lootBox.forEach((item:any) => {
 			if (item.type == 'weapon' || item.type == 'potion') {
 				$character.inventory.push(item)
 				$character.inventory = $character.inventory
@@ -578,21 +561,7 @@
 		}
 	}
 
-	function sellItem(item: any) {
-		if (!$game.event[0].shopMode) return
-
-		$character.gold += item.price
-
-		if (!item.element) {
-			let newArray: any = $character.inventory.filter((obj) => obj.name !== item.name)
-			$character.inventory = newArray
-		} else {
-			let newArray: any = $character.spells.filter((obj) => obj.name !== item.name)
-			$character.spells = newArray
-		}
-
-		hideWindow()
-	}
+	
 
 	function giveYourAnswer(choice: any) {
 		if (!choice) {
@@ -607,7 +576,7 @@
 			}
 		}
 
-		displayItemWindow = 'none'
+		$selectedItem.showDescription = 'none'
 
 		$game.choices = []
 		$game.shop = []
@@ -659,74 +628,37 @@
 		return randomlySelectedElement
 	}
 
-	//description window
-	let x: any = 0
-	let y: any = 0
-	let displayItemWindow: any = 'none'
-
-	function handleMouseMove(event: any, item: any) {
-		displayItemWindow = 'block'
-		x = event.clientX + 10
-		y = event.clientY - 40
-
-		name = undefined
-		damage = undefined
-		type = undefined
-		healing = undefined
-		armor = undefined
-		element = undefined
-		weaponClass = undefined
-		manaCost = undefined
-		price = undefined
-		amount = undefined
-
-		name = item && item.name ? item.name : undefined
-		damage = item && item.damage ? item.damage : undefined
-		type = item && item.type ? item.type : undefined
-		healing = item && item.healing ? item.healing : undefined
-		armor = item && item.armor ? item.armor : undefined
-		element = item && item.element ? item.element : undefined
-		weaponClass = item && item.weaponClass ? item.weaponClass : undefined
-		manaCost = item && item.manaCost ? item.manaCost : undefined
-		price = item && item.price ? item.price : undefined
-		amount = item && item.amount ? item.amount : undefined
-	}
-
-	let name: any
-	let damage: any
-	let type: any
-	let healing: any
-	let armor: any
-	let element: any
-	let weaponClass: any
-	let manaCost: any
-	let price: any
-	let amount: any
-
-	function hideWindow() {
-		displayItemWindow = 'none'
-	}
-
-	let ingameErrorMessage: string = ''
-	let askBuy: string = ''
-	let askSell: string = ''
-
-	let eventfulItem: any = {}
-
-	function handleBuy(prompt: any, item: any) {
+	
+function handleBuy(prompt: any, item: any) {
 		if ($game.event[0].shopMode) {
-			eventfulItem = item
-			askBuy = prompt
+			$selectedItem.item = item
+			$ui.buyWarnMsg = prompt
 		} else return
 	}
 
 	function handleSell(prompt: any, item: any) {
 		if ($game.event[0].shopMode) {
-			eventfulItem = item
-			askSell = prompt
+			$selectedItem.item = item
+			$ui.sellWarnMsg = prompt
 		} else return
 	}
 
+	//description window
+	
+	// let displayItemWindow: any = 'none'
+
+	
+	function hideWindow() {
+		$selectedItem.showDescription = 'none'
+	}
+
+	// let ingameErrorMessage: string = ''
+	// let askBuy: string = ''
+	// let askSell: string = ''
+
+	// let eventfulItem: any = {}
+
+	
 
 
 	$: hpPercentage = ($character.stats[0].hp / $character.stats[0].maxHp) * 100
@@ -787,91 +719,10 @@ giveYourAnswer(event.detail.answer)
 	<GonnaDeleteThis on:emittedAnswer={handleEmittedAnswer} />
 	
 
-	<!-- ingame notification window (out of ui) -->
-	{#if ingameErrorMessage}
-		<div transition:fade={{ duration: 300 }} class="notification-window">
-			<p>
-				{ingameErrorMessage}
-			</p>
-			<button on:click={() => (ingameErrorMessage = '')}>Got it</button>
-		</div>
-	{/if}
-	<!-- ingame notification window ends here -->
-
-	<!-- askbuy window (out of ui) -->
-	{#if askBuy}
-		<div transition:fade={{ duration: 300 }} class="notification-window">
-			<p>
-				{askBuy}
-			</p>
-			<div class="dual-button">
-				<button
-					on:click={() => {
-						buyItem(eventfulItem)
-						askBuy = ''
-					}}>Yes</button
-				>
-				<button on:click={() => (askBuy = '')}>Cancel</button>
-			</div>
-		</div>
-	{/if}
-	<!-- askbuy window -->
-
-	<!-- asksell window (out of ui) -->
-	{#if askSell}
-		<div transition:fade={{ duration: 300 }} class="notification-window">
-			<p>
-				{askSell}
-			</p>
-			<div class="dual-button">
-				<button
-					on:click={() => {
-						sellItem(eventfulItem)
-						askSell = ''
-					}}>Yes</button
-				>
-				<button on:click={() => (askSell = '')}>Cancel</button>
-			</div>
-		</div>
-	{/if}
-	<!-- asksell window -->
+	
 
 	<!-- item description window (out of ui) -->
-	<div class="description-window" style="left:{x}px; top:{y}px; display:{displayItemWindow}">
-		<h5 class="desc-name">{name}</h5>
-		{#if damage}
-			<p class="desc-all">damage: x{damage}</p>
-		{/if}
-		{#if healing && type == 'healing spell'}
-			<p class="desc-all">healing: x{healing}</p>
-		{/if}
-		{#if healing && type == 'potion'}
-			<p class="desc-all">healing: +{healing}</p>
-		{/if}
-
-		{#if armor}
-			<p class="desc-all">armor: x{armor}</p>
-		{/if}
-		{#if element}
-			<p class="desc-all">element: {element}</p>
-		{/if}
-		{#if weaponClass}
-			<p class="desc-all">class: {weaponClass}</p>
-		{/if}
-		{#if type}
-			<p class="desc-all">type: {type}</p>
-		{/if}
-
-		{#if price}
-			<p class="desc-all">price: {price}</p>
-		{/if}
-		{#if amount}
-			<p class="desc-all">amount: {amount}</p>
-		{/if}
-		{#if manaCost}
-			<p class="desc-all">mana cost: -{manaCost}</p>
-		{/if}
-	</div>
+	<DescriptionWindow/>
 	<!-- item description window  -->
 
 
@@ -891,7 +742,7 @@ giveYourAnswer(event.detail.answer)
 			<!-- bottom game ui starts here-->
 			<div transition:fade={{ duration: 2000 }} class="game-controls">
 				<!-- ui left -->
-				<div style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
+				<!-- <div style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
 					<div
 						class="hp-bar"
 						style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8);"
@@ -902,7 +753,7 @@ giveYourAnswer(event.detail.answer)
 						<h3>Inventory</h3>
 						{#each $character.inventory as item}
 							<button
-								disabled={loading}
+								disabled={$misc.loading}
 								on:click={() => {
 									useItem(item)
 									handleSell(`You sure to sell ${item.name}?`, item)
@@ -927,7 +778,8 @@ giveYourAnswer(event.detail.answer)
 							</button>
 						{/each}
 					</div>
-				</div>
+				</div> -->
+				<ActionBox title={"Inventory"} actions={$character.inventory}/>
 				<!-- ui left ends here -->
 
 				<!-- ui bottom mid starts here -->
@@ -937,7 +789,7 @@ giveYourAnswer(event.detail.answer)
 						<div class="choices">
 							{#each $game.choices as choice}
 								<button
-									disabled={loading}
+									disabled={$misc.loading}
 									transition:fade={{ ...getDelayTime(), duration: 700 }}
 									class="choice"
 									on:click={() => giveYourAnswer(choice)}>{choice}</button
@@ -1120,14 +972,14 @@ giveYourAnswer(event.detail.answer)
 
 							{#if $game.event[0].inCombat}
 								<button
-									disabled={loading}
+									disabled={$misc.loading}
 									class="leave-button"
 									style="opacity: {$game.choices.length ? '1' : '0'};"
 									on:click={() => calculateRetreat()}>Retreat.</button
 								>
 							{:else if $game.event[0].shopMode}
 								<button
-									disabled={loading}
+									disabled={$misc.loading}
 									class="leave-button"
 									style="opacity: {$game.event[0].shopMode ? '1' : '0'};"
 									on:click={() => {
@@ -1137,14 +989,14 @@ giveYourAnswer(event.detail.answer)
 								>
 							{:else if $game.lootBox.length}
 								<button
-									disabled={loading}
+									disabled={$misc.loading}
 									class="leave-button"
 									style="opacity: {$game.lootBox.length ? '1' : '0'};"
 									on:click={() => giveYourAnswer('Leave the loot.')}>Leave it.</button
 								>
 							{:else if extractHours(time) >= 20 && fetchThisBg != 'Town' && fetchThisBg != 'Tavern' && fetchThisBg != 'Inn'}
 								<button
-									disabled={loading}
+									disabled={$misc.loading}
 									class="leave-button night-time"
 									style="opacity: {extractHours(time) >= 20 ? '1' : '0'}; "
 									on:click={() =>
@@ -1164,7 +1016,7 @@ giveYourAnswer(event.detail.answer)
 				</div>
 				<!-- ui bottom mid ends here -->
 				<!-- ui right starts here -->
-				<div
+				<!-- <div
 					style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;"
 					class="ui-right"
 				>
@@ -1178,7 +1030,7 @@ giveYourAnswer(event.detail.answer)
 						<h3>Spells</h3>
 						{#each $character.spells as spell}
 							<button
-								disabled={loading}
+								disabled={$misc.loading}
 								on:click={() => {
 									useItem(spell)
 									handleSell(`You sure to sell ${spell.name}?`, spell)
@@ -1193,7 +1045,10 @@ giveYourAnswer(event.detail.answer)
 							>
 						{/each}
 					</div>
-				</div>
+				</div> -->
+				<ActionBox title={"Spells"} actions={$character.spells}/>
+
+
 				<!-- ui right ends here -->
 			</div>
 			<!-- bottom game ui ends here-->
@@ -1205,23 +1060,7 @@ giveYourAnswer(event.detail.answer)
 <style>
 
 
-	.desc-name {
-		color: orange;
-		font-size: 1rem;
-		font-weight: 500;
-	}
-	.desc-all {
-		font-size: 0.9rem;
-	}
-
-	.description-window {
-		position: absolute;
-		min-width: 10rem;
-		background-color: rgba(56, 40, 112, 0.766);
-		padding: 0.4rem;
-		border-radius: 0.5rem;
-		z-index: 100;
-	}
+	
 
 	.main-game {
 		display: flex;
@@ -1508,7 +1347,7 @@ giveYourAnswer(event.detail.answer)
 		text-align: center;
 		transition: 0.2s;
 
-		font-style:italic;
+		/* font-style:italic; */
 
 	}
 	.choiceInput {
@@ -1580,57 +1419,6 @@ giveYourAnswer(event.detail.answer)
 	}
 
 	
-
-	
-
-
-
-	/* ingame error window */
-	/* .dark-overlay{
-		width:100vw;
-		height:100vh;
-		background-color:rgba(23, 23, 23, 0.688);
-
-		position:absolute;
-		left:0;
-		top:0;
-
-		z-index:999;
-		
-	} */
-	.notification-window {
-		background-color: rgb(33, 33, 33, 0.7);
-		backdrop-filter: blur(4px);
-		padding: 2rem 4rem;
-		border-radius: 1rem;
-		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		gap: 1rem;
-
-		z-index: 999;
-	}
-
-	.notification-window button {
-		border: 2px solid rgb(65, 124, 65);
-		background-color: transparent;
-		border-radius: 2px;
-		border-radius: 0.5rem;
-		padding: 0.4rem 1rem;
-		transition: 0.2s;
-
-		display: flex;
-		justify-content: center;
-	}
-	.notification-window button:hover {
-		transform: translateY(-3%);
-	}
 	.dual-button {
 		display: flex;
 		justify-content: center;
@@ -1642,12 +1430,6 @@ giveYourAnswer(event.detail.answer)
 	.dual-button button:nth-child(2) {
 		border: 2px solid rgb(111, 30, 0);
 	}
-
-
-
-
-
-	
 
 	.heading-and-enemy {
 		display: flex;

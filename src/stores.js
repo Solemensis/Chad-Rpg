@@ -45,5 +45,26 @@ export const character = writable({
 	]
 });
     
+export const ui = writable({ errorWarnMsg: "", buyWarnMsg: "", sellWarnMsg: "", })
 
 
+//hem combat, hem sell, hem de (emin olduktan sonra) buy için kullanılabilir galiba
+export const selectedItem = writable({})
+
+
+export const misc = writable({
+	loading: false, showDescription:"none", x:0, y:0
+})
+
+export const descWindow = writable({
+name: undefined,
+damage: undefined,
+type: undefined,
+healing: undefined,
+armor: undefined,
+element: undefined,
+weaponClass: undefined,
+manaCost: undefined,
+price: undefined,
+amount: undefined
+})
