@@ -193,7 +193,7 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 		}
 
 		if (eventMatch) {
-			$game.event[0] = JSON.parse(eventMatch[1])
+			$game.event = JSON.parse(eventMatch[1])
 			if ($game.event[0].shopMode && $game.shop.length != 4) {
 				mixBuyables($game.event[0].shopMode)
 			}
@@ -354,6 +354,7 @@ giveYourAnswer(event.detail.answer)
 		const hour = parseInt(timeString.split(':')[0], 10)
 		return hour
 	}
+
 	
 	async function fetchImg() {
 		if($game.placeAndTime[0].place==$misc.curentImg) return;
@@ -406,14 +407,13 @@ giveYourAnswer(event.detail.answer)
 
 	<BackgroundImgs/>
 	
-	
 	{#if !gameStarted}
 		<GameStartWindow on:emittedAnswer={handleEmittedAnswer}/>
 	{/if}
 	
 
 	<GonnaDeleteThis on:emittedAnswer={handleEmittedAnswer} />
-	<MessageWindows/>
+	<!-- <MessageWindows/> -->
 
 	
 
@@ -437,83 +437,13 @@ giveYourAnswer(event.detail.answer)
 
 			<!-- bottom game ui starts here-->
 			<div transition:fade={{ duration: 2000 }} class="game-controls">
-				<!-- ui left -->
-				<!-- <div style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
-					<div
-						class="hp-bar"
-						style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8);"
-					>
-						{$character.stats[0].hp}/{$character.stats[0].maxHp}
-					</div>
-					<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
-						<h3>Inventory</h3>
-						{#each $character.inventory as item}
-							<button
-								disabled={$misc.loading}
-								on:click={() => {
-									useItem(item)
-									handleSell(`You sure to sell ${item.name}?`, item)
-								}}
-								in:fade={{ duration: 600 }}
-							>
-								{#if item.type == 'weapon'}
-									<img
-										on:mousemove={(event) => handleMouseMove(event, item)}
-										on:mouseleave={hideWindow}
-										src="/images/{item.weaponClass}.svg"
-										alt=""
-									/>
-								{:else if item.type == 'potion'}
-									<img
-										on:mousemove={(event) => handleMouseMove(event, item)}
-										on:mouseleave={hideWindow}
-										src="/images/{item.type}.svg"
-										alt=""
-									/>
-								{/if}
-							</button>
-						{/each}
-					</div>
-				</div> -->
-				<ActionBox title={"Inventory"} actions={$character.inventory} on:emittedAnswer={handleEmittedAnswer}/>
-				<!-- ui left ends here -->
+				
+				<!-- <ActionBox title={"Inventory"} actions={$character.inventory} on:emittedAnswer={handleEmittedAnswer}/> -->
 
-				<Choices on:emittedAnswer={handleEmittedAnswer}/>
-				<!-- ui right starts here -->
-				<!-- <div
-					style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;"
-					class="ui-right"
-				>
-					<div
-						class="mp-bar"
-						style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8);"
-					>
-						{$character.stats[0].mp}/{$character.stats[0].maxMp}
-					</div>
-					<div in:fade={{ delay: 200, duration: 1000 }} class="spells">
-						<h3>Spells</h3>
-						{#each $character.spells as spell}
-							<button
-								disabled={$misc.loading}
-								on:click={() => {
-									useItem(spell)
-									handleSell(`You sure to sell ${spell.name}?`, spell)
-								}}
-								in:fade={{ duration: 600 }}
-								><img
-									on:mousemove={(event) => handleMouseMove(event, spell)}
-									on:mouseleave={hideWindow}
-									src="/images/{spell.element}.svg"
-									alt=""
-								/></button
-							>
-						{/each}
-					</div>
-				</div> -->
-				<ActionBox title={"Spells"} actions={$character.spells} on:emittedAnswer={handleEmittedAnswer}/>
+				<!-- <Choices on:emittedAnswer={handleEmittedAnswer}/> -->
+				
+				<!-- <ActionBox title={"Spells"} actions={$character.spells} on:emittedAnswer={handleEmittedAnswer}/> -->
 
-
-				<!-- ui right ends here -->
 			</div>
 			<!-- bottom game ui ends here-->
 		</div>

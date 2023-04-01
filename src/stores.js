@@ -55,7 +55,7 @@ export const coolDowns = writable({})
 
 
 export const misc = writable({
-	loading: false, showDescription: "none", x: 0, y: 0, diceNumber: 0, query:"", time:"", place:"", currentImg:""
+	loading: false, showDescription: "none", x: 0, y: 0, diceNumber: 0, query:"", time:"00:00", place:"", currentImg:""
 })
 
 export const bgImage = writable({
