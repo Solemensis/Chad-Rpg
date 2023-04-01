@@ -79,7 +79,7 @@
     <div class="dual-button">
         <button
             on:click={() => {
-                buyItem(eventfulItem)
+                buyItem(selectedItem)
                 $ui.buyWarnMsg = ''
             }}>Yes</button
         >
@@ -98,7 +98,7 @@
     <div class="dual-button">
         <button
             on:click={() => {
-                sellItem(eventfulItem)
+                sellItem(selectedItem)
                 $ui.sellWarnMsg = ''
             }}>Yes</button
         >
@@ -144,5 +144,17 @@
 	}
 	.notification-window button:hover {
 		transform: translateY(-3%);
+	}
+
+	.dual-button {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+	}
+	.dual-button button:nth-child(1) {
+		border: 2px solid green;
+	}
+	.dual-button button:nth-child(2) {
+		border: 2px solid rgb(111, 30, 0);
 	}
     </style>

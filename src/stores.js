@@ -51,9 +51,15 @@ export const ui = writable({ errorWarnMsg: "", buyWarnMsg: "", sellWarnMsg: "", 
 //hem combat, hem sell, hem de (emin olduktan sonra) buy için kullanılabilir galiba
 export const selectedItem = writable({})
 
+export const coolDowns = writable({})
+
 
 export const misc = writable({
-	loading: false, showDescription:"none", x:0, y:0
+	loading: false, showDescription: "none", x: 0, y: 0, diceNumber: 0, query:"", time:"", place:"", currentImg:""
+})
+
+export const bgImage = writable({
+	fetchedBg1:"", fetchedBg2:"", img1active:false, img2active:false
 })
 
 export const descWindow = writable({
