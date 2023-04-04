@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import { misc } from '../../stores.js';
+
 
 	const dispatch = createEventDispatcher();
 
@@ -23,6 +25,7 @@
 	flex-direction:column;
 	transform:translate(-50%,-50%);"
 	>
+	<p style="padding-left:8rem;">{$misc.loading}</p>
 		<button on:click={() => emitAnswer('go woods, find some goblins to hunt')}
 			>kill goblins</button
 		>

@@ -41,11 +41,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		})
 
 		const moderationData = await moderationRes.json()
-		const [results] = moderationData.results
+		// const [results] = moderationData.results
 
-		if (results.flagged) {
-			throw new Error('Query flagged by openai')
-		}
+		// if (results.flagged) {
+		// 	throw new Error('Query flagged by openai')
+		// }
 
 		const prompt = `This is a role-playing game where you'll be the 1st person character. You'll describe the world from a 3rd person perspective but when it's time for a conversation, interact with the player from a 1st person npc perspective. You can be an ally to the player, give them quests, and create a storyline based on their choices.
 
@@ -150,7 +150,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 
 		if (!chatResponse.ok) {
 			const err = await chatResponse.json()
-			throw new Error(err)
+			throw new Error(JSON.stringify(err))
 		}
 
 		return new Response(chatResponse.body, {

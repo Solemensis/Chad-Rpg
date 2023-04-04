@@ -127,6 +127,9 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 
 		handleErr = true
 
+
+// $misc.loading=false
+
 		// query = ''
 		// answer = ''
 	}
@@ -193,6 +196,7 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 		}
 
 		if (eventMatch) {
+			// $game.event[0] = JSON.parse(eventMatch[1])
 			$game.event = JSON.parse(eventMatch[1])
 			if ($game.event[0].shopMode && $game.shop.length != 4) {
 				mixBuyables($game.event[0].shopMode)
@@ -354,7 +358,6 @@ giveYourAnswer(event.detail.answer)
 		const hour = parseInt(timeString.split(':')[0], 10)
 		return hour
 	}
-
 	
 	async function fetchImg() {
 		if($game.placeAndTime[0].place==$misc.curentImg) return;
@@ -407,13 +410,14 @@ giveYourAnswer(event.detail.answer)
 
 	<BackgroundImgs/>
 	
+	
 	{#if !gameStarted}
 		<GameStartWindow on:emittedAnswer={handleEmittedAnswer}/>
 	{/if}
 	
 
 	<GonnaDeleteThis on:emittedAnswer={handleEmittedAnswer} />
-	<!-- <MessageWindows/> -->
+	<MessageWindows/>
 
 	
 
@@ -438,11 +442,11 @@ giveYourAnswer(event.detail.answer)
 			<!-- bottom game ui starts here-->
 			<div transition:fade={{ duration: 2000 }} class="game-controls">
 				
-				<!-- <ActionBox title={"Inventory"} actions={$character.inventory} on:emittedAnswer={handleEmittedAnswer}/> -->
+				<ActionBox title={"Inventory"} actions={$character.inventory} on:emittedAnswer={handleEmittedAnswer}/>
 
-				<!-- <Choices on:emittedAnswer={handleEmittedAnswer}/> -->
+				<Choices on:emittedAnswer={handleEmittedAnswer}/>
 				
-				<!-- <ActionBox title={"Spells"} actions={$character.spells} on:emittedAnswer={handleEmittedAnswer}/> -->
+				<ActionBox title={"Spells"} actions={$character.spells} on:emittedAnswer={handleEmittedAnswer}/>
 
 			</div>
 			<!-- bottom game ui ends here-->

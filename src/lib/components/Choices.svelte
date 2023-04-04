@@ -34,15 +34,7 @@ import { game } from '../../stores.js';
 		return { delay }
 	}
 
-    function emitAnswer(answer:any) {
-		dispatch('emittedAnswer', {
-			answer: answer
-		});
-
-					//choice transition delay reset for every new conversation
-
-        delay=-300
-	}
+    
 
     function calculateRetreat() {
 		let number = Math.floor(Math.random() * 6) + 1
@@ -139,7 +131,7 @@ function hideWindow() {
 		$game.lootBox = newArray
 
 		if (!$game.lootBox.length) {
-			giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+			emitAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
 			$game.event[0].lootMode = false
 		}
 	}
@@ -163,9 +155,20 @@ function hideWindow() {
 		$game.lootBox = []
 
 		if (!$game.lootBox.length) {
-			giveYourAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+			emitAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
 			$game.event[0].lootMode = false
 		}
+	}
+
+
+	function emitAnswer(answer:any) {
+		dispatch('emittedAnswer', {
+			answer: answer
+		});
+
+					//choice transition delay reset for every new conversation
+
+        delay=-300
 	}
     </script>
 
