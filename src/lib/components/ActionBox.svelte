@@ -34,6 +34,8 @@
 
 	function handleSell(prompt: any, item: any) {
 		if ($game.event[0].shopMode) {
+$selectedItem={}
+
 			$selectedItem = item
 			$ui.sellWarnMsg = prompt
 		} else return
@@ -71,6 +73,8 @@
 	
 
 function useItem(item: any) {
+$selectedItem={};
+
 		const { type, name, damage, manaCost, healing, mana, cooldown } = item
 		const { mp, maxMp, hp, maxHp } = $character.stats[0]
 		const { inCombat, shopMode } = $game.event[0]
@@ -213,7 +217,7 @@ function useItem(item: any) {
 	}
 </script>
 
-<div style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="ui-left">
+<div style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="container-box">
 	{#if title=="Inventory"}
 	<div
 		class="hp-bar"
@@ -229,7 +233,7 @@ function useItem(item: any) {
 	{$character.stats[0].mp}/{$character.stats[0].maxMp}
 </div>
 	{/if}
-	<div in:fade={{ delay: 200, duration: 1500 }} class="inventory">
+	<div in:fade={{ delay: 200, duration: 1500 }} class="box">
 		<h3>{title}</h3>
 		{#each actions as action}
 			<button
@@ -269,8 +273,7 @@ function useItem(item: any) {
 
 <style>
 
-.ui-left,
-	.ui-right {
+.container-box {
 		width: 25%;
 		display: flex;
 		flex-direction: column;
@@ -289,8 +292,7 @@ function useItem(item: any) {
 		border-bottom-right-radius: 0;
 		padding: 0.2rem 0;
 	}
-	.spells,
-	.inventory {
+	.box {
 		display: grid;
 		align-items: center;
 		justify-items: center;
@@ -304,8 +306,7 @@ function useItem(item: any) {
 		border-top-right-radius: 0;
 	}
 
-	.spells h3,
-	.inventory h3 {
+	.box h3 {
 		grid-column-start: 1;
 		grid-column-end: 4;
 		justify-self: center;
@@ -314,8 +315,7 @@ function useItem(item: any) {
 		color: #3fcf8e;
 		/* font-family:"medieval" !important; */
 	}
-	.spells img,
-	.inventory img {
+	.box img {
 		width: 85%;
 		margin-inline: auto;
 		padding: 0.2rem;
@@ -323,12 +323,10 @@ function useItem(item: any) {
 		align-items: center;
 		justify-content: center;
 	}
-	.spells img:active,
-	.inventory img:active {
+	.box img:active {
 		animation: button-pop 0.3s ease-out;
 	}
-	.spells button,
-	.inventory button {
+	.box button {
 		background-color: rgb(128 128 128 / 29%);
 		border: none;
 		border-radius: 0.4rem;

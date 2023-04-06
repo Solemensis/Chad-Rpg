@@ -106,13 +106,18 @@ function hideWindow() {
 	}
 
     function handleBuy(prompt: any, item: any) {
+
+
 		if ($game.event[0].shopMode) {
+$selectedItem={}
+
 			$selectedItem.item = item
 			$ui.buyWarnMsg = prompt
 		} else return
 	}
 
     function lootItem(item: any) {
+
 		if (item.type == 'weapon' || item.type == 'potion') {
 			$character.inventory.push(item)
 			$character.inventory = $character.inventory
@@ -212,7 +217,7 @@ function hideWindow() {
                     <h3>You are now in <span class="span-heading">Combat</span> against:</h3>
                     {#if $game.enemy[0]}
                         <div
-                            style="background-image: linear-gradient(to right, #E1683Caa {mpPercentage}%, #1f1f1fc8);"
+                            style="background-image: linear-gradient(to right, #E1683Caa 100%, #1f1f1fc8);"
                             class="enemy"
                         >
                             <h5>{capitalizeFirstLetter($game.enemy[0].enemyName)}</h5>
@@ -393,73 +398,7 @@ function hideWindow() {
 
 
 <style>
-.ui-left,
-	.ui-right {
-		width: 25%;
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-	}
 
-	.hp-bar,
-	.mp-bar {
-		text-align: center;
-		font-size: 1.2rem;
-		border-radius: 0.2rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-bottom-left-radius: 0;
-		border-bottom-right-radius: 0;
-		padding: 0.2rem 0;
-	}
-	.spells,
-	.inventory {
-		display: grid;
-		align-items: center;
-		justify-items: center;
-		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-rows: 1fr 1fr 1fr 1fr;
-		background-color: #362525bc;
-
-		border-radius: 0.2rem;
-		min-height: 25vh;
-		border-top-left-radius: 0;
-		border-top-right-radius: 0;
-	}
-
-	.spells h3,
-	.inventory h3 {
-		grid-column-start: 1;
-		grid-column-end: 4;
-		justify-self: center;
-		font-weight: 400;
-		font-size: 1.4rem;
-		color: #3fcf8e;
-		/* font-family:"medieval" !important; */
-	}
-	.spells img,
-	.inventory img {
-		width: 85%;
-		margin-inline: auto;
-		padding: 0.2rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	.spells img:active,
-	.inventory img:active {
-		animation: button-pop 0.3s ease-out;
-	}
-	.spells button,
-	.inventory button {
-		background-color: rgb(128 128 128 / 29%);
-		border: none;
-		border-radius: 0.4rem;
-		width: 85%;
-		height: 85%;
-	}
-	
 
 	.choices {
 		/* min-height: 36.9%; */
@@ -543,7 +482,7 @@ function hideWindow() {
 	}
 
 	.night-time {
-		background-color: 964B00aa;
+		background-color: #964B00aa;
 	}
 
 	.combat-button {
@@ -688,15 +627,6 @@ function hideWindow() {
 	.choice:hover:not(:last-child) {
 		background-color: #372b2b;
 	}
-
-	
-
-	
-
-	
-
-	
-	
 
 	.heading-and-enemy {
 		display: flex;
