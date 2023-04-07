@@ -90,11 +90,11 @@
 		"weaponClass": "dagger"
 	},
 	{
-		"name": "Iron Lance",
+		"name": "Iron Flail",
 		"damage": 6,
 		"price": 85,
 		"type": "weapon",
-		"weaponClass": "lance"
+		"weaponClass": "flail"
 	},
 	{
 		"name": "Bronze Battle Axe",

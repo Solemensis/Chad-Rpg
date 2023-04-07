@@ -79,7 +79,7 @@
     <div class="dual-button">
         <button
             on:click={() => {
-                buyItem(selectedItem)
+                buyItem($selectedItem)
                 $ui.buyWarnMsg = ''
             }}>Yes</button
         >
@@ -98,7 +98,7 @@
     <div class="dual-button">
         <button
             on:click={() => {
-                sellItem(selectedItem)
+                sellItem($selectedItem)
                 $ui.sellWarnMsg = ''
             }}>Yes</button
         >

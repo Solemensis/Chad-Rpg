@@ -77,7 +77,7 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 						}
 					}
 					console.log(answer)
-					console.log(event)
+					
 
 					// 					if (!$game.event[0].inCombat){
 					// enemy =[]

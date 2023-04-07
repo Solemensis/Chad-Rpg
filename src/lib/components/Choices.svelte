@@ -7,6 +7,10 @@ import { game } from '../../stores.js';
 	import { coolDowns } from '../../stores.js';
 	import { descWindow } from '../../stores.js';
 
+	import  PickChoice  from '$lib/components/choices/PickChoice.svelte';
+	import  Combat  from '$lib/components/choices/Combat.svelte';
+	import  Shop from '$lib/components/choices/Shop.svelte';
+
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition'
 
@@ -17,10 +21,6 @@ import { game } from '../../stores.js';
     function extractHours(timeString: any) {
 		const hour = parseInt(timeString.split(':')[0], 10)
 		return hour
-	}
-
-    function capitalizeFirstLetter(str: any) {
-		return str.charAt(0).toUpperCase() + str.slice(1)
 	}
 
 
@@ -48,35 +48,7 @@ import { game } from '../../stores.js';
 	}
 
     
-	function throwDice(combatEvent: any) {
-		if (!combatEvent.name) return ($ui.errorWarnMsg = 'You need to choose a weapon or spell.')
-
-		if ($coolDowns[combatEvent.name]) {
-			$coolDowns[combatEvent.name] = 0
-		}
-
-		//zar numarasını bi süre göstermek için 1-2 saniyelik bi timeout
-		//içine alıncak giveYourAnswer
-		console.log(combatEvent.prompt)
-		emitAnswer(combatEvent.prompt)
-
-		if (combatEvent.manaCost) {
-			$character.stats[0].mp -= combatEvent.manaCost
-		}
-
-		$character.stats[0].hp -= $misc.diceNumber
-		$misc.diceNumber = 0
-
-		// $game.event[0].inCombat = !$game.event[0].inCombat
-
-		//empty the object after
-		$selectedItem.name = ''
-		$selectedItem.damage = undefined
-		$selectedItem.healing = undefined
-		$selectedItem.prompt = ''
-		$selectedItem.combatScore = undefined
-		$selectedItem.manaCost = 0
-	}
+	
 
     function handleMouseMove(event: any, item: any) {
     $misc.showDescription = 'block'
@@ -102,20 +74,10 @@ import { game } from '../../stores.js';
 }
 
 function hideWindow() {
-		$selectedItem.showDescription = 'none'
+		$misc.showDescription = 'none'
 	}
 
-    function handleBuy(prompt: any, item: any) {
-
-
-		if ($game.event[0].shopMode) {
-$selectedItem={}
-
-			$selectedItem.item = item
-			$ui.buyWarnMsg = prompt
-		} else return
-	}
-
+    
     function lootItem(item: any) {
 
 		if (item.type == 'weapon' || item.type == 'potion') {
@@ -175,135 +137,26 @@ $selectedItem={}
 
         delay=-300
 	}
+
+	function handleEmittedAnswer(event:any){
+emitAnswer(event.detail.answer)
+	}
     </script>
 
 
 <!-- ui bottom mid starts here -->
 <div class="ui-mid">
     {#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode}
-        <!-- choices ui starts here -->
-        <div class="choices">
-            {#each $game.choices as choice}
-                <button
-                    disabled={$misc.loading}
-                    transition:fade={{ ...getDelayTime(), duration: 700 }}
-                    class="choice"
-                    on:click={() => emitAnswer(choice)}>{choice}</button
-                >
-            {/each}
-            {#if $game.choices.length >= 2}
-                <div
-                    transition:fade={{ ...getDelayTime(), duration: 400 }}
-                    class="choice choiceInput"
-                >
-                    <input
-                        placeholder="Go to local Inn, find someone to talk to"
-                        type="text"
-                        bind:value={$misc.query}
-                    />
-                    <button disabled={!$misc.query} on:click={() => emitAnswer($misc.query)}>Answer</button>
-                </div>
-            {/if}
-        </div>
-        <!-- choices ui ends here -->
+        <PickChoice on:emittedAnswer={handleEmittedAnswer}/>
 
         
 
-        <!-- combat ui -->
     {:else if $game.event[0] && $game.event[0].inCombat}
-        <div transition:fade={{ duration: 1000 }} class="combat">
-            <div class="combat-box">
-                <div class="heading-and-enemy">
-                    <h3>You are now in <span class="span-heading">Combat</span> against:</h3>
-                    {#if $game.enemy[0]}
-                        <div
-                            style="background-image: linear-gradient(to right, #E1683Caa 100%, #1f1f1fc8);"
-                            class="enemy"
-                        >
-                            <h5>{capitalizeFirstLetter($game.enemy[0].enemyName)}</h5>
-                            <p>
-                                {$game.enemy[0].enemyHp} <span class="hp-mp-text">HP</span>
-                            </p>
-                        </div>
-                    {/if}
-                </div>
-                <div class="combat-but-and-info">
-                    <ul>
-                        {#if !$selectedItem.name}
-                            <li>
-                                Choose an <span class="g-span">item</span> or a
-                                <span class="g-span">spell.</span>
-                            </li>
-                        {:else if $selectedItem.damage}
-                            <li>
-                                You chose <span class="g-span">{$selectedItem.name}</span> with
-                                <span class="g-span">x{$selectedItem.damage}</span> damage!
-                            </li>
-                        {:else if $selectedItem.healing}
-                            <li>
-                                You chose <span class="g-span">{$selectedItem.name}</span> with
-                                <span class="g-span">x{$selectedItem.healing}</span> heal power!
-                            </li>
-                        {/if}
+	<Combat on:emittedAnswer={handleEmittedAnswer}/>
+       
 
-                        <li>Then, press the <span class="g-span">dice</span> to learn your fate!</li>
-                        <li>
-                            <!-- Your fighting scenario will be calculated based on these and some element of
-                            surprise. -->
-                            Or, just try to <span class="red-span">Retreat!</span>
-                        </li>
-                    </ul>
-                    <button on:click={() => throwDice($selectedItem)} class="combat-button">
-                        <img src="images/dice.webp" alt="" />
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- combat ui ends here-->
-
-        <!-- shop ui -->
     {:else if $game.event[0] && $game.event[0].shopMode}
-        <div transition:fade={{ duration: 1000 }} class="shop">
-            <div class="shop-box">
-                {#if $game.event[0].shopMode == 'weaponsmith'}
-                    <h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
-                {/if}
-                {#if $game.event[0].shopMode == 'armorsmith'}
-                    <h3>You're at a local <span class="g-span">Armorsmith</span></h3>
-                {/if}
-                {#if $game.event[0].shopMode == 'spell shop'}
-                    <h3>You're at a local <span class="g-span">Spell Shop</span></h3>
-                {/if}
-                {#if $game.event[0].shopMode == 'potion shop'}
-                    <h3>You're at a local <span class="g-span">Potion Shop</span></h3>
-                {/if}
-                {#if $game.event[0].shopMode != 'weaponsmith' && $game.event[0].shopMode != 'armorsmith' && $game.event[0].shopMode != 'spell shop' && $game.event[0].shopMode != 'potion shop'}
-                    <h3>You're at a local <span class="g-span">Merchant</span></h3>
-                {/if}
-
-                <div class="buyables-box">
-                    {#each $game.shop as buyable}
-                        <button
-                            class="item-button"
-                            on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
-                            on:mousemove={(event) => handleMouseMove(event, buyable)}
-                            on:mouseleave={hideWindow}
-                        >
-                            {#if buyable.type == 'weapon'}
-                                <img class="buyable-img" src="images/{buyable.weaponClass}.svg" alt="" />
-                            {:else if buyable.type == 'potion'}
-                                <img class="buyable-img" src="images/{buyable.type}.svg" alt="" />
-                            {/if}
-                            {#if buyable.element}
-                                <img class="buyable-img" src="images/{buyable.element}.svg" alt="" />
-                            {/if}
-                        </button>
-                    {/each}
-                </div>
-            </div>
-        </div>
-
-        <!-- shop ui ends here -->
+       <Shop/>
 
         <!-- loot ui-->
     {:else if $game.event[0].lootMode}
@@ -400,72 +253,11 @@ $selectedItem={}
 <style>
 
 
-	.choices {
-		/* min-height: 36.9%; */
-		display: flex;
-		justify-content: space-between;
-		flex-direction: column;
-		gap: 0.3rem;
-		width: 100%;
-		margin-inline: auto;
-		padding: 0;
+.svg-images {
+		width: 1.1rem;
+		height: 1.1rem;
 	}
-	.combat,
-	.shop {
-		min-height: 36.9%;
-		display: flex;
-		justify-content: space-between;
-		flex-direction: column;
-		width: 100%;
-		height: 100%;
-		margin-inline: auto;
-		gap: 1rem;
-	}
-
-	.combat-box h3,
-	.shop-box h3 {
-		text-align: center;
-		font-weight: 300;
-		font-size: 1.3rem;
-	}
-
-	.combat-box,
-	.shop-box {
-		background-color: rgba(31, 31, 31, 0.841);
-		border-radius: 0.5rem;
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-		justify-content: space-around;
-		padding: 0 0.5rem;
-	}
-	.shop-box {
-		align-items: center;
-		padding-bottom: 1rem;
-	}
-
-	.combat-but-and-info {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 2rem;
-	}
-
-	.combat-box img:active {
-		animation: button-pop 0.3s ease-out;
-	}
-
-	.combat-box ul {
-		font-size: 1rem;
-		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-
-	.combat-box ul {
-		width: 60%;
-	}
+	
 
 	.leave-button {
 		border: none;
@@ -485,63 +277,12 @@ $selectedItem={}
 		background-color: #964B00aa;
 	}
 
-	.combat-button {
-		border: none;
-		background-color: rgba(19, 19, 19, 0.525);
-		border-radius: 0.6rem;
-		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
-	}
 
-	.combat-button img {
-		width: 3.5rem;
-	}
+	
 
-	.combat-box ul li,
-	.shop-box ul li {
-		color: #bbb;
-		padding-left: 0.4rem;
-		text-align: start;
-		transition: 0.2s;
-		line-height: 1.2;
-	}
-	.shop-box ul li:hover {
-		cursor: pointer;
-		color: #3fcf8e;
-	}
+	
 
-	.combat-box ul li:nth-child(1) {
-		list-style-type: '⚔️';
-	}
-	.combat-box ul li:nth-child(2) {
-		list-style-type: '🎲';
-	}
-	.combat-box ul li:nth-child(3) {
-		list-style-type: '🔮';
-		font-size: 0.9rem;
-		padding-left: 0.5rem;
-		margin-left: -0.08rem;
-
-		color: #aaa;
-	}
-
-	.item-button {
-		border: none;
-		background-color: transparent;
-	}
-
-	.shop-box ul li {
-		list-style-type: '\1F7E3';
-	}
-	.span-heading {
-		color: rgb(228, 55, 55);
-		font-weight: 400;
-	}
-	.g-span {
-		color: #3fcf8e;
-	}
-	.red-span {
-		color: rgb(228, 55, 55);
-	}
+	
 	.stats {
 		width: 100%;
 		display: flex;
@@ -556,10 +297,7 @@ $selectedItem={}
 		border-radius: 0.3rem;
 		padding: 0.2rem 0.5rem;
 	}
-	.svg-images {
-		width: 1.1rem;
-		height: 1.1rem;
-	}
+	
 
 	.stat p {
 		font-size: 1.2rem;
@@ -574,112 +312,13 @@ $selectedItem={}
 		gap: 0.8rem;
 	}
 
-	.choice {
-		/* background-color: rgba(49, 49, 49, 0.83); */
-
-		background-color: #362525;
-		border-radius: 0.5rem;
-		font-size: 1.35rem;
-		color: #ccc;
-		padding: 0.4rem 0.6rem;
-		border: none;
-		position: relative;
-		text-align: center;
-		transition: 0.2s;
-
-		/* font-style:italic; */
-
-	}
-	.choiceInput {
-		background-color: #1f1f1fc8;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		height: 100%;
-	}
-
-	.choiceInput input {
-		background-color: transparent;
-		border: none;
-		width: 85%;
-		height: 100%;
-		font-size: 1.2rem;
-		outline: none;
-		padding: 0.1rem 0.3rem;
-		text-align: start;
-	}
-	.choiceInput button {
-		border: none;
-		color: #ddd;
-		border-radius: 0.3rem;
-		padding: 0.2rem 0.5rem;
-		background-color: #9018c486;
-	}
-	.choiceInput button:active {
-		animation: button-pop 0.3s ease-out;
-	}
-	.choiceInput button:hover {
-		background-color: #a61ce186;
-	}
+	
 	::placeholder {
 		color: #aaa;
 	}
-	.choice:hover:not(:last-child) {
-		background-color: #372b2b;
-	}
+	
 
-	.heading-and-enemy {
-		display: flex;
-		justify-content: space-evenly;
-		align-items: center;
-	}
+	
 
-	.enemy {
-		display: flex;
 
-		gap: 0.05rem;
-		align-items: center;
-		justify-content: space-around;
-		width: 8rem;
-		height: 1rem;
-		border-radius: 0.3rem;
-
-		padding: 0.7rem 0;
-	}
-
-	.enemy h5 {
-		font-weight: 400;
-		font-size: 0.9rem;
-		color: #ccc;
-	}
-	.enemy p {
-		font-size: 0.9rem;
-		text-align: center;
-		color: #ccc;
-	}
-	.enemy span {
-		font-size: 0.9rem;
-
-		color: #ccc;
-	}
-
-	.buyables-box {
-		display: flex;
-		gap: 1rem;
-	}
-	.shop-box button {
-		background-color: rgb(128 128 128 / 29%);
-		border: none;
-		width: 3.5rem;
-		height: 3.5rem;
-		border-radius: 0.4rem;
-
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-	.buyable-img {
-		width: 65%;
-		height: 65%;
-	}
     </style>
