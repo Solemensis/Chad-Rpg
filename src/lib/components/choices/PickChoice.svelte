@@ -18,6 +18,8 @@ let delay: any = -300
 	}
 
     function emitAnswer(answer:any) {
+		if(!answer)return;
+		
 		dispatch('emittedAnswer', {
 			answer: answer
 		});
@@ -28,6 +30,8 @@ let delay: any = -300
 	}
 </script>
 
+
+<!-- {#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode} -->
 <!-- choices ui starts here -->
 <div class="choices">
     {#each $game.choices as choice}
@@ -48,11 +52,12 @@ let delay: any = -300
                 type="text"
                 bind:value={$misc.query}
             />
-            <button disabled={!$misc.query} on:click={() => emitAnswer($misc.query)}>Answer</button>
+            <button disabled={$misc.loading} on:click={() => emitAnswer($misc.query)}>Answer</button>
         </div>
     {/if}
 </div>
 <!-- choices ui ends here -->
+<!-- {/if} -->
 
 
 <style>

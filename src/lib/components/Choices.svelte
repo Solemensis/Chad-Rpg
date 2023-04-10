@@ -1,15 +1,12 @@
 <script lang="ts">
 import { game } from '../../stores.js';
 	import { character } from '../../stores.js';
-    import { ui } from '../../stores.js';
-	import { selectedItem} from '../../stores.js';
 	import { misc } from '../../stores.js';
-	import { coolDowns } from '../../stores.js';
-	import { descWindow } from '../../stores.js';
 
 	import  PickChoice  from '$lib/components/choices/PickChoice.svelte';
 	import  Combat  from '$lib/components/choices/Combat.svelte';
 	import  Shop from '$lib/components/choices/Shop.svelte';
+	import  Loot from '$lib/components/choices/Loot.svelte';
 
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition'
@@ -28,11 +25,11 @@ import { game } from '../../stores.js';
 	//transition delay logic
 	let delay: any = -300
 	
-    function getDelayTime() {
-		delay += 300
+    // function getDelayTime() {
+	// 	delay += 300
 
-		return { delay }
-	}
+	// 	return { delay }
+	// }
 
     
 
@@ -44,102 +41,44 @@ import { game } from '../../stores.js';
 			//lose 20 health here
 		} else {
 			emitAnswer('You have escaped succesfully!')
+			$game.event[0].inCombat= false
 		}
+
+
 	}
 
     
 	
 
-    function handleMouseMove(event: any, item: any) {
-    $misc.showDescription = 'block'
-    $misc.x = event.clientX + 10
-    $misc.y = event.clientY - 40
-
-
-    // for (let key in $descWindow) {
-    //     $descWindow[key] = undefined
-	// 					}
-
-
-            $descWindow.name = item && item.name ? item.name : undefined
-            $descWindow.damage = item && item.damage ? item.damage : undefined
-            $descWindow.type = item && item.type ? item.type : undefined
-            $descWindow.healing = item && item.healing ? item.healing : undefined
-            $descWindow.armor = item && item.armor ? item.armor : undefined
-         $descWindow.element = item && item.element ? item.element : undefined
-            $descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
-             $descWindow.manaCost = item && item.manaCost ? item.manaCost : undefined
-            $descWindow.price = item && item.price ? item.price : undefined
-             $descWindow.amount = item && item.amount ? item.amount : undefined
-}
-
-function hideWindow() {
-		$misc.showDescription = 'none'
-	}
-
     
-    function lootItem(item: any) {
-
-		if (item.type == 'weapon' || item.type == 'potion') {
-			$character.inventory.push(item)
-			$character.inventory = $character.inventory
-		} else if (
-			item.type == 'destruction spell' ||
-			item.type == 'healing spell' ||
-			item.type == 'unique spell'
-		) {
-			$character.spells.push(item)
-			$character.spells = $character.spells
-		} else if (item.type == 'currency') {
-			$character.gold += parseInt(item.amount)
-		}
-
-		let newArray: any = $game.lootBox.filter((lootItem:any) => lootItem.name !== item.name)
-		$game.lootBox = newArray
-
-		if (!$game.lootBox.length) {
-			emitAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
-			$game.event[0].lootMode = false
-		}
-	}
-	function lootAll() {
-		$game.lootBox.forEach((item:any) => {
-			if (item.type == 'weapon' || item.type == 'potion') {
-				$character.inventory.push(item)
-				$character.inventory = $character.inventory
-			} else if (
-				item.type == 'destruction spell' ||
-				item.type == 'healing spell' ||
-				item.type == 'unique spell'
-			) {
-				$character.spells.push(item)
-				$character.spells = $character.spells
-			} else if (item.type == 'currency') {
-				$character.gold += parseInt(item.amount)
-			}
-		})
-
-		$game.lootBox = []
-
-		if (!$game.lootBox.length) {
-			emitAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
-			$game.event[0].lootMode = false
-		}
-	}
+   
 
 
 	function emitAnswer(answer:any) {
+
+
+
 		dispatch('emittedAnswer', {
 			answer: answer
 		});
 
 					//choice transition delay reset for every new conversation
-
         delay=-300
+
+
 	}
 
 	function handleEmittedAnswer(event:any){
 emitAnswer(event.detail.answer)
+	}
+
+
+	function leaveButton(leaveString:any){
+		emitAnswer(leaveString)
+
+		$game.event[0].shopMode =false
+		$game.event[0].lootMode =false
+		$game.lootBox=[]
 	}
     </script>
 
@@ -148,6 +87,7 @@ emitAnswer(event.detail.answer)
 <div class="ui-mid">
     {#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode}
         <PickChoice on:emittedAnswer={handleEmittedAnswer}/>
+
 
         
 
@@ -158,44 +98,12 @@ emitAnswer(event.detail.answer)
     {:else if $game.event[0] && $game.event[0].shopMode}
        <Shop/>
 
-        <!-- loot ui-->
-    {:else if $game.event[0].lootMode}
-        <div transition:fade={{ duration: 1000 }} class="shop">
-            <div class="shop-box">
-                <h3>You're <span class="g-span">looting.</span></h3>
-
-                <div class="buyables-box">
-                    {#if !$game.lootBox.length}
-                        <p>loading...</p>
-                    {:else}
-                        {#each $game.lootBox as item}
-                            <button
-                                class="item-button"
-                                on:click={() => lootItem(item)}
-                                on:mousemove={(event) => handleMouseMove(event, item)}
-                                on:mouseleave={hideWindow}
-                            >
-                                {#if item.type == 'weapon'}
-                                    <img class="buyable-img" src="images/{item.weaponClass}.svg" alt="" />
-                                {/if}
-                                {#if item.element}
-                                    <img class="buyable-img" src="images/{item.element}.svg" alt="" />
-                                {/if}
-                                {#if item.type == 'potion' || item.type == 'currency'}
-                                    <img class="buyable-img" src="images/{item.type}.svg" alt="" />
-                                {/if}
-                            </button>
-                        {/each}
-                        <button on:click={() => lootAll()}>Loot All</button>
-                    {/if}
-                </div>
-            </div>
-        </div>
+    {:else if $game.event[0] && $game.event[0].lootMode}
+        <Loot on:emittedAnswer={handleEmittedAnswer}/>
     {/if}
-    <!-- loot ui ends here -->
 
     <!-- gold&time and reject choices -->
-    {#if $game.choices.length >= 2 || $game.event[0].inCombat || $game.event[0].shopMode}
+    {#if $game.choices.length >= 2 || $game.event[0].inCombat || $game.event[0].shopMode || $game.event[0].lootMode}
         <div transition:fade={{ duration: 700 }} class="stats">
             <div class="stat">
                 <img class="svg-images" src="images/gold.svg" alt="" />
@@ -215,7 +123,7 @@ emitAnswer(event.detail.answer)
                     class="leave-button"
                     style="opacity: {$game.event[0].shopMode ? '1' : '0'};"
                     on:click={() => {
-                        emitAnswer('Leave the shop')
+                        leaveButton('Leave the shop')
                         $game.event[0].shopMode = null
                     }}>Leave the Shop</button
                 >
@@ -224,7 +132,7 @@ emitAnswer(event.detail.answer)
                     disabled={$misc.loading}
                     class="leave-button"
                     style="opacity: {$game.lootBox.length ? '1' : '0'};"
-                    on:click={() => emitAnswer('Leave the loot.')}>Leave it.</button
+                    on:click={() => leaveButton('Leave the loot.')}>Leave it.</button
                 >
             {:else if extractHours($misc.time) >= 20 && $misc.place != 'Town' && $misc.place != 'Tavern' && $misc.place != 'Inn'}
                 <button
@@ -274,7 +182,7 @@ emitAnswer(event.detail.answer)
 	}
 
 	.night-time {
-		background-color: #964B00aa;
+		background-color: rgba(34, 34, 34, 0.352);
 	}
 
 

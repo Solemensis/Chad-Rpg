@@ -45,7 +45,9 @@
 		"name": "Iron Battle Axe",
 		"damage": 4,
 		"price": 35,
-		"type": "axe"
+		"type": "weapon",
+		"weaponClass": "axe"
+
 	},
 	{
 		"name": "Steel Axe",

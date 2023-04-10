@@ -70,10 +70,10 @@
 </div>
 
 <style>
-
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
     
 	.starting-screen {
-		background-color: #333333aa;
+		background-color: #242424cc;
 		width: 60%;
 		height: 60%;
 		border-radius: 1rem;
@@ -94,20 +94,29 @@
 		display: flex;
 		flex-direction: column;
 	}
+	h1{
+		font-weight:400;
+		font-family:"MedievalSharp", sans-serif;
+	}
+	.g-span{
+		font-weight:400;
+		color:orange;
+		font-family:"MedievalSharp", sans-serif;
+
+	}
 	
 	.heading-box button {
 		margin-top: 0.8rem;
 		align-self: end;
 		border: none;
-		background-color: rgba(239, 102, 52, 0.349);
+		background-color: rgba(239, 102, 52, 0.111);
 		color: #eee;
 		padding: 0.2rem 0.5rem;
 		border-radius: 0.3rem;
 		transition: 0.2s;
 	}
 	.heading-box button:hover {
-		background-color: rgba(239, 102, 52, 0.549);
-
+		background-color: rgba(239, 102, 52, 0.150);
 		cursor: pointer;
 	}
 
@@ -140,6 +149,7 @@
 		margin-bottom: 0.3rem;
 		color: orange;
 		font-weight: 500;
+		
 	}
 	.game-explanation p {
 		line-height: 1.1;

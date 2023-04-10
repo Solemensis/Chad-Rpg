@@ -53,8 +53,9 @@
 		left: 0;
 		z-index: -999;
 		height: 100vh;
-		background-image: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.767)),
-			url(/images/main-bg.jpg);
+		/* background-image: linear-gradient(rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.767)),
+			url(/images/main-bg.webp); */
+			background-image:url(/images/main-bg.webp);
 		width: 100%;
 		background-position: 50%;
 		background-repeat: no-repeat;

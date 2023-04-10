@@ -45,6 +45,12 @@
 		$selectedItem.prompt = ''
 		$selectedItem.combatScore = undefined
 		$selectedItem.manaCost = 0
+
+
+	//close combatmode if enemy dies
+	if($game.enemy[0].enemyHp <= 0)
+	$game.event[0].inCombat = false
+	
 	}
 
 
@@ -54,7 +60,7 @@
 			answer: answer
 		});
 
-					//choice transition delay reset for every new conversation
+		
 
 	}
     </script>

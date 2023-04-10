@@ -5,10 +5,8 @@
     import { descWindow } from '../../../stores.js';
     import { misc} from '../../../stores.js';
     
-    import { createEventDispatcher } from 'svelte';
     import { fade } from 'svelte/transition'
     
-    const dispatch = createEventDispatcher();
 
 
     function hideWindow() {

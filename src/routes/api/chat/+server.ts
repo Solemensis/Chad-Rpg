@@ -41,11 +41,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		})
 
 		const moderationData = await moderationRes.json()
-		// const [results] = moderationData.results
+		const [results] = moderationData.results
 
-		// if (results.flagged) {
-		// 	throw new Error('Query flagged by openai')
-		// }
+		if (results.flagged) {
+			throw new Error('Query flagged by openai')
+		}
 
 		const prompt = `This is a role-playing game where you'll be the 1st person character. You'll describe the world from a 3rd person perspective but when it's time for a conversation, interact with the player from a 1st person npc perspective. You can be an ally to the player, give them quests, and create a storyline based on their choices.
 
@@ -65,15 +65,15 @@ export const POST: RequestHandler = async ({ request }) => {
 		if "inCombat" is true, fill the @enemy array. But fill it only with 1 enemy object even if there are more than 1 enemy, just increase the hp parameter instead and give it an "s" letter in the end, so if the enemy is "goblin" but a group of goblins, make the enemy name "goblins". 
 
 		If player starts talking with a seller npc about buying things, switch "shopMode" to a specific shop name from null. 
-       "shopMode" can only be null, 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation in @story and @choices.
-shopMode will stay null at "Tavern"! You sometimes change shopMode to "potion shop" or "merchant" when player goes into tavern, do not do that. Tavern is not a shop. Everything in tavern will be free.
+       "shopMode" can only be null, 'Weaponsmith', 'SpellShop', 'Armorsmith', 'PotionShop', 'Merchant', 'Market' and 'Shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation in @story and @choices.
+shopMode will stay null at "Tavern"! You sometimes change shopMode to "PotionShop" or "Merchant" when player goes into tavern, do not do that. Tavern is not a shop. Everything in tavern will be free.
 
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!
 
 put everything story related and conversation related into @story.
 
-do NOT put "Check your inventory" and "Drink a potion" choices in @choices ever. These are out of concept responses for the game.
+do NOT give "Check your inventory", "Check my equipment" and "Drink a potion" choices in @choices ever. These are out of concept responses for the game.
 
 There are 2 potions in the game. "health potion" and "mana potion".
 There are no accessory or armor in the game as lootable. There are just weapons, spells, potions and currencies.
@@ -82,18 +82,22 @@ you are forgetting to put "@story" at the beginning of the story you tell. Put "
 you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is no enemy to fight.
 
 you are forgetting to put the quest reward into the lootBox, when talking to the npc about the quest reward. Always put the reward into the lootBox, even if it is just gold.
+you are forgetting to change "place" according to where player went. Change "place" always if player changes place.
 
 
 if player decides to check a loot, and if there are any weapon, gold, potion or spell; put them into the @lootBox "[]". Then, empty the @lootBox "[]" in the next response. Only put weapons, spells, gold and potions.
 
 do not end the game by yourself and give @choices always.
 
-You are changing inCombat to true wrongly sometimes. inCombat will only be true when enemies have spotted the player!
+You are changing inCombat to true wrongly sometimes. inCombat will only be true when enemies have spotted the player and when the fight starts!
+
 fill @lootBox only if player DECIDES to check a loot! 
+
 do not fill @lootBox after inCombat turns to false!
+
 understand the example format of the json objects of lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
-		Here's the exact format for the @placeAndTime, @story, @event, @choices, @enemy and @lootBox Do it with the exact data structures shown: -- @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null when there's no gold spend potential, but will be 'weaponsmith', 'spell shop', 'armorsmith', 'potion shop', 'merchant', 'market' and 'shop' if there's currently a conversation with an npc about selling-buying something.", "lootMode":"this will be true if user chooses to explore a loot, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
+		Here's an example answer for you. You'll give your answers always in this format. Do it with the shown parantheses! @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null when there's no gold spend potential, but will be 'Weaponsmith', 'SpellShop', 'Armorsmith', 'PotionShop', 'Merchant', 'Market' and 'Shop' if there's currently a conversation with an npc about selling-buying something.", "lootMode":"this will be true if user chooses to explore a loot, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
 			"name": "Bronze Battle Axe",
 			"damage": "this number can maximum be 9.",
 			"price": 85,

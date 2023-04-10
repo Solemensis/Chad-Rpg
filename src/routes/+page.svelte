@@ -151,9 +151,9 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 	}
 
 	function mixBuyables(category: any) {
-		if (category == 'weaponsmith') return ($game.shop = shuffleItems(buyWeapons))
-		if (category == 'spell shop') return ($game.shop = shuffleItems(buySpells))
-		if (category == 'potion shop') return ($game.shop = shuffleItems(buyPotions))
+		if (category == 'Weaponsmith') return ($game.shop = shuffleItems(buyWeapons))
+		if (category == 'SpellShop') return ($game.shop = shuffleItems(buySpells))
+		if (category == 'PotionShop') return ($game.shop = shuffleItems(buyPotions))
 	}
 
 
@@ -176,7 +176,8 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 			$game.placeAndTime = JSON.parse(placeAndTimeMatch[1])
 
 			if (!logged) {
-				$misc.place = checkWordsForImg($game.placeAndTime[0].place)
+				// $misc.place = checkWordsForImg($game.placeAndTime[0].place)
+				$misc.place = $game.placeAndTime[0].place
 				$misc.time = $game.placeAndTime[0].time
 				fetchImg()
 
@@ -336,18 +337,18 @@ giveYourAnswer(event.detail.answer)
 	// console.log($count.name)
 
 
-	function checkWordsForImg(str: any) {
-		const words = str.split(' ')
+	// function checkWordsForImg(str: any) {
+	// 	const words = str.split(' ')
 
-		for (let i = 0; i < words.length; i++) {
-			const word = words[i]
-			if (frpgPlaces.includes(word)) {
-				return word
-			}
-		}
+	// 	for (let i = 0; i < words.length; i++) {
+	// 		const word = words[i]
+	// 		if (frpgPlaces.includes(word)) {
+	// 			return word
+	// 		}
+	// 	}
 
-		return null
-	}
+	// 	return null
+	// }
 
 
 	function getRandomNumber(num: any) {
@@ -359,36 +360,58 @@ giveYourAnswer(event.detail.answer)
 		return hour
 	}
 	
-	async function fetchImg() {
-		if($game.placeAndTime[0].place==$misc.curentImg) return;
-		// check if place is the same
 
+
+	
+	async function fetchImg() {
+		// check if place is the same
+		if($game.placeAndTime[0].place==$misc.curentImg) return;
+
+
+		const places:any = ["Town", "Forest", "Woods", "Academy", "Beach", "Castle", "Cathedral", "Cave", "Dungeon", "Harbor", "Shore", "Dock", "Library", "Monastery", "Mansion", "Mountain", "Shop", "Weaponsmith", "Armorsmith", "Blacksmith", "PotionShop", "SpellShop", "Merchant", "Market", "Tavern"];
+		function checkPlace(str:any) {
+	
+  let matchingPlaces:any = places.filter(place =>  str.includes(place));
+		
+  return matchingPlaces.length > 0 ? matchingPlaces[0] : null
+}
 
 		//list imgs
-		const { data: imgs } = await supabase.storage.from('imgs').list(`${$misc.place}`, {
+		const { data: imgs } = await supabase.storage.from('imgs').list(checkPlace($misc.place), {
 			limit: 100,
 			offset: 0,
 			sortBy: { column: 'name', order: 'asc' }
 		})
 
 		//fetch img based on time and place
+		
+
+
 		let finalImg: any
 		if (imgs) {
-			if ($misc.place == 'Town' && extractHours($misc.time) >= 18 && extractHours($misc.time) <= 6) {
+			// if ($misc.place.includes('Town') ||$misc.place.includes('Forest')&& extractHours($misc.time) >= 18 && extractHours($misc.time) <= 6) {
+			if ((checkPlace($misc.place)=='Town' ||checkPlace($misc.place)=='City'||checkPlace($misc.place)=='Forest'||checkPlace($misc.place)=='Woods')&& (extractHours($misc.time) >= 18 || extractHours($misc.time) <= 6)) {
 				const { data: img, error } = await supabase.storage
 					.from('imgs')
-					.download(`${$misc.place}_night/${getRandomNumber(imgs.length - 1)}.png`)
+					.download(`${checkPlace($misc.place)}-night/${getRandomNumber(imgs.length - 1)}.webp`)
 				finalImg = img
 			} else {
 				const { data: img, error } = await supabase.storage
 					.from('imgs')
-					.download(`${$misc.place}/${getRandomNumber(imgs.length - 1)}.png`)
+					.download(`${checkPlace($misc.place)}/${getRandomNumber(imgs.length - 1)}.webp`)
 				finalImg = img
 			}
 		}
 
 		const reader = new FileReader()
-		reader.readAsDataURL(finalImg ? finalImg : console.log('no img'))
+		
+		if (finalImg){
+			reader.readAsDataURL(finalImg)
+		}else{
+			console.log('no img')
+			return;
+		}
+
 		reader.onload = () => {
 			if (!$bgImage.img1active) {
 			$bgImage.fetchedBg1 = reader.result
