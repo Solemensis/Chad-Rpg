@@ -1,68 +1,60 @@
 <script lang="ts">
-import { game } from '../../../stores.js';
-import { misc } from '../../../stores.js';
+	import { game } from '../../../stores.js'
+	import { misc } from '../../../stores.js'
 
-import { createEventDispatcher } from 'svelte';
-import { fade } from 'svelte/transition'
+	import { createEventDispatcher } from 'svelte'
+	import { fade } from 'svelte/transition'
 
-const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher()
 
+	let delay: any = -300
 
-
-let delay: any = -300
-	
-    function getDelayTime() {
+	function getDelayTime() {
 		delay += 300
 
 		return { delay }
 	}
 
-    function emitAnswer(answer:any) {
-		if(!answer)return;
-		
+	function emitAnswer(answer: any) {
+		if (!answer) return
+
 		dispatch('emittedAnswer', {
 			answer: answer
-		});
+		})
 
-					//choice transition delay reset for every new conversation
+		//choice transition delay reset for every new conversation
 
-        delay=-300
+		delay = -300
 	}
 </script>
-
 
 <!-- {#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode} -->
 <!-- choices ui starts here -->
 <div class="choices">
-    {#each $game.choices as choice}
-        <button
-            disabled={$misc.loading}
-            transition:fade={{ ...getDelayTime(), duration: 700 }}
-            class="choice"
-            on:click={() => emitAnswer(choice)}>{choice}</button
-        >
-    {/each}
-    {#if $game.choices.length >= 2}
-        <div
-            transition:fade={{ ...getDelayTime(), duration: 400 }}
-            class="choice choiceInput"
-        >
-            <input
-                placeholder="Go to local Inn, find someone to talk to"
-                type="text"
-                bind:value={$misc.query}
-            />
-            <button disabled={$misc.loading} on:click={() => emitAnswer($misc.query)}>Answer</button>
-        </div>
-    {/if}
+	{#each $game.choices as choice}
+		<button
+			disabled={$misc.loading}
+			transition:fade={{ ...getDelayTime(), duration: 700 }}
+			class="choice"
+			on:click={() => emitAnswer(choice)}>{choice}</button
+		>
+	{/each}
+	{#if $game.choices.length >= 2}
+		<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choice choiceInput">
+			<input
+				placeholder="Go to local Inn, find someone to talk to"
+				type="text"
+				bind:value={$misc.query}
+			/>
+			<button disabled={$misc.loading} on:click={() => emitAnswer($misc.query)}>Answer</button>
+		</div>
+	{/if}
 </div>
 <!-- choices ui ends here -->
+
 <!-- {/if} -->
-
-
 <style>
-
-.choices {
+	.choices {
 		/* min-height: 36.9%; */
 		display: flex;
 		justify-content: space-between;
@@ -72,10 +64,11 @@ let delay: any = -300
 		margin-inline: auto;
 		padding: 0;
 	}
-    .choice {
+	.choice {
 		/* background-color: rgba(49, 49, 49, 0.83); */
+		backdrop-filter: blur(2px);
 
-		background-color: #362525;
+		background-color: #362525cc;
 		border-radius: 0.5rem;
 		font-size: 1.35rem;
 		color: #ccc;
@@ -86,7 +79,6 @@ let delay: any = -300
 		transition: 0.2s;
 
 		/* font-style:italic; */
-
 	}
 	.choiceInput {
 		background-color: #1f1f1fc8;
@@ -119,7 +111,7 @@ let delay: any = -300
 	.choiceInput button:hover {
 		background-color: #a61ce186;
 	}
-    .choice:hover:not(:last-child) {
-		background-color: #372b2b;
+	.choice:hover:not(:last-child) {
+		background-color: #372b2bcc;
 	}
-    </style>
+</style>

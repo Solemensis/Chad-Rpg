@@ -4,7 +4,6 @@
 	import GameStartWindow from '$lib/components/GameStartWindow.svelte'
 	import DescriptionWindow from '$lib/components/DescriptionWindow.svelte'
 	import MessageWindows from '$lib/components/MessageWindows.svelte'
-	import GonnaDeleteThis from '$lib/components/GonnaDeleteThis.svelte'
 	import ActionBox from '$lib/components/ActionBox.svelte'
 	import Choices from '$lib/components/Choices.svelte'
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
@@ -31,10 +30,8 @@
 
 	// import buyArmors from '$lib/gamedata/armors.json'
 
-	// let query: string = ''
 	let answer: string = ''
 	let story: string = ''
-	// let loading: boolean = false
 	let chatMessages: ChatCompletionRequestMessage[] = []
 
 	const handleSubmit = async () => {
@@ -58,7 +55,6 @@
 
 		eventSource.addEventListener('message', (e) => {
 			try {
-				// $misc.loading = false
 				parseText(answer)
 				story = extractStory(answer)
 				if (e.data === '[DONE]') {
@@ -74,15 +70,13 @@
 					}
 					console.log(answer)
 
-					// 					if (!$game.event[0].inCombat){
-					// enemy =[]
-					// 					}
-
+					//to handle a possible noLoot bug
 					if ($game.event[0].lootMode && !$game.lootBox.length) {
 						$game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
 					}
 
-					//to handle token limitation of gpt
+					//to handle token limitation of gpt, delete the first 2 messages from array
+					//and do not exceed the limit of context tokens with this way.
 					if (chatMessages.length >= 16) {
 						chatMessages.splice(1, 2)
 					}
@@ -91,13 +85,19 @@
 					if ($misc.place.includes('Inn') || $misc.place.includes('Tavern')) {
 						if ($character.stats[0].hp < $character.stats[0].maxHp) {
 							$character.stats[0].hp += 25
+
+							if ($character.stats[0].hp > $character.stats[0].maxHp || !$character.stats[0].hp) {
+								$character.stats[0].hp = $character.stats[0].maxHp
+							}
 						}
 						if ($character.stats[0].mp < $character.stats[0].maxMp) {
 							$character.stats[0].mp += 20
+
+							if ($character.stats[0].mp > $character.stats[0].maxMp || !$character.stats[0].mp) {
+								$character.stats[0].mp = $character.stats[0].maxMp
+							}
 						}
 					}
-
-					// delay = -300
 
 					return
 				}
@@ -117,7 +117,6 @@
 
 	let handleErr: boolean = false
 	function handleError<T>(err: T) {
-		// $misc.loading = false
 		console.error('error from client: ' + err)
 
 		handleErr = true
@@ -138,15 +137,12 @@
 	}
 
 	function mixBuyables(category: any) {
-		if (category == 'Weaponsmith') return ($game.shop = shuffleItems(buyWeapons))
-		if (category == 'Armorsmith') return ($game.shop = shuffleItems(buyWeapons))
-		if (category == 'Blacksmith') return ($game.shop = shuffleItems(buyWeapons))
-		if (category == 'SpellShop') return ($game.shop = shuffleItems(buySpells))
-		if (category == 'PotionShop') return ($game.shop = shuffleItems(buyPotions))
-		if (category == 'Market') return ($game.shop = shuffleItems(buyPotions))
-		if (category == 'Merchant') return ($game.shop = shuffleItems(buyPotions))
-		if (category == 'Shop') return ($game.shop = shuffleItems(buySpells))
-		if (category == 'Marketplace') return ($game.shop = shuffleItems(buySpells))
+		if (category == 'Weaponsmith' || category == 'Armorsmith' || category == 'Blacksmith')
+			return ($game.shop = shuffleItems(buyWeapons))
+		if (category == 'SpellShop' || category == 'Shop' || category == 'Marketplace')
+			return ($game.shop = shuffleItems(buySpells))
+		if (category == 'PotionShop' || category == 'Market' || category == 'Merchant')
+			return ($game.shop = shuffleItems(buyPotions))
 	}
 
 	// let enemyParseDone:any=false;
@@ -243,12 +239,10 @@
 			handleError(error)
 		}
 
-		if (gameStarted == false) {
-			gameStarted = true
+		if ($game.started == false) {
+			$game.started = true
 		}
 	}
-
-	let gameStarted: boolean = false
 
 	//message loading animation logic
 	let dotty: any = '.'
@@ -370,11 +364,9 @@
 <div>
 	<BackgroundImgs />
 
-	{#if !gameStarted}
+	{#if !$game.started}
 		<GameStartWindow on:emittedAnswer={handleEmittedAnswer} />
 	{/if}
-
-	<GonnaDeleteThis on:emittedAnswer={handleEmittedAnswer} />
 
 	<MessageWindows />
 
@@ -383,7 +375,7 @@
 	<!-- item description window  -->
 
 	<!-- game ui starts here -->
-	{#if gameStarted}
+	{#if $game.started}
 		<div class="main-game">
 			<!-- chat ui starts here -->
 			<div transition:fade={{ duration: 1000 }} class="game-master">

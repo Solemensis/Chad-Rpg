@@ -84,22 +84,26 @@ you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is no en
 you are forgetting to put the quest reward into the lootBox, when talking to the npc about the quest reward. Always put the reward into the lootBox, even if it is just gold.
 you are forgetting to change "place" according to where player went. Change "place" always if player changes place.
 
+Sometimes you are giving @choices in numeric order. Don't do that! Give choices as array of elements always.
 
 if player decides to check a loot, and if there are any weapon, gold, potion or spell; put them into the @lootBox "[]". Then, empty the @lootBox "[]" in the next response. Only put weapons, spells, gold and potions.
 
 do not end the game by yourself and give @choices always.
 
-You are changing inCombat to true wrongly sometimes. inCombat will only be true when enemies have spotted the player and when the fight starts!
+inCombat will only be true when enemies have spotted the player!
+shopMode will only change if player starts to talk a seller npc!
 
 fill @lootBox only if player DECIDES to check a loot! 
 
 do not fill @lootBox after inCombat turns to false!
 
+Always put @event in your answers, don't forget it!
+
 If an npc gives an item or gold to the player, turn the lootMode to true and put the item-gold into the @lootBox. 
 
 understand the example format of the json objects of lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
-		Here's an example answer for you. You'll give your answers always in this format. Do it with the shown parantheses! @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null when there's no gold spend potential, but will be 'Weaponsmith', 'SpellShop', 'Armorsmith', 'PotionShop', 'Merchant', 'Market' and 'Shop' if there's currently a conversation with an npc about selling-buying something.", "lootMode":"this will be true if user chooses to explore a loot, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
+		Here's an example answer for you. Do it exactly in this order always: @placeAndTime, @story, @event, @choices, @enemy, lootBox. You'll give your answers always in this format. Do it with the shown parantheses! @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null normally, but will be 'Weaponsmith', 'SpellShop', 'Armorsmith', 'PotionShop', 'Merchant', 'Market' or 'Shop' if there's currently a conversation happening with a seller npc.", "lootMode":"this will be true only if user chooses a choice about exploring a loot from @choices, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
 			"name": "Bronze Battle Axe",
 			"damage": "this number can maximum be 9.",
 			"price": 85,

@@ -1,101 +1,95 @@
 <script lang="ts">
-    import { game } from '../../../stores.js';
-    import { selectedItem } from '../../../stores.js';
-    import { ui } from '../../../stores.js';
-    import { descWindow } from '../../../stores.js';
-    import { misc} from '../../../stores.js';
-    
-    import { fade } from 'svelte/transition'
-    
+	import { game } from '../../../stores.js'
+	import { selectedItem } from '../../../stores.js'
+	import { ui } from '../../../stores.js'
+	import { descWindow } from '../../../stores.js'
+	import { misc } from '../../../stores.js'
 
+	import { fade } from 'svelte/transition'
 
-    function hideWindow() {
+	function hideWindow() {
 		$misc.showDescription = 'none'
 	}
 
-    function handleBuy(prompt: any, item: any) {
+	function handleBuy(prompt: any, item: any) {
+		if ($game.event[0].shopMode) {
+			$selectedItem = {}
 
+			$selectedItem = item
+			$ui.buyWarnMsg = prompt
+		} else return
+	}
 
-if ($game.event[0].shopMode) {
-$selectedItem={}
+	function handleMouseMove(event: any, item: any) {
+		$misc.showDescription = 'block'
+		$misc.x = event.clientX + 10
+		$misc.y = event.clientY - 40
 
-    $selectedItem = item
-    $ui.buyWarnMsg = prompt
-} else return
-}
+		// for (let key in $descWindow) {
+		//     $descWindow[key] = undefined
+		// 					}
 
-function handleMouseMove(event: any, item: any) {
-    $misc.showDescription = 'block'
-    $misc.x = event.clientX + 10
-    $misc.y = event.clientY - 40
+		$descWindow.name = item && item.name ? item.name : undefined
+		$descWindow.damage = item && item.damage ? item.damage : undefined
+		$descWindow.type = item && item.type ? item.type : undefined
+		$descWindow.healing = item && item.healing ? item.healing : undefined
+		$descWindow.armor = item && item.armor ? item.armor : undefined
+		$descWindow.element = item && item.element ? item.element : undefined
+		$descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
+		$descWindow.manaCost = item && item.manaCost ? item.manaCost : undefined
+		$descWindow.price = item && item.price ? item.price : undefined
+		$descWindow.amount = item && item.amount ? item.amount : undefined
+	}
+</script>
 
+<!-- shop ui -->
 
-    // for (let key in $descWindow) {
-    //     $descWindow[key] = undefined
-	// 					}
+<div transition:fade={{ duration: 1000 }} class="shop">
+	<div class="shop-box">
+		{#if $game.event[0].shopMode == 'weaponsmith'}
+			<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
+		{/if}
+		{#if $game.event[0].shopMode == 'armorsmith'}
+			<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
+		{/if}
+		{#if $game.event[0].shopMode == 'spell shop'}
+			<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
+		{/if}
+		{#if $game.event[0].shopMode == 'potion shop'}
+			<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
+		{/if}
+		{#if $game.event[0].shopMode != 'weaponsmith' && $game.event[0].shopMode != 'armorsmith' && $game.event[0].shopMode != 'spell shop' && $game.event[0].shopMode != 'potion shop'}
+			<h3>You're at a local <span class="g-span">Merchant</span></h3>
+		{/if}
 
-
-            $descWindow.name = item && item.name ? item.name : undefined
-            $descWindow.damage = item && item.damage ? item.damage : undefined
-            $descWindow.type = item && item.type ? item.type : undefined
-            $descWindow.healing = item && item.healing ? item.healing : undefined
-            $descWindow.armor = item && item.armor ? item.armor : undefined
-         $descWindow.element = item && item.element ? item.element : undefined
-            $descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
-             $descWindow.manaCost = item && item.manaCost ? item.manaCost : undefined
-            $descWindow.price = item && item.price ? item.price : undefined
-             $descWindow.amount = item && item.amount ? item.amount : undefined
-}
-    </script>
- 
- 
- <!-- shop ui -->
-
- <div transition:fade={{ duration: 1000 }} class="shop">
-    <div class="shop-box">
-        {#if $game.event[0].shopMode == 'weaponsmith'}
-            <h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
-        {/if}
-        {#if $game.event[0].shopMode == 'armorsmith'}
-            <h3>You're at a local <span class="g-span">Armorsmith</span></h3>
-        {/if}
-        {#if $game.event[0].shopMode == 'spell shop'}
-            <h3>You're at a local <span class="g-span">Spell Shop</span></h3>
-        {/if}
-        {#if $game.event[0].shopMode == 'potion shop'}
-            <h3>You're at a local <span class="g-span">Potion Shop</span></h3>
-        {/if}
-        {#if $game.event[0].shopMode != 'weaponsmith' && $game.event[0].shopMode != 'armorsmith' && $game.event[0].shopMode != 'spell shop' && $game.event[0].shopMode != 'potion shop'}
-            <h3>You're at a local <span class="g-span">Merchant</span></h3>
-        {/if}
-
-        <div class="buyables-box">
-            {#each $game.shop as buyable}
-                <button
-                    class="item-button"
-                    on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
-                    on:mousemove={(event) => handleMouseMove(event, buyable)}
-                    on:mouseleave={hideWindow}
-                >
-                    {#if buyable.type == 'weapon'}
-                        <img class="buyable-img" src="images/{buyable.weaponClass}.svg" alt="" />
-                    {:else if buyable.type == 'potion'}
-                        <img class="buyable-img" src="images/{buyable.type}.svg" alt="" />
-                    {/if}
-                    {#if buyable.element}
-                        <img class="buyable-img" src="images/{buyable.element}.svg" alt="" />
-                    {/if}
-                </button>
-            {/each}
-        </div>
-    </div>
+		<div class="buyables-box">
+			{#each $game.shop as buyable}
+				<button
+					class="item-button"
+					on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
+					on:mousemove={(event) => handleMouseMove(event, buyable)}
+					on:mouseleave={hideWindow}
+				>
+					{#if buyable.type == 'weapon'}
+						<img
+							class="buyable-img"
+							src="images/{buyable.weaponClass}.svg"
+							alt="a buyable weapon"
+						/>
+					{:else if buyable.type == 'potion'}
+						<img class="buyable-img" src="images/{buyable.type}.svg" alt="a buyable potion" />
+					{/if}
+					{#if buyable.element}
+						<img class="buyable-img" src="images/{buyable.element}.svg" alt="a buyable spell" />
+					{/if}
+				</button>
+			{/each}
+		</div>
+	</div>
 </div>
 
 <!-- shop ui ends here -->
-
 <style>
-
-    
 	.shop {
 		min-height: 36.9%;
 		display: flex;
@@ -105,15 +99,14 @@ function handleMouseMove(event: any, item: any) {
 		height: 100%;
 		margin-inline: auto;
 		gap: 1rem;
+		backdrop-filter: blur(2px);
 	}
 
-	
 	.shop-box h3 {
 		text-align: center;
 		font-weight: 300;
 		font-size: 1.3rem;
 	}
-
 
 	.shop-box {
 		background-color: rgba(31, 31, 31, 0.841);
@@ -131,8 +124,6 @@ function handleMouseMove(event: any, item: any) {
 		border: none;
 		background-color: transparent;
 	}
-
-
 
 	.buyables-box {
 		display: flex;
@@ -153,10 +144,8 @@ function handleMouseMove(event: any, item: any) {
 		width: 65%;
 		height: 65%;
 	}
-	
+
 	.g-span {
 		color: #3fcf8e;
 	}
-	
-
 </style>

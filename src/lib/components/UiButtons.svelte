@@ -3,6 +3,9 @@
 	import { fade } from 'svelte/transition'
 
 	import { misc } from '../../stores.js'
+	import { game } from '../../stores.js'
+
+	import { supabase } from '$lib/supabaseClient'
 
 	const dispatch = createEventDispatcher()
 
@@ -13,36 +16,77 @@
 	}
 
 	let mapOn: any
+
+	//song
+	let audioElement: any
+	async function startSong() {
+		if (!audioElement.src) {
+			const { data: song, error } = await supabase.storage
+				.from('audios/chad-rpg')
+				.download('tavernLoopOne.mp3')
+
+			// const blob = new Blob([song], { type: 'audio/mp3' })
+
+			audioElement.src = URL.createObjectURL(song)
+		}
+
+		audioElement.paused ? audioElement.play() : audioElement.pause()
+	}
 </script>
 
 <div>
+	<!-- audio -->
+	{#if $game.started}
+		<button class="song-icon" transition:fade={{ duration: 500 }} on:click={() => startSong()}>
+			<img src="images/music.svg" alt="music button" />
+		</button>
+		<audio bind:this={audioElement} loop />
+	{/if}
 	<!--  map and places  -->
 
 	<div class="map-and-places">
-		<button on:click={() => (mapOn = !mapOn)}>
-			<img src="images/map-svgs/2.svg" alt="" />
-		</button>
+		{#if $game.started}
+			<button transition:fade={{ duration: 500 }} on:click={() => (mapOn = !mapOn)}>
+				<img src="images/map.svg" alt="map button" />
+			</button>
+		{/if}
 		{#if mapOn}
 			<div class="places-to-go">
 				<button
-					on:click={() => emitAnswer("I'll go to nearest Woods.")}
-					transition:fade={{ duration: 100 }}
-					><img src="images/landscape-svgs/1.svg" alt="" />
-					<p transition:fade={{ duration: 100 }}>Woods</p></button
+					on:click={() => emitAnswer("I'll go to nearest Town.")}
+					transition:fade={{ delay: 0, duration: 100 }}
+					><img src="images/landscape-svgs/3.svg" alt="go town button" />
+					<p transition:fade={{ delay: 0, duration: 100 }}>Town</p></button
 				>
-
+				<button
+					on:click={() => emitAnswer("I'll go to nearest Woods.")}
+					transition:fade={{ delay: 100, duration: 100 }}
+					><img src="images/landscape-svgs/1.svg" alt="go woods button" />
+					<p transition:fade={{ delay: 100, duration: 100 }}>Woods</p></button
+				>
+				<button
+					on:click={() => emitAnswer("I'll go to weaponsmith.")}
+					transition:fade={{ delay: 200, duration: 100 }}
+					><img src="images/landscape-svgs/1.svg" alt="go weaponsmith button" />
+					<p transition:fade={{ delay: 200, duration: 100 }}>Weaponsmith</p></button
+				>
+				<button
+					on:click={() => emitAnswer("I'll go to spell shop.")}
+					transition:fade={{ delay: 300, duration: 100 }}
+					><img src="images/landscape-svgs/1.svg" alt="go spell shop button" />
+					<p transition:fade={{ delay: 300, duration: 100 }}>Spell Shop</p></button
+				>
+				<button
+					on:click={() => emitAnswer("I'll go to potion shop.")}
+					transition:fade={{ delay: 400, duration: 100 }}
+					><img src="images/landscape-svgs/.svg" alt="go potion shop button" />
+					<p transition:fade={{ delay: 400, duration: 100 }}>Potion Shop</p></button
+				>
 				<button
 					on:click={() => emitAnswer("I'll go to nearest Harbor.")}
-					transition:fade={{ delay: 100, duration: 100 }}
-					><img src="images/landscape-svgs/2.svg" alt="" />
-					<p transition:fade={{ delay: 100, duration: 100 }}>Harbor</p></button
-				>
-
-				<button
-					on:click={() => emitAnswer("I'll go to nearest Town.")}
-					transition:fade={{ delay: 200, duration: 100 }}
-					><img src="images/landscape-svgs/3.svg" alt="" />
-					<p transition:fade={{ delay: 200, duration: 100 }}>Town</p></button
+					transition:fade={{ delay: 500, duration: 100 }}
+					><img src="images/landscape-svgs/2.svg" alt="go harbor button" />
+					<p transition:fade={{ delay: 500, duration: 100 }}>Harbor</p></button
 				>
 			</div>
 		{/if}
@@ -50,7 +94,7 @@
 
 	<!--  game info button done  -->
 	<button class="game-info-button" on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>
-		<img src="images/info.svg" alt="" />
+		<img src="images/info.svg" alt="info button" />
 	</button>
 
 	<!-- game info window -->
@@ -79,7 +123,7 @@
 							<li>
 								There is no save game functionality for now, current version is just a tastement.
 							</li>
-							<li>You can encounter some bugs sometimes for now, for numerous reasons.</li>
+							<li>You can encounter some minor bugs sometimes for now, for numerous reasons.</li>
 						</ul>
 					</div>
 					<div>
@@ -97,13 +141,13 @@
 							<li>
 								Background images will be more organized, and songs will change according to places.
 							</li>
-							<li>
+							<li class="support">
 								If this project gets support, i want to add save game functionality and continue
 								developing it using gpt-4 models, as all these improvements are so pricy for me.
 							</li>
-							<li>
+							<li class="support">
 								You can support this project for the upper improvements from this LTC (litecoin)
-								wallet account: <p class="wallet">LQpjuAKLBCpanv4PnHekpzwxJsdWyjeBJA</p>
+								wallet address: <p class="wallet">LQpjuAKLBCpanv4PnHekpzwxJsdWyjeBJA</p>
 							</li>
 						</ul>
 					</div>
@@ -119,7 +163,7 @@
 		height: 80%;
 		width: 80%;
 		background-color: #2e2e2ecc;
-		backdrop-filter: blur(4px);
+		backdrop-filter: blur(8px);
 		border-radius: 1rem;
 
 		position: absolute;
@@ -193,6 +237,28 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		width: 5rem;
+	}
+	.map-and-places img {
+		opacity: 0.7;
+		transition: 0.2s;
+	}
+	.map-and-places img:hover {
+		opacity: 1;
+	}
+	.song-icon {
+		position: absolute;
+		right: 1.5rem;
+		top: 1.5rem;
+		opacity: 0.3;
+		transition: 0.1s;
+		cursor: pointer;
+	}
+	.song-icon:hover {
+		opacity: 1;
+	}
+	.song-icon img {
+		width: 4rem;
 	}
 	.map-and-places button {
 		cursor: pointer;
@@ -223,7 +289,11 @@
 	}
 	.wallet {
 		margin-top: 0.5rem;
-		color: #ccc;
+		color: palevioletred !important;
+
 		user-select: all !important;
+	}
+	.support {
+		color: #d6d631 !important;
 	}
 </style>

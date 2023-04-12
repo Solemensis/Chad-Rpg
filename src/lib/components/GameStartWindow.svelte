@@ -20,7 +20,7 @@
 	</div>
 	<div class="game-starters">
 		<div class="game-starter">
-			<img src="images/game-starter.svg" alt="" />
+			<img src="images/landscape-svgs/rpg.webp" alt="game mode img" />
 			<div class="game-explanation">
 				<h3>FRPG Starter</h3>
 				<p>
@@ -37,7 +37,7 @@
 			</div>
 		</div>
 		<div class="game-starter">
-			<img src="images/game-starter.svg" alt="" />
+			<img src="images/landscape-svgs/cyberpunk.webp" alt="game mode img" />
 
 			<div class="game-explanation">
 				<h3>Cyberpunk Starter</h3>
@@ -47,7 +47,7 @@
 		</div>
 
 		<div class="game-starter">
-			<img src="images/game-starter.svg" alt="" />
+			<img src="images/landscape-svgs/random.svg" alt="game mode img" />
 
 			<div class="game-explanation">
 				<h3>Random Starter</h3>
@@ -56,7 +56,7 @@
 			</div>
 		</div>
 		<div class="game-starter">
-			<img src="images/game-starter.svg" alt="" />
+			<img src="images/landscape-svgs/custom.svg" alt="game mode img" />
 
 			<div class="game-explanation">
 				<h3>Custom Starter</h3>

@@ -6,7 +6,8 @@ export const game = writable({
 	shop: [],
 	choices: [],
 	enemy: [],
-	event: [{ inCombat: false, shopMode: null }]
+	event: [{ inCombat: false, shopMode: null }],
+	started: false
 })
 
 export const character = writable({

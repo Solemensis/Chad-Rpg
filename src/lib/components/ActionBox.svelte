@@ -1,79 +1,66 @@
 <script lang="ts">
-    import { game } from '../../stores.js';
-    import { ui } from '../../stores.js';
-    import { selectedItem } from '../../stores.js'
-	import { character } from '../../stores.js';
+	import { game } from '../../stores.js'
+	import { ui } from '../../stores.js'
+	import { selectedItem } from '../../stores.js'
+	import { character } from '../../stores.js'
 
-	import { misc } from '../../stores.js';
-	import { descWindow } from '../../stores.js';
-	import { coolDowns } from '../../stores.js';
+	import { misc } from '../../stores.js'
+	import { descWindow } from '../../stores.js'
+	import { coolDowns } from '../../stores.js'
 
-
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher()
 
-
-    function emitAnswer(answer:any) {
+	function emitAnswer(answer: any) {
 		dispatch('emittedAnswer', {
 			answer: answer
-		});
+		})
 	}
 
-	export let title:any;
-	export let actions:any;
-
+	export let title: any
+	export let actions: any
 
 	function hideWindow() {
 		$misc.showDescription = 'none'
-
 	}
-
-
 
 	function handleSell(prompt: any, item: any) {
 		if ($game.event[0].shopMode) {
-$selectedItem={}
+			$selectedItem = {}
 
 			$selectedItem = item
 			$ui.sellWarnMsg = prompt
 		} else return
 	}
 
-
 	$: hpPercentage = ($character.stats[0].hp / $character.stats[0].maxHp) * 100
 	$: mpPercentage = ($character.stats[0].mp / $character.stats[0].maxMp) * 100
 
-
-
 	function handleMouseMove(event: any, item: any) {
-    $misc.showDescription = 'block'
-    $misc.x = event.clientX + 10
-    $misc.y = event.clientY - 40
+		$misc.showDescription = 'block'
+		$misc.x = event.clientX + 10
+		$misc.y = event.clientY - 40
 
+		// for (let key in $descWindow) {
+		//     $descWindow[key] = undefined
+		// 					}
 
-    // for (let key in $descWindow) {
-    //     $descWindow[key] = undefined
-	// 					}
+		$descWindow.name = item && item.name ? item.name : undefined
+		$descWindow.damage = item && item.damage ? item.damage : undefined
+		$descWindow.type = item && item.type ? item.type : undefined
+		$descWindow.healing = item && item.healing ? item.healing : undefined
+		$descWindow.armor = item && item.armor ? item.armor : undefined
+		$descWindow.element = item && item.element ? item.element : undefined
+		$descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
+		$descWindow.manaCost = item && item.manaCost ? item.manaCost : undefined
+		$descWindow.price = item && item.price ? item.price : undefined
+		$descWindow.amount = item && item.amount ? item.amount : undefined
+	}
 
-
-            $descWindow.name = item && item.name ? item.name : undefined
-            $descWindow.damage = item && item.damage ? item.damage : undefined
-            $descWindow.type = item && item.type ? item.type : undefined
-            $descWindow.healing = item && item.healing ? item.healing : undefined
-            $descWindow.armor = item && item.armor ? item.armor : undefined
-         $descWindow.element = item && item.element ? item.element : undefined
-            $descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
-             $descWindow.manaCost = item && item.manaCost ? item.manaCost : undefined
-            $descWindow.price = item && item.price ? item.price : undefined
-             $descWindow.amount = item && item.amount ? item.amount : undefined
-}
-
-	
-
-function useItem(item: any) {
-$selectedItem={};
+	function useItem(item: any) {
+		$selectedItem = {}
 
 		const { type, name, damage, manaCost, healing, mana, cooldown } = item
 		const { mp, maxMp, hp, maxHp } = $character.stats[0]
@@ -84,51 +71,34 @@ $selectedItem={};
 			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
-			let takenDamage = Math.floor($game.enemy[0].enemyHp/$misc.diceNumber)
+			let takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
 
-			
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-				if($game.enemy[0].enemyHp > 
-					$selectedItem.combatScore
-				){
-				$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${
-					$selectedItem.combatScore
-				} damage back.)`
-			}else{
-				$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
-			}
+				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${$selectedItem.combatScore} damage back.)`
+				} else {
+					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+				}
 			}
 			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-				if($game.enemy[0].enemyHp > 
-					$selectedItem.combatScore
-				){
-				$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${
-					$selectedItem.combatScore
-				} damage to enemy but taking ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.)`
-			}else{
-				$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+					$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy but taking ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.)`
+				} else {
+					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+				}
 			}
-			}
-		
 
 			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-				if($game.enemy[0].enemyHp > 
-					$selectedItem.combatScore
-				){
-				$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${
-					$selectedItem.combatScore
-				} damage but receiving ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.))`
-			}else{
-				$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage but receiving ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.))`
+				} else {
+					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+				}
 			}
-			}
-		
-			
+
 			if ($selectedItem.combatScore >= 85) {
 				$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the fight.)`
 			}
-		
-			
 
 			$selectedItem.name = name
 			$selectedItem.damage = damage
@@ -148,46 +118,31 @@ $selectedItem={};
 			$coolDowns[name] = cooldown
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
-			let takenDamage = Math.floor($game.enemy[0].enemyHp/$misc.diceNumber)
-
+			let takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
 
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-				if($game.enemy[0].enemyHp > 
-					$selectedItem.combatScore
-				){
-				$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${
-					$selectedItem.combatScore
-				} damage back.)`
-			}else{
-				$selectedItem.prompt = `Attack with ${name} spell! (this blow kills the enemy and ends the combat successfully!)`
-			}
+				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${$selectedItem.combatScore} damage back.)`
+				} else {
+					$selectedItem.prompt = `Attack with ${name} spell! (this blow kills the enemy and ends the combat successfully!)`
+				}
 			}
 			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-				if($game.enemy[0].enemyHp > 
-					$selectedItem.combatScore
-				){
-				$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${
-					$selectedItem.combatScore
-				} damage to enemy but taking ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.)`
-			}else{
-				$selectedItem.prompt = `Attack with ${name} spell! (this blow kills the enemy and ends the combat successfully!)`
+				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+					$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy but taking ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.)`
+				} else {
+					$selectedItem.prompt = `Attack with ${name} spell! (this blow kills the enemy and ends the combat successfully!)`
+				}
 			}
-			}
-		
 
 			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-				if($game.enemy[0].enemyHp > 
-					$selectedItem.combatScore
-				){
-				$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${
-					$selectedItem.combatScore
-				} damage but receiving ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.))`
-			}else{
-				$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage but receiving ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.))`
+				} else {
+					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+				}
 			}
-			}
-		
-			
+
 			if ($selectedItem.combatScore >= 85) {
 				$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the fight.)`
 			}
@@ -208,7 +163,7 @@ $selectedItem={};
 			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
 			if ($coolDowns[name] && $coolDowns[name] < cooldown) return ($ui.errorWarnMsg = 'On cooldown')
 			if (!inCombat)
-				return  emitAnswer(
+				return emitAnswer(
 					`Heal myself with ${name} spell by ${calculateCombatScore(healing)} amount.)`
 				)
 
@@ -235,27 +190,25 @@ $selectedItem={};
 			$coolDowns[name] = cooldown
 			$selectedItem.combatScore = calculateCombatScore(1)
 
-			if(name=="Summon"){
-			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 5) {
-				$selectedItem.prompt = `Use "Summon" skill and summon a little bird to help me in this fight.`
+			if (name == 'Summon') {
+				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 5) {
+					$selectedItem.prompt = `Use "Summon" skill and summon a little bird to help me in this fight.`
+				}
+				if ($selectedItem.combatScore >= 5 && $selectedItem.combatScore < 10) {
+					$selectedItem.prompt = `Use "Summon" skill and summon a powerful tiger to help me in this fight.`
+				}
+				if ($selectedItem.combatScore >= 10 && $selectedItem.combatScore < 15) {
+					$selectedItem.prompt = `Use "Summon" skill and summon a storm spirit (which is a magician) to help me in this fight.`
+				}
+				if ($selectedItem.combatScore >= 15 && $selectedItem.combatScore <= 20) {
+					$selectedItem.prompt = `Use "Summon" skill and summon an ultimate demon to help me in this fight. (fight immedietaly ends with the power of the demon)`
+				}
 			}
-			if ($selectedItem.combatScore >= 5 && $selectedItem.combatScore < 10) {
-				$selectedItem.prompt = `Use "Summon" skill and summon a powerful tiger to help me in this fight.`
+			if (name == 'Teleportation') {
+				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore <= 20) {
+					$selectedItem.prompt = `Use "Teleportation" skill and teleport myself to a secure place away from fight.`
+				}
 			}
-			if ($selectedItem.combatScore >= 10 && $selectedItem.combatScore < 15) {
-				$selectedItem.prompt = `Use "Summon" skill and summon a storm spirit (which is a magician) to help me in this fight.`
-			}
-			if ($selectedItem.combatScore >= 15 && $selectedItem.combatScore <= 20) {
-				$selectedItem.prompt = `Use "Summon" skill and summon an ultimate demon to help me in this fight. (fight immedietaly ends with the power of the demon)`
-			}
-		}
-		if(name=="Teleportation"){
-			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore <= 20) {
-				$selectedItem.prompt = `Use "Teleportation" skill and teleport myself to a secure place away from fight.`
-			}
-			
-		}
-			
 
 			$selectedItem.name = name
 			$selectedItem.damage = 1
@@ -265,8 +218,7 @@ $selectedItem={};
 
 			return
 		}
-		
-		
+
 		if (type === 'potion') {
 			if (shopMode) return
 
@@ -274,20 +226,19 @@ $selectedItem={};
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 
 			if (healing && hp < maxHp) {
-				return  emitAnswer(
+				return emitAnswer(
 					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
 				)
 			}
 			if (mp && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 			if (mp && mp < maxMp) {
-				return  emitAnswer(
+				return emitAnswer(
 					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
 				)
 			}
 		}
 	}
-
 
 	function calculateCombatScore(damage: any) {
 		let dice = Math.floor(Math.random() * 20) + 1
@@ -296,26 +247,29 @@ $selectedItem={};
 		console.log(dice)
 		console.log(damage * dice)
 
-		$misc.diceNumber=dice
+		$misc.diceNumber = dice
 		return damage * dice
 	}
 </script>
 
-<div style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;" class="container-box">
-	{#if title=="Inventory"}
-	<div
-		class="hp-bar"
-		style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8 {hpPercentage}%);"
-	>
-		{$character.stats[0].hp}/{$character.stats[0].maxHp}
-	</div>
-	{:else if title =="Spells"}
-	<div
-	class="mp-bar"
-	style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8 {mpPercentage}%);"
+<div
+	style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;"
+	class="container-box"
 >
-	{$character.stats[0].mp}/{$character.stats[0].maxMp}
-</div>
+	{#if title == 'Inventory'}
+		<div
+			class="hp-bar"
+			style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8 {hpPercentage}%);"
+		>
+			{$character.stats[0].hp}/{$character.stats[0].maxHp}
+		</div>
+	{:else if title == 'Spells'}
+		<div
+			class="mp-bar"
+			style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8 {mpPercentage}%);"
+		>
+			{$character.stats[0].mp}/{$character.stats[0].maxMp}
+		</div>
 	{/if}
 	<div in:fade={{ delay: 200, duration: 1500 }} class="box">
 		<h3>{title}</h3>
@@ -333,22 +287,22 @@ $selectedItem={};
 						on:mousemove={(event) => handleMouseMove(event, action)}
 						on:mouseleave={hideWindow}
 						src="/images/{action.weaponClass}.svg"
-						alt=""
+						alt="a weapon"
 					/>
 				{:else if action.type == 'potion'}
 					<img
 						on:mousemove={(event) => handleMouseMove(event, action)}
 						on:mouseleave={hideWindow}
 						src="/images/{action.type}.svg"
-						alt=""
+						alt="a potion"
 					/>
 				{:else if action.element}
-				<img
-				on:mousemove={(event) => handleMouseMove(event, action)}
-				on:mouseleave={hideWindow}
-				src="/images/{action.element}.svg"
-				alt=""
-			/>
+					<img
+						on:mousemove={(event) => handleMouseMove(event, action)}
+						on:mouseleave={hideWindow}
+						src="/images/{action.element}.svg"
+						alt="a spell"
+					/>
 				{/if}
 			</button>
 		{/each}
@@ -356,12 +310,12 @@ $selectedItem={};
 </div>
 
 <style>
-
-.container-box {
+	.container-box {
 		width: 25%;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		backdrop-filter: blur(2px);
 	}
 
 	.hp-bar,
@@ -416,5 +370,4 @@ $selectedItem={};
 		width: 85%;
 		height: 85%;
 	}
-
-	</style>
+</style>
