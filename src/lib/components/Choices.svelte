@@ -84,6 +84,8 @@ emitAnswer(event.detail.answer)
 
 
 <!-- ui bottom mid starts here -->
+<!-- {#if !$misc.loading} -->
+
 <div class="ui-mid">
     {#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode}
         <PickChoice on:emittedAnswer={handleEmittedAnswer}/>
@@ -154,6 +156,7 @@ emitAnswer(event.detail.answer)
     {/if}
     <!-- gold&time and reject choices ends here -->
 </div>
+<!-- {/if} -->
 <!-- ui bottom mid ends here -->
 
 

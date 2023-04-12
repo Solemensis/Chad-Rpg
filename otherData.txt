@@ -1,0 +1,8 @@
+// {
+	// 	"name": "Telekinetic Cut",
+	// 	"price": 350,
+	// 	"manaCost": 50,
+	// 	"type": "unique spell",
+	// 	"element": "unique",
+	// 	"cooldown": 3
+	// },

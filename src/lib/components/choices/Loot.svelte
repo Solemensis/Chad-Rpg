@@ -63,9 +63,12 @@ let newArray: any = $game.lootBox.filter((lootItem:any) => lootItem.name !== ite
 $game.lootBox = newArray
 
 if (!$game.lootBox.length) {
-    emitAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+    emitAnswer("I'm gonna loot it all and think what i'm going to do now. (clear the @lootBox array in your next response!)")
     $game.event[0].lootMode = false
 }
+
+
+hideWindow()
 }
 function lootAll() {
 $game.lootBox.forEach((item:any) => {
@@ -87,7 +90,7 @@ $game.lootBox.forEach((item:any) => {
 $game.lootBox = []
 
 if (!$game.lootBox.length) {
-    emitAnswer("I'm gonna loot it all. (clear the @lootBox array in the next response)")
+    emitAnswer("I'm gonna loot it all and think what i'm going to do now. (clear the @lootBox array in your next response)")
     $game.event[0].lootMode = false
 }
 }
@@ -138,3 +141,71 @@ function emitAnswer(answer:any) {
     </div>
 </div>
     <!-- loot ui ends here -->
+
+    <style>
+        /* classes are from shop ui, so class names are shop ui's classes */
+
+        .shop {
+		min-height: 36.9%;
+		display: flex;
+		justify-content: space-between;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+		margin-inline: auto;
+		gap: 1rem;
+	}
+
+	
+	.shop-box h3 {
+		text-align: center;
+		font-weight: 300;
+		font-size: 1.3rem;
+	}
+
+
+	.shop-box {
+		background-color: rgba(31, 31, 31, 0.841);
+		border-radius: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		justify-content: space-around;
+		padding: 0 0.5rem;
+		align-items: center;
+		padding-bottom: 1rem;
+	}
+
+	.item-button {
+		border: none;
+		background-color: transparent;
+	}
+
+
+
+	.buyables-box {
+		display: flex;
+		gap: 1rem;
+	}
+	.shop-box button {
+		background-color: rgb(128 128 128 / 29%);
+		border: none;
+		width: 3.5rem;
+		height: 3.5rem;
+		border-radius: 0.4rem;
+        cursor:pointer;
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.buyable-img {
+		width: 65%;
+		height: 65%;
+	}
+	
+	.g-span {
+		color: #3fcf8e;
+	}
+	
+    </style>

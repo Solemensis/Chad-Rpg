@@ -95,6 +95,8 @@ fill @lootBox only if player DECIDES to check a loot!
 
 do not fill @lootBox after inCombat turns to false!
 
+If an npc gives an item or gold to the player, turn the lootMode to true and put the item-gold into the @lootBox. 
+
 understand the example format of the json objects of lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
 		Here's an example answer for you. You'll give your answers always in this format. Do it with the shown parantheses! @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null when there's no gold spend potential, but will be 'Weaponsmith', 'SpellShop', 'Armorsmith', 'PotionShop', 'Merchant', 'Market' and 'Shop' if there's currently a conversation with an npc about selling-buying something.", "lootMode":"this will be true if user chooses to explore a loot, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
@@ -139,6 +141,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		const chatRequestOpts: CreateChatCompletionRequest = {
 			model: 'gpt-3.5-turbo',
 			messages,
+			// temperature: 0.8,
 			temperature: 1,
 			stream: true
 		}

@@ -1,77 +1,75 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	const dispatch = createEventDispatcher();
+	import { misc } from '../../stores.js'
 
+	const dispatch = createEventDispatcher()
 
-    function emitAnswer(answer:any) {
+	function emitAnswer(answer: any) {
 		dispatch('emittedAnswer', {
 			answer: answer
-		});
+		})
 	}
-
 </script>
 
-
-
-
 <div transition:fade={{ duration: 1000 }} class="starting-screen">
-    <div class="heading-box">
-        <h1>Welcome to <span class="g-span">Chad-Rpg!</span></h1>
-        <button>What is That?</button>
-    </div>
-    <div class="game-starters">
-        <div class="game-starter">
-            <img src="images/game-starter.svg" alt="" />
-            <div class="game-explanation">
-                <h3>FRPG Starter</h3>
-                <p>
-                    Start as a new adventurer in a fantasy role-playing world, sitting in a tavern and conversing with the innkeeper.
-                </p>
-                <button
-                    on:click={() => {
-                        emitAnswer(
-                            `Start off as a new adventurer in a fantasy role-playing world, sitting in a tavern and conversing with the innkeeper. You can use World of Warcraft mmorpg as the dataset; so quests, items, spells, mobs, npcs and storyline.`
-                        )
-                    }}>Play</button
-                >
-            </div>
-        </div>
-        <div class="game-starter">
-            <img src="images/game-starter.svg" alt="" />
+	<div class="heading-box">
+		<h1>Welcome to <span class="g-span">Chad-Rpg!</span></h1>
+		<button on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>What is That?</button>
+	</div>
+	<div class="game-starters">
+		<div class="game-starter">
+			<img src="images/game-starter.svg" alt="" />
+			<div class="game-explanation">
+				<h3>FRPG Starter</h3>
+				<p>
+					Start as a new adventurer in a fantasy role-playing world, sitting in a tavern and
+					conversing with the innkeeper.
+				</p>
+				<button
+					on:click={() => {
+						emitAnswer(
+							`Start off as a new adventurer in a fantasy role-playing world, sitting in a tavern and conversing with the innkeeper. You can use World of Warcraft mmorpg as the dataset; so quests, items, spells, mobs, npcs and storyline.`
+						)
+					}}>Play</button
+				>
+			</div>
+		</div>
+		<div class="game-starter">
+			<img src="images/game-starter.svg" alt="" />
 
-            <div class="game-explanation">
-                <h3>Cyberpunk Starter</h3>
-                <p>Start as a capable human being at a neon city in a Cyberpunk world.</p>
-                <button>Play</button>
-            </div>
-        </div>
+			<div class="game-explanation">
+				<h3>Cyberpunk Starter</h3>
+				<p>Start as a capable human being at a neon city in a Cyberpunk world.</p>
+				<button>Play</button>
+			</div>
+		</div>
 
-        <div class="game-starter">
-            <img src="images/game-starter.svg" alt="" />
+		<div class="game-starter">
+			<img src="images/game-starter.svg" alt="" />
 
-            <div class="game-explanation">
-                <h3>Random Starter</h3>
-                <p>Start the game at a random place, in a random world, while on a random event.</p>
-                <button>Play</button>
-            </div>
-        </div>
-        <div class="game-starter">
-            <img src="images/game-starter.svg" alt="" />
+			<div class="game-explanation">
+				<h3>Random Starter</h3>
+				<p>Start the game at a random place, in a random world, while on a random event.</p>
+				<button>Play</button>
+			</div>
+		</div>
+		<div class="game-starter">
+			<img src="images/game-starter.svg" alt="" />
 
-            <div class="game-explanation">
-                <h3>Custom Starter</h3>
-                <p>Start your own unique adventure as your own character, in your own world!</p>
-                <button>Configure game settings</button>
-            </div>
-        </div>
-    </div>
+			<div class="game-explanation">
+				<h3>Custom Starter</h3>
+				<p>Start your own unique adventure as your own character, in your own world!</p>
+				<button>Configure game settings</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
-    
+	@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
 	.starting-screen {
 		background-color: #242424cc;
 		width: 60%;
@@ -94,17 +92,16 @@
 		display: flex;
 		flex-direction: column;
 	}
-	h1{
-		font-weight:400;
-		font-family:"MedievalSharp", sans-serif;
+	h1 {
+		font-weight: 400;
+		font-family: 'MedievalSharp', sans-serif;
 	}
-	.g-span{
-		font-weight:400;
-		color:orange;
-		font-family:"MedievalSharp", sans-serif;
+	.g-span {
+		font-weight: 400;
+		color: orange;
+		font-family: 'MedievalSharp', sans-serif;
+	}
 
-	}
-	
 	.heading-box button {
 		margin-top: 0.8rem;
 		align-self: end;
@@ -116,7 +113,7 @@
 		transition: 0.2s;
 	}
 	.heading-box button:hover {
-		background-color: rgba(239, 102, 52, 0.150);
+		background-color: rgba(239, 102, 52, 0.15);
 		cursor: pointer;
 	}
 
@@ -149,7 +146,6 @@
 		margin-bottom: 0.3rem;
 		color: orange;
 		font-weight: 500;
-		
 	}
 	.game-explanation p {
 		line-height: 1.1;
@@ -188,5 +184,4 @@
 	.game-starter:nth-child(4) button:hover {
 		background-color: rgb(180, 46, 224, 0.5);
 	}
-
-    </style>
+</style>

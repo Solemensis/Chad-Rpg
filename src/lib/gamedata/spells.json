@@ -190,14 +190,6 @@
 		"cooldown": 3
 	},
 	{
-		"name": "Telekinetic Cut",
-		"price": 350,
-		"manaCost": 50,
-		"type": "unique spell",
-		"element": "unique",
-		"cooldown": 3
-	},
-	{
 		"name": "Summon",
 		"price": 600,
 		"manaCost": 50,
@@ -206,3 +198,5 @@
 		"cooldown": 5
 	}
 ]
+
+

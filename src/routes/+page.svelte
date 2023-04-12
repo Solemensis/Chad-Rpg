@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ChatMessage from '$lib/components/ChatMessage.svelte'
-	import MapAndPlaces from '$lib/components/MapAndPlaces.svelte'
+	import UiButtons from '$lib/components/UiButtons.svelte'
 	import GameStartWindow from '$lib/components/GameStartWindow.svelte'
 	import DescriptionWindow from '$lib/components/DescriptionWindow.svelte'
 	import MessageWindows from '$lib/components/MessageWindows.svelte'
@@ -9,26 +9,22 @@
 	import Choices from '$lib/components/Choices.svelte'
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
 
-
-	import { game } from '../stores.js';
-	import { character } from '../stores.js';
-    import { ui } from '../stores.js';
-	import { selectedItem} from '../stores.js';
-	import { misc } from '../stores.js';
-	import { coolDowns } from '../stores.js';
-	import { bgImage } from '../stores.js';
+	import { game } from '../stores.js'
+	import { character } from '../stores.js'
+	import { selectedItem } from '../stores.js'
+	import { misc } from '../stores.js'
+	import { coolDowns } from '../stores.js'
+	import { bgImage } from '../stores.js'
 
 	import { supabase } from '$lib/supabaseClient'
 
-import frpgPlaces from '$lib/gamedata/places/frpg.json'
-import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
-
-
+	// import frpgPlaces from '$lib/gamedata/places/frpg.json'
+	// import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 
 	import type { ChatCompletionRequestMessage } from 'openai'
 	import { SSE } from 'sse.js'
 	import { fade } from 'svelte/transition'
-	
+
 	import buyWeapons from '$lib/gamedata/weapons.json'
 	import buySpells from '$lib/gamedata/spells.json'
 	import buyPotions from '$lib/gamedata/potions.json'
@@ -77,7 +73,6 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 						}
 					}
 					console.log(answer)
-					
 
 					// 					if (!$game.event[0].inCombat){
 					// enemy =[]
@@ -93,7 +88,7 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 					}
 
 					//heal player if currently in Tavern or Inn
-					if ($misc.place == 'Inn' || $misc.place == 'Tavern') {
+					if ($misc.place.includes('Inn') || $misc.place.includes('Tavern')) {
 						if ($character.stats[0].hp < $character.stats[0].maxHp) {
 							$character.stats[0].hp += 25
 						}
@@ -123,18 +118,10 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 	let handleErr: boolean = false
 	function handleError<T>(err: T) {
 		// $misc.loading = false
-		console.error('error from client: ' + JSON.stringify(err))
+		console.error('error from client: ' + err)
 
 		handleErr = true
-
-
-// $misc.loading=false
-
-		// query = ''
-		// answer = ''
 	}
-
-	
 
 	function shuffleItems(items: any) {
 		// Start at the end of the array and work backwards
@@ -152,11 +139,15 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 
 	function mixBuyables(category: any) {
 		if (category == 'Weaponsmith') return ($game.shop = shuffleItems(buyWeapons))
+		if (category == 'Armorsmith') return ($game.shop = shuffleItems(buyWeapons))
+		if (category == 'Blacksmith') return ($game.shop = shuffleItems(buyWeapons))
 		if (category == 'SpellShop') return ($game.shop = shuffleItems(buySpells))
 		if (category == 'PotionShop') return ($game.shop = shuffleItems(buyPotions))
+		if (category == 'Market') return ($game.shop = shuffleItems(buyPotions))
+		if (category == 'Merchant') return ($game.shop = shuffleItems(buyPotions))
+		if (category == 'Shop') return ($game.shop = shuffleItems(buySpells))
+		if (category == 'Marketplace') return ($game.shop = shuffleItems(buySpells))
 	}
-
-
 
 	// let enemyParseDone:any=false;
 	function parseText(text: string) {
@@ -185,11 +176,10 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 			}
 		}
 
-		
 		if (enemyMatch) {
-			// if(enemy) return;
+			//  if( $game.enemy[0] && $game.enemy[0].enemyName && $game.enemy[0].enemyHp) return;
+
 			$game.enemy = JSON.parse(enemyMatch[1])
-			
 		}
 
 		if (lootBoxMatch) {
@@ -224,16 +214,6 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 		}
 		return str.slice(startIndex, endIndex).trim()
 	}
-
-	
-
-
-	
-
-	
-	
-
-	
 
 	function giveYourAnswer(choice: any) {
 		if (!choice) {
@@ -270,8 +250,6 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 
 	let gameStarted: boolean = false
 
-
-	
 	//message loading animation logic
 	let dotty: any = '.'
 	setInterval(() => {
@@ -281,75 +259,9 @@ import frpgStarter from '$lib/gamedata/gamestarters/frpg.json'
 		dotty += '.'
 	}, 400)
 
-	function randomize(gameStarter: any) {
-		const randomIndex = Math.floor(Math.random() * gameStarter.length)
-		const randomlySelectedElement = gameStarter[randomIndex]
-
-		chatMessages = [...chatMessages, { role: 'user', content: randomlySelectedElement }]
-		return randomlySelectedElement
+	function handleEmittedAnswer(event: any) {
+		giveYourAnswer(event.detail.answer)
 	}
-
-	
-
-
-	function handleSell(prompt: any, item: any) {
-		if ($game.event[0].shopMode) {
-			$selectedItem.item = item
-			$ui.sellWarnMsg = prompt
-		} else return
-	}
-
-	//description window
-	
-	// let displayItemWindow: any = 'none'
-
-	
-	function hideWindow() {
-		$selectedItem.showDescription = 'none'
-	}
-
-	// let ingameErrorMessage: string = ''
-	// let askBuy: string = ''
-	// let askSell: string = ''
-
-	// let eventfulItem: any = {}
-
-	
-
-
-	$: hpPercentage = ($character.stats[0].hp / $character.stats[0].maxHp) * 100
-	$: mpPercentage = ($character.stats[0].mp / $character.stats[0].maxMp) * 100
-	// $: enemyHpPercentage =  ($character.stats[0].mp / $character.stats[0].maxMp) * 100
-
-	
-
-
-
-	function handleEmittedAnswer(event:any){
-giveYourAnswer(event.detail.answer)
-	}
-
-
-	
-
-	// $count.name = 32
-
-	// console.log($count.name)
-
-
-	// function checkWordsForImg(str: any) {
-	// 	const words = str.split(' ')
-
-	// 	for (let i = 0; i < words.length; i++) {
-	// 		const word = words[i]
-	// 		if (frpgPlaces.includes(word)) {
-	// 			return word
-	// 		}
-	// 	}
-
-	// 	return null
-	// }
-
 
 	function getRandomNumber(num: any) {
 		return Math.floor(Math.random() * num) + 1
@@ -359,22 +271,45 @@ giveYourAnswer(event.detail.answer)
 		const hour = parseInt(timeString.split(':')[0], 10)
 		return hour
 	}
-	
 
-
-	
 	async function fetchImg() {
 		// check if place is the same
-		if($game.placeAndTime[0].place==$misc.curentImg) return;
+		if ($game.placeAndTime[0].place == $misc.curentImg) return
 
+		const places: any = [
+			'Town',
+			'City',
+			'Forest',
+			'Woods',
+			'Academy',
+			'Beach',
+			'Castle',
+			'Cathedral',
+			'Cave',
+			'Dungeon',
+			'Harbor',
+			'Shore',
+			'Dock',
+			'Library',
+			'Monastery',
+			'Mansion',
+			'Mountain',
+			'Shop',
+			'Weaponsmith',
+			'Armorsmith',
+			'Blacksmith',
+			'PotionShop',
+			'SpellShop',
+			'Merchant',
+			'Market',
+			'Tavern',
+			'Inn'
+		]
+		function checkPlace(str: any) {
+			let matchingPlaces: any = places.filter((place) => str.includes(place))
 
-		const places:any = ["Town", "Forest", "Woods", "Academy", "Beach", "Castle", "Cathedral", "Cave", "Dungeon", "Harbor", "Shore", "Dock", "Library", "Monastery", "Mansion", "Mountain", "Shop", "Weaponsmith", "Armorsmith", "Blacksmith", "PotionShop", "SpellShop", "Merchant", "Market", "Tavern"];
-		function checkPlace(str:any) {
-	
-  let matchingPlaces:any = places.filter(place =>  str.includes(place));
-		
-  return matchingPlaces.length > 0 ? matchingPlaces[0] : null
-}
+			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
+		}
 
 		//list imgs
 		const { data: imgs } = await supabase.storage.from('imgs').list(checkPlace($misc.place), {
@@ -384,13 +319,16 @@ giveYourAnswer(event.detail.answer)
 		})
 
 		//fetch img based on time and place
-		
-
-
 		let finalImg: any
 		if (imgs) {
 			// if ($misc.place.includes('Town') ||$misc.place.includes('Forest')&& extractHours($misc.time) >= 18 && extractHours($misc.time) <= 6) {
-			if ((checkPlace($misc.place)=='Town' ||checkPlace($misc.place)=='City'||checkPlace($misc.place)=='Forest'||checkPlace($misc.place)=='Woods')&& (extractHours($misc.time) >= 18 || extractHours($misc.time) <= 6)) {
+			if (
+				(checkPlace($misc.place) == 'Town' ||
+					checkPlace($misc.place) == 'City' ||
+					checkPlace($misc.place) == 'Forest' ||
+					checkPlace($misc.place) == 'Woods') &&
+				(extractHours($misc.time) >= 18 || extractHours($misc.time) <= 6)
+			) {
 				const { data: img, error } = await supabase.storage
 					.from('imgs')
 					.download(`${checkPlace($misc.place)}-night/${getRandomNumber(imgs.length - 1)}.webp`)
@@ -404,19 +342,19 @@ giveYourAnswer(event.detail.answer)
 		}
 
 		const reader = new FileReader()
-		
-		if (finalImg){
+
+		if (finalImg) {
 			reader.readAsDataURL(finalImg)
-		}else{
+		} else {
 			console.log('no img')
-			return;
+			return
 		}
 
 		reader.onload = () => {
 			if (!$bgImage.img1active) {
-			$bgImage.fetchedBg1 = reader.result
-			$bgImage.img1active = !$bgImage.img1active
-			$bgImage.img2active = !$bgImage.img1active
+				$bgImage.fetchedBg1 = reader.result
+				$bgImage.img1active = !$bgImage.img1active
+				$bgImage.img2active = !$bgImage.img1active
 			} else if (!$bgImage.img2active) {
 				$bgImage.fetchedBg2 = reader.result
 				$bgImage.img2active = !$bgImage.img2active
@@ -424,65 +362,60 @@ giveYourAnswer(event.detail.answer)
 			}
 		}
 
-		$misc.curentImg=$misc.place
+		$misc.curentImg = $misc.place
 	}
 	let logged: boolean = false
 </script>
 
 <div>
+	<BackgroundImgs />
 
-	<BackgroundImgs/>
-	
-	
 	{#if !gameStarted}
-		<GameStartWindow on:emittedAnswer={handleEmittedAnswer}/>
+		<GameStartWindow on:emittedAnswer={handleEmittedAnswer} />
 	{/if}
-	
 
 	<GonnaDeleteThis on:emittedAnswer={handleEmittedAnswer} />
-	<MessageWindows/>
 
-	
+	<MessageWindows />
 
 	<!-- item description window (out of ui) -->
-	<DescriptionWindow/>
+	<DescriptionWindow />
 	<!-- item description window  -->
-
-
-	<MapAndPlaces on:emittedAnswer={handleEmittedAnswer}/>
-	
-
 
 	<!-- game ui starts here -->
 	{#if gameStarted}
 		<div class="main-game">
-			<!-- top game ui -->
+			<!-- chat ui starts here -->
 			<div transition:fade={{ duration: 1000 }} class="game-master">
 				<ChatMessage type="assistant" message={story ? story : dotty} />
 			</div>
-			<!-- top game ui ends-->
+			<!-- chat ui ends here -->
 
-			<!-- bottom game ui starts here-->
+			<!-- game controls ui starts here-->
 			<div transition:fade={{ duration: 2000 }} class="game-controls">
-				
-				<ActionBox title={"Inventory"} actions={$character.inventory} on:emittedAnswer={handleEmittedAnswer}/>
+				<ActionBox
+					title={'Inventory'}
+					actions={$character.inventory}
+					on:emittedAnswer={handleEmittedAnswer}
+				/>
 
-				<Choices on:emittedAnswer={handleEmittedAnswer}/>
-				
-				<ActionBox title={"Spells"} actions={$character.spells} on:emittedAnswer={handleEmittedAnswer}/>
+				<Choices on:emittedAnswer={handleEmittedAnswer} />
 
+				<ActionBox
+					title={'Spells'}
+					actions={$character.spells}
+					on:emittedAnswer={handleEmittedAnswer}
+				/>
 			</div>
-			<!-- bottom game ui ends here-->
+			<!-- game controls ui ends here-->
 		</div>
 	{/if}
 	<!-- game ui ends here -->
+
+	<UiButtons on:emittedAnswer={handleEmittedAnswer} />
 </div>
 
 <style>
-
-
-	
-
 	.main-game {
 		display: flex;
 		flex-direction: column;
@@ -512,7 +445,4 @@ giveYourAnswer(event.detail.answer)
 		justify-content: space-between;
 		gap: 2rem;
 	}
-
-	
-	
 </style>

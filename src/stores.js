@@ -1,20 +1,18 @@
-import { writable } from 'svelte/store';
-
+import { writable } from 'svelte/store'
 
 export const game = writable({
-    lootBox: [],
-    placeAndTime:[],
-    shop:[],
-    choices: [],
-    enemy: [],
-    event: [{ inCombat: false, shopMode: null }],
-});
-
+	lootBox: [],
+	placeAndTime: [],
+	shop: [],
+	choices: [],
+	enemy: [],
+	event: [{ inCombat: false, shopMode: null }]
+})
 
 export const character = writable({
-    stats: [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }],
-    gold: 31,
-    spells:[
+	stats: [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }],
+	gold: 20,
+	spells: [
 		{
 			name: 'Fireball',
 			damage: 4,
@@ -33,8 +31,8 @@ export const character = writable({
 			element: 'light',
 			cooldown: 2
 		}
-    ],
-    inventory:[
+	],
+	inventory: [
 		{
 			name: 'Wooden Sword',
 			damage: 3,
@@ -43,34 +41,44 @@ export const character = writable({
 			weaponClass: 'sword'
 		}
 	]
-});
-    
-export const ui = writable({ errorWarnMsg: "", buyWarnMsg: "", sellWarnMsg: "", })
+})
 
+export const ui = writable({ errorWarnMsg: '', buyWarnMsg: '', sellWarnMsg: '' })
 
 //hem combat, hem sell, hem de (emin olduktan sonra) buy için kullanılabilir galiba
 export const selectedItem = writable({})
 
 export const coolDowns = writable({})
 
-
 export const misc = writable({
-	loading: false, showDescription: "none", x: 0, y: 0, diceNumber: 0, query:"", time:"00:00", place:"", currentImg:""
+	showInfoWindow: false,
+	loading: false,
+	showDescription: 'none',
+	x: 0,
+	y: 0,
+	diceNumber: 0,
+	query: '',
+	time: '00:00',
+	place: '',
+	currentImg: ''
 })
 
 export const bgImage = writable({
-	fetchedBg1:"", fetchedBg2:"", img1active:false, img2active:false
+	fetchedBg1: '',
+	fetchedBg2: '',
+	img1active: false,
+	img2active: false
 })
 
 export const descWindow = writable({
-name: undefined,
-damage: undefined,
-type: undefined,
-healing: undefined,
-armor: undefined,
-element: undefined,
-weaponClass: undefined,
-manaCost: undefined,
-price: undefined,
-amount: undefined
+	name: undefined,
+	damage: undefined,
+	type: undefined,
+	healing: undefined,
+	armor: undefined,
+	element: undefined,
+	weaponClass: undefined,
+	manaCost: undefined,
+	price: undefined,
+	amount: undefined
 })

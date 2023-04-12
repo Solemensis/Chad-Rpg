@@ -29,11 +29,23 @@
 		console.log(combatEvent.prompt)
 		emitAnswer(combatEvent.prompt)
 
+
+		//lower the player mana
 		if (combatEvent.manaCost) {
 			$character.stats[0].mp -= combatEvent.manaCost
 		}
 
-		$character.stats[0].hp -= $misc.diceNumber
+
+		//lower the player hp (with a little buff if the dice is 1)
+		if($misc.diceNumber==1){
+		$misc.diceNumber =2
+		$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp/$misc.diceNumber)
+	}
+		else{
+			$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp/$misc.diceNumber)
+		}
+
+
 		$misc.diceNumber = 0
 
 		// $game.event[0].inCombat = !$game.event[0].inCombat
@@ -47,10 +59,11 @@
 		$selectedItem.manaCost = 0
 
 
-	//close combatmode if enemy dies
+	//close combatmode and empty the enemy array if enemy dies
 	if($game.enemy[0].enemyHp <= 0)
 	$game.event[0].inCombat = false
-	
+	$game.enemy=[]
+
 	}
 
 
@@ -119,6 +132,7 @@
         </div>
     </div>
 </div>
+
 <!-- combat ui ends here-->
 
 
