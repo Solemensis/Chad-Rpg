@@ -67,8 +67,7 @@
 	.choice {
 		/* background-color: rgba(49, 49, 49, 0.83); */
 		backdrop-filter: blur(2px);
-
-		background-color: #362525cc;
+		background-color: #2d1e1ecc;
 		border-radius: 0.5rem;
 		font-size: 1.35rem;
 		color: #ccc;
@@ -77,8 +76,9 @@
 		position: relative;
 		text-align: center;
 		transition: 0.2s;
-
-		/* font-style:italic; */
+	}
+	.choice:hover:not(:last-child) {
+		background-color: #201919cc;
 	}
 	.choiceInput {
 		background-color: #1f1f1fc8;
@@ -110,8 +110,5 @@
 	}
 	.choiceInput button:hover {
 		background-color: #a61ce186;
-	}
-	.choice:hover:not(:last-child) {
-		background-color: #372b2bcc;
 	}
 </style>

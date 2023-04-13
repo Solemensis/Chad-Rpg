@@ -30,7 +30,7 @@
 				<button
 					on:click={() => {
 						emitAnswer(
-							`Start off as a new adventurer in a fantasy role-playing world, sitting in a tavern and conversing with the innkeeper. You can use World of Warcraft mmorpg as the dataset; so quests, items, spells, mobs, npcs and storyline.`
+							`Start off as a new adventurer in a fantasy role-playing world. Player enters a bustling tavern in a town.`
 						)
 					}}>Play</button
 				>

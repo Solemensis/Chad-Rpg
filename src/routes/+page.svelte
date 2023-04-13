@@ -212,7 +212,7 @@
 	}
 
 	function giveYourAnswer(choice: any) {
-		if (!choice) {
+		if (!choice || choice.includes('sex') || choice.includes('kill')) {
 			return
 		}
 		story = ''

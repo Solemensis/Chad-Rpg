@@ -5,11 +5,10 @@
 		"type": "potion",
 		"healing": "40"
 	},
-    {
+	{
 		"name": "Mana Potion",
 		"price": 30,
 		"type": "potion",
 		"healing": "35"
 	}
-	
 ]

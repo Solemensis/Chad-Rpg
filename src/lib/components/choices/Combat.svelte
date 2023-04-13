@@ -132,27 +132,21 @@
 		backdrop-filter: blur(2px);
 	}
 
-	.combat-box h3 {
-		text-align: center;
-		font-weight: 300;
-		font-size: 1.3rem;
-	}
-
 	.combat-box {
 		background-color: rgba(31, 31, 31, 0.841);
 		border-radius: 0.5rem;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		justify-content: space-around;
 		padding: 0 0.5rem;
+		gap: 2rem;
+		padding-top: 0.75rem;
 	}
 
-	.combat-but-and-info {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 2rem;
+	.combat-box h3 {
+		text-align: center;
+		font-weight: 300;
+		font-size: 1.3rem;
 	}
 
 	.combat-box img:active {
@@ -179,6 +173,12 @@
 
 	.combat-button img {
 		width: 3.5rem;
+	}
+	.combat-but-and-info {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 2rem;
 	}
 
 	.combat-box ul li {
