@@ -32,6 +32,7 @@
 			$character.stats[0].mp -= combatEvent.manaCost
 		}
 
+		//if heal skill used, heal player
 		if (combatEvent.healing) {
 			$character.stats[0].hp += $selectedItem.combatScore
 			if ($character.stats[0].hp > $character.stats[0].maxHp) {
@@ -49,8 +50,6 @@
 
 		$misc.diceNumber = 0
 
-		// $game.event[0].inCombat = !$game.event[0].inCombat
-
 		//empty the object after
 		$selectedItem.name = ''
 		$selectedItem.damage = undefined
@@ -60,8 +59,10 @@
 		$selectedItem.manaCost = 0
 
 		//close combatmode and empty the enemy array if enemy dies
-		if ($game.enemy[0].enemyHp <= 0) $game.event[0].inCombat = false
-		$game.enemy = []
+		// if ($game.enemy[0] && $game.enemy[0].enemyHp <= 0) {
+		// 	$game.event[0].inCombat = false
+		// 	$game.enemy = []
+		// }
 	}
 
 	function emitAnswer(answer: any) {
@@ -72,58 +73,60 @@
 </script>
 
 <!-- combat ui -->
+{#if !$misc.loading}
+	<div transition:fade={{ duration: 1000 }} class="combat">
+		<div class="combat-box">
+			<div class="heading-and-enemy">
+				<h3>You are now in a <span class="red-span">Combat</span> against:</h3>
+				{#if $game.enemy[0]}
+					<div>
+						<h5>{capitalizeFirstLetter($game.enemy[0].enemyName)}</h5>
 
-<div transition:fade={{ duration: 1000 }} class="combat">
-	<div class="combat-box">
-		<div class="heading-and-enemy">
-			<h3>You are now in <span class="span-heading">Combat</span> against:</h3>
-			{#if $game.enemy[0]}
-				<div>
-					<h5>{capitalizeFirstLetter($game.enemy[0].enemyName)}</h5>
-
-					<div
-						style="background-image: linear-gradient(to right, #E1683Caa 100%, #1f1f1fc8);"
-						class="enemy"
-					>
-						<p>
-							{$game.enemy[0].enemyHp} <span class="hp-mp-text">HP</span>
-						</p>
+						<div
+							style="background-image: linear-gradient(to right, #E1683Caa 100%, #1f1f1fc8);"
+							class="enemy"
+						>
+							<p>
+								{$game.enemy[0].enemyHp} <span class="hp-mp-text">HP</span>
+							</p>
+						</div>
 					</div>
-				</div>
-			{/if}
-		</div>
-		<div class="combat-but-and-info">
-			<ul>
-				{#if !$selectedItem.name}
-					<li>
-						Choose an <span class="g-span">item</span> or a
-						<span class="g-span">spell.</span>
-					</li>
-				{:else if $selectedItem.damage}
-					<li>
-						You chose <span class="g-span">{$selectedItem.name}</span> with
-						<span class="g-span">x{$selectedItem.damage}</span> damage!
-					</li>
-				{:else if $selectedItem.healing}
-					<li>
-						You chose <span class="g-span">{$selectedItem.name}</span> with
-						<span class="g-span">x{$selectedItem.healing}</span> heal power!
-					</li>
 				{/if}
+			</div>
+			<div class="combat-but-and-info">
+				<ul>
+					{#if !$selectedItem.name}
+						<li>
+							Choose a <span class="g-span">weapon</span> or a
+							<span class="g-span">spell.</span>
+						</li>
+					{:else if $selectedItem.damage}
+						<li>
+							You chose <span class="g-span">{$selectedItem.name}</span> with
+							<span class="g-span">x{$selectedItem.damage}</span> damage!
+						</li>
+					{:else if $selectedItem.healing}
+						<li>
+							You chose <span class="g-span">{$selectedItem.name}</span> with
+							<span class="g-span">x{$selectedItem.healing}</span> heal power!
+						</li>
+					{/if}
 
-				<li>Then, press the <span class="g-span">dice</span> to learn your fate!</li>
-				<li>
-					<!-- Your fighting scenario will be calculated based on these and some element of
-                    surprise. -->
-					Or, just try to <span class="red-span">Retreat!</span>
-				</li>
-			</ul>
-			<button on:click={() => throwDice($selectedItem)} class="combat-button">
-				<img src="images/dice.webp" alt="throw dice button" />
-			</button>
+					<li>
+						Then, press the <span class="g-span">dice</span> to learn your fate!
+						<span class="g-span">&nbsp;➜</span>
+					</li>
+					<li>
+						Or, just try to <span class="red-span">Retreat!</span>
+					</li>
+				</ul>
+				<button on:click={() => throwDice($selectedItem)} class="combat-button">
+					<img src="images/dice.webp" alt="throw dice button" />
+				</button>
+			</div>
 		</div>
 	</div>
-</div>
+{/if}
 
 <!-- combat ui ends here-->
 <style>
@@ -151,7 +154,6 @@
 	}
 
 	.combat-box h3 {
-		text-align: center;
 		font-weight: 300;
 		font-size: 1.3rem;
 	}
@@ -176,6 +178,11 @@
 		background-color: rgba(19, 19, 19, 0.525);
 		border-radius: 0.6rem;
 		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
+		cursor: pointer;
+		transition: 0.2s;
+	}
+	.combat-button:hover {
+		transform: scale(1.05);
 	}
 
 	.combat-button img {
@@ -210,13 +217,7 @@
 
 		color: #aaa;
 	}
-	.span-heading {
-		color: rgb(228, 55, 55);
-		font-weight: 400;
-	}
-	.red-span {
-		color: rgb(228, 55, 55);
-	}
+
 	.heading-and-enemy {
 		display: flex;
 		justify-content: space-evenly;

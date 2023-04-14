@@ -19,6 +19,9 @@
 	{#if $descWindow.healing && $descWindow.type == 'potion'}
 		<p class="desc-all">healing: +{$descWindow.healing}</p>
 	{/if}
+	{#if $descWindow.mana && $descWindow.type == 'potion'}
+		<p class="desc-all">mana: +{$descWindow.mana}</p>
+	{/if}
 
 	{#if $descWindow.armor}
 		<p class="desc-all">armor: x{$descWindow.armor}</p>

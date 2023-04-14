@@ -56,3 +56,8 @@ button {
 		font-size: 85%;
 	}
 } */
+
+.red-span {
+	color: rgb(228, 55, 55);
+	font-weight: 400;
+}

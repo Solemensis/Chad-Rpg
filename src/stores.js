@@ -11,8 +11,8 @@ export const game = writable({
 })
 
 export const character = writable({
-	stats: [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }],
-	gold: 20,
+	stats: [{ hp: 110, maxHp: 110, mp: 900, maxMp: 900 }],
+	gold: 2000,
 	spells: [
 		{
 			name: 'Fireball',
@@ -76,6 +76,7 @@ export const descWindow = writable({
 	damage: undefined,
 	type: undefined,
 	healing: undefined,
+	mana: undefined,
 	armor: undefined,
 	element: undefined,
 	weaponClass: undefined,

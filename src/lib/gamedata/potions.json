@@ -3,12 +3,12 @@
 		"name": "Health Potion",
 		"price": 30,
 		"type": "potion",
-		"healing": "40"
+		"healing": "5"
 	},
 	{
 		"name": "Mana Potion",
 		"price": 30,
 		"type": "potion",
-		"healing": "35"
+		"mana": "5"
 	}
 ]

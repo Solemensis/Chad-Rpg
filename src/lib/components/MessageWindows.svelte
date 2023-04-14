@@ -7,6 +7,7 @@
 	import { fade } from 'svelte/transition'
 
 	function buyItem(item: any) {
+		$selectedItem = {}
 		if ($character.gold < item.price) return ($ui.errorWarnMsg = 'Not enough gold.')
 
 		$character.gold -= item.price
@@ -32,6 +33,7 @@
 	}
 
 	function sellItem(item: any) {
+		$selectedItem = {}
 		if (!$game.event[0].shopMode) return
 
 		$character.gold += item.price
@@ -44,14 +46,14 @@
 			$character.spells = newArray
 		}
 
-		//hide the description window after selling item.
+		//hide the description window after selling item
 		$selectedItem.showDescription = 'none'
 	}
 </script>
 
 <!-- ingame notification window (out of ui) -->
 {#if $ui.errorWarnMsg}
-	<div transition:fade={{ duration: 300 }} class="notification-window">
+	<div transition:fade={{ duration: 200 }} class="notification-window">
 		<p>
 			{$ui.errorWarnMsg}
 		</p>
@@ -62,7 +64,7 @@
 
 <!-- askbuy window (out of ui) -->
 {#if $ui.buyWarnMsg}
-	<div transition:fade={{ duration: 300 }} class="notification-window">
+	<div transition:fade={{ duration: 200 }} class="notification-window">
 		<p>
 			{$ui.buyWarnMsg}
 		</p>
@@ -81,7 +83,7 @@
 
 <!-- asksell window (out of ui) -->
 {#if $ui.sellWarnMsg}
-	<div transition:fade={{ duration: 300 }} class="notification-window">
+	<div transition:fade={{ duration: 200 }} class="notification-window">
 		<p>
 			{$ui.sellWarnMsg}
 		</p>
@@ -100,7 +102,7 @@
 <!-- asksell window -->
 <style>
 	.notification-window {
-		background-color: rgba(56, 38, 61, 0.75);
+		background-color: rgba(48, 41, 50, 0.75);
 		backdrop-filter: blur(4px);
 		padding: 3rem 6rem;
 		border-radius: 1rem;

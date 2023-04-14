@@ -66,7 +66,7 @@
 	}
 	.choice {
 		/* background-color: rgba(49, 49, 49, 0.83); */
-		backdrop-filter: blur(2px);
+		backdrop-filter: blur(3px);
 		background-color: #2d1e1ecc;
 		border-radius: 0.5rem;
 		font-size: 1.35rem;
@@ -77,6 +77,11 @@
 		text-align: center;
 		transition: 0.2s;
 	}
+
+	.choice:active:not(:last-child) {
+		animation: button-pop 0.2s ease-out;
+	}
+
 	.choice:hover:not(:last-child) {
 		background-color: #201919cc;
 	}

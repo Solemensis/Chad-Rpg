@@ -50,36 +50,42 @@
 		{#if mapOn}
 			<div class="places-to-go">
 				<button
+					disabled={$misc.loading}
 					on:click={() => emitAnswer("I'll go to nearest Town.")}
 					transition:fade={{ delay: 0, duration: 100 }}
 					><img src="images/landscape-svgs/town.svg" alt="go town button" />
 					<p transition:fade={{ delay: 0, duration: 100 }}>Town</p></button
 				>
 				<button
+					disabled={$misc.loading}
 					on:click={() => emitAnswer("I'll go to nearest Woods.")}
 					transition:fade={{ delay: 100, duration: 100 }}
 					><img src="images/landscape-svgs/forest.svg" alt="go woods button" />
 					<p transition:fade={{ delay: 100, duration: 100 }}>Woods</p></button
 				>
 				<button
+					disabled={$misc.loading}
 					on:click={() => emitAnswer("I'll go to nearest Harbor.")}
 					transition:fade={{ delay: 200, duration: 100 }}
 					><img src="images/landscape-svgs/dock.svg" alt="go harbor button" />
 					<p transition:fade={{ delay: 200, duration: 100 }}>Harbor</p></button
 				>
 				<button
+					disabled={$misc.loading}
 					on:click={() => emitAnswer("I'll go to weaponsmith.")}
 					transition:fade={{ delay: 300, duration: 100 }}
 					><img src="images/landscape-svgs/shop1.svg" alt="go weaponsmith button" />
 					<p transition:fade={{ delay: 300, duration: 100 }}>Weaponsmith</p></button
 				>
 				<button
+					disabled={$misc.loading}
 					on:click={() => emitAnswer("I'll go to spell shop.")}
 					transition:fade={{ delay: 400, duration: 100 }}
 					><img src="images/landscape-svgs/shop2.svg" alt="go spell shop button" />
 					<p transition:fade={{ delay: 400, duration: 100 }}>Spell Shop</p></button
 				>
 				<button
+					disabled={$misc.loading}
 					on:click={() => emitAnswer("I'll go to potion shop.")}
 					transition:fade={{ delay: 500, duration: 100 }}
 					><img src="images/landscape-svgs/shop3.svg" alt="go potion shop button" />
@@ -114,7 +120,10 @@
 								You'll give your own choices throughout the game, and AI will shape the story based
 								on your choices (and combat success).
 							</li>
-							<li>To fill your hp and mana, you can rest at a Inn, or have time in a Tavern.</li>
+							<li>
+								To fill your hp and mana; you can rest at a Inn, have time in a Tavern, or wonder in
+								a Town.
+							</li>
 							<li>There are no cooldowns for items but there are for spells.</li>
 							<li>Game ends if your health points drops to 0.</li>
 							<li>

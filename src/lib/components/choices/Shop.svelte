@@ -33,6 +33,7 @@
 		$descWindow.damage = item && item.damage ? item.damage : undefined
 		$descWindow.type = item && item.type ? item.type : undefined
 		$descWindow.healing = item && item.healing ? item.healing : undefined
+		$descWindow.mana = item && item.mana ? item.mana : undefined
 		$descWindow.armor = item && item.armor ? item.armor : undefined
 		$descWindow.element = item && item.element ? item.element : undefined
 		$descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined

@@ -51,6 +51,7 @@
 		$descWindow.damage = item && item.damage ? item.damage : undefined
 		$descWindow.type = item && item.type ? item.type : undefined
 		$descWindow.healing = item && item.healing ? item.healing : undefined
+		$descWindow.mana = item && item.mana ? item.mana : undefined
 		$descWindow.armor = item && item.armor ? item.armor : undefined
 		$descWindow.element = item && item.element ? item.element : undefined
 		$descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
@@ -63,7 +64,7 @@
 		$selectedItem = {}
 
 		const { type, name, damage, manaCost, healing, mana, cooldown } = item
-		const { mp, maxMp, hp, maxHp } = $character.stats[0]
+		let { mp, maxMp, hp, maxHp } = $character.stats[0]
 		const { inCombat, shopMode } = $game.event[0]
 
 		if (type === 'weapon') {
@@ -242,25 +243,32 @@
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 
 			if (healing && hp < maxHp) {
-				emitAnswer(
-					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
-				)
-				$character.stats[0].hp += healing
-				if ($character.stats[0].hp > $character.stats[0].maxHp) {
-					$character.stats[0].hp = $character.stats[0].maxHp
+				// emitAnswer(`Drink a ${name} from your inventory to heal by ${healing}.`)
+				hp += parseInt(healing)
+				if (hp > maxHp) {
+					hp = maxHp
 				}
+
+				//delete the potion from inventory
+				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
+				$character.inventory = newArray
+				hideWindow()
 				return
 			}
-			if (mp && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
+			if (mana && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
-			if (mp && mp < maxMp) {
-				emitAnswer(
-					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
-				)
-				$character.stats[0].mp += mana
-				if ($character.stats[0].mp > $character.stats[0].maxMp) {
-					$character.stats[0].mp = $character.stats[0].maxMp
+			if (mana && mp < maxMp) {
+				// emitAnswer(`Drink a ${name} from your inventory to fill up mana by ${mana}.`)
+				mp += parseInt(mana)
+				if (mp > maxMp) {
+					mp = maxMp
 				}
+
+				//delete the potion from inventory
+				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
+				$character.inventory = newArray
+				hideWindow()
+
 				return
 			}
 		}
@@ -329,6 +337,13 @@
 						src="/images/{action.element}.svg"
 						alt="a spell"
 					/>
+				{:else}
+					<img
+						on:mousemove={(event) => handleMouseMove(event, action)}
+						on:mouseleave={hideWindow}
+						src="/images/item.svg"
+						alt="an item"
+					/>
 				{/if}
 			</button>
 		{/each}
@@ -395,5 +410,6 @@
 		border-radius: 0.4rem;
 		width: 85%;
 		height: 85%;
+		cursor: pointer;
 	}
 </style>

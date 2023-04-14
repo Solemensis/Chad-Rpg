@@ -133,7 +133,7 @@
 		}
 
 		// Return the first four shuffled items
-		return items.slice(0, 4)
+		return items.slice(0, 10)
 	}
 
 	function mixBuyables(category: any) {
@@ -145,7 +145,6 @@
 			return ($game.shop = shuffleItems(buyPotions))
 	}
 
-	// let enemyParseDone:any=false;
 	function parseText(text: string) {
 		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
 		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
@@ -301,6 +300,12 @@
 		]
 		function checkPlace(str: any) {
 			let matchingPlaces: any = places.filter((place) => str.includes(place))
+
+			if (matchingPlaces == 'Town Inn') {
+				matchingPlaces = 'Inn'
+			} else if (matchingPlaces.includes('Outskirts')) {
+				matchingPlaces = 'Forest'
+			}
 
 			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
 		}

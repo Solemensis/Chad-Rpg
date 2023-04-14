@@ -22,6 +22,7 @@
 		$descWindow.damage = item && item.damage ? item.damage : undefined
 		$descWindow.type = item && item.type ? item.type : undefined
 		$descWindow.healing = item && item.healing ? item.healing : undefined
+		$descWindow.mana = item && item.mana ? item.mana : undefined
 		$descWindow.armor = item && item.armor ? item.armor : undefined
 		$descWindow.element = item && item.element ? item.element : undefined
 		$descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
@@ -54,7 +55,7 @@
 
 		if (!$game.lootBox.length) {
 			emitAnswer(
-				"I'm gonna loot it all and think what i'm going to do now. (clear the @lootBox array in your next response!)"
+				"I've looted all. What should i do now..? (clear the @lootBox array in your next response!)"
 			)
 			$game.event[0].lootMode = false
 		}
@@ -82,7 +83,7 @@
 
 		if (!$game.lootBox.length) {
 			emitAnswer(
-				"I'm gonna loot it all and think what i'm going to do now. (clear the @lootBox array in your next response)"
+				"I've looted all. What should i do now..? (clear the @lootBox array in your next response!)"
 			)
 			$game.event[0].lootMode = false
 		}
@@ -92,8 +93,6 @@
 		dispatch('emittedAnswer', {
 			answer: answer
 		})
-
-		//choice transition delay reset for every new conversation
 	}
 </script>
 

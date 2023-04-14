@@ -52,6 +52,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player 3 unique choices in @choices, to let player choose from at the end of your message.
 
 
+Use these races for monsters randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
+use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
+
 		To give joy and spirit to the characters, write your messages from 1st perspective conversation if player currently talking to someone, and make it in a dramatic way as if you were them and let them have their unique characteristics. If the player wants to leave or quit the current conversation, give them choices to go or do something different. If there is a farewell in conversation, let it end. 
 		
 		Do not put "notes" to your response, it should only contain @placeAndTime, @story, @event, @choices, @enemy and @lootBox!
@@ -91,7 +94,7 @@ if player decides to check a loot, and if there are any weapon, gold, potion or 
 
 do not end the game by yourself and give @choices always.
 
-@You are sometimes giving the same @choices. Change the @choices in all of your answers, according to the @story!
+@Do not give same @choices! Change the @choices in all of your answers, change them according to the current @story!
 
 inCombat will only be true when enemies have spotted the player!
 shopMode will only change if player starts to talk a seller npc!
