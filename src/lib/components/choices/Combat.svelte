@@ -32,6 +32,13 @@
 			$character.stats[0].mp -= combatEvent.manaCost
 		}
 
+		if (combatEvent.healing) {
+			$character.stats[0].hp += $selectedItem.combatScore
+			if ($character.stats[0].hp > $character.stats[0].maxHp) {
+				$character.stats[0].hp = $character.stats[0].maxHp
+			}
+		}
+
 		//lower the player hp (with a little buff if the dice is 1)
 		if ($misc.diceNumber == 1) {
 			$misc.diceNumber = 2

@@ -23,10 +23,7 @@
 			<img src="images/landscape-svgs/rpg.webp" alt="game mode img" />
 			<div class="game-explanation">
 				<h3>FRPG Starter</h3>
-				<p>
-					Start as a new adventurer in a fantasy role-playing world, sitting in a tavern and
-					conversing with the innkeeper.
-				</p>
+				<p>Start as a new adventurer in a fantasy role-playing world, entering a tavern.</p>
 				<button
 					on:click={() => {
 						emitAnswer(
@@ -60,7 +57,7 @@
 
 			<div class="game-explanation">
 				<h3>Custom Starter</h3>
-				<p>Start your own unique adventure as your own character, in your own world!</p>
+				<p>Start your own unique adventure in your own world!</p>
 				<button>Configure game settings</button>
 			</div>
 		</div>
@@ -88,13 +85,14 @@
 		top: 1.8rem;
 		left: 50%;
 		transform: translateX(-50%);
-
+		white-space: nowrap;
 		display: flex;
 		flex-direction: column;
 	}
 	h1 {
 		font-weight: 400;
 		font-family: 'MedievalSharp', sans-serif;
+		font-size: 2.6rem;
 	}
 	.g-span {
 		font-weight: 400;
@@ -126,11 +124,10 @@
 		grid-column-gap: 1rem;
 		grid-row-gap: 2rem;
 		justify-items: center;
-		height: 60%;
 		align-items: start;
 
 		position: absolute;
-		bottom: 1.5rem;
+		bottom: 2.5rem;
 	}
 	.game-starter {
 		display: flex;

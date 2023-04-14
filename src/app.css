@@ -44,3 +44,15 @@ button {
 ::-webkit-scrollbar-thumb:hover {
 	background-color: hsl(22, 8%, 20%);
 }
+
+/* responsive */
+/* @media (min-width: 1024px) and (max-width: 1500px) {
+	html {
+		font-size: 85%;
+	}
+} */
+/* @media (min-width: 1024px) {
+	html {
+		font-size: 85%;
+	}
+} */

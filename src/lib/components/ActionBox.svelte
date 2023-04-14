@@ -71,7 +71,13 @@
 			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
-			let takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+
+			let takenDamage: any
+			if ($game.enemy[0].enemyHp) {
+				takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+			} else {
+				takenDamage = 5
+			}
 
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
@@ -118,7 +124,13 @@
 			$coolDowns[name] = cooldown
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
-			let takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+
+			let takenDamage: any
+			if ($game.enemy[0].enemyHp) {
+				takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+			} else {
+				takenDamage = 5
+			}
 
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
@@ -162,10 +174,14 @@
 			if (hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
 			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
 			if ($coolDowns[name] && $coolDowns[name] < cooldown) return ($ui.errorWarnMsg = 'On cooldown')
-			if (!inCombat)
-				return emitAnswer(
-					`Heal myself with ${name} spell by ${calculateCombatScore(healing)} amount.)`
-				)
+			if (!inCombat) {
+				emitAnswer(`Heal myself with ${name} spell by ${calculateCombatScore(healing)} amount.)`)
+				$character.stats[0].hp += calculateCombatScore(healing)
+				if ($character.stats[0].hp > $character.stats[0].maxHp) {
+					$character.stats[0].hp = $character.stats[0].maxHp
+				}
+				return
+			}
 
 			$coolDowns[name] = cooldown
 			$selectedItem.combatScore = calculateCombatScore(healing)
@@ -226,16 +242,26 @@
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 
 			if (healing && hp < maxHp) {
-				return emitAnswer(
+				emitAnswer(
 					`Drink a ${name} from your inventory to heal by ${healing}. (that potion must be gone from inventory after that)`
 				)
+				$character.stats[0].hp += healing
+				if ($character.stats[0].hp > $character.stats[0].maxHp) {
+					$character.stats[0].hp = $character.stats[0].maxHp
+				}
+				return
 			}
 			if (mp && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 			if (mp && mp < maxMp) {
-				return emitAnswer(
+				emitAnswer(
 					`Drink a ${name} from your inventory to fill up mana by ${mana}. (that potion must be gone from inventory after that)`
 				)
+				$character.stats[0].mp += mana
+				if ($character.stats[0].mp > $character.stats[0].maxMp) {
+					$character.stats[0].mp = $character.stats[0].maxMp
+				}
+				return
 			}
 		}
 	}
