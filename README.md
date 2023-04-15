@@ -1,2 +1,2 @@
-# Chad-Rpg ##- an AI-driven interactive role-playing game
+# An AI-driven interactive role-playing game
 
