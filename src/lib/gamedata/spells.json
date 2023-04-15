@@ -2,7 +2,7 @@
 	{
 		"name": "Mend Wounds",
 		"healing": 3,
-		"price": 50,
+		"price": 60,
 		"manaCost": 20,
 		"type": "healing spell",
 		"element": "light",
@@ -11,7 +11,7 @@
 	{
 		"name": "Nature's Grace",
 		"healing": 4,
-		"price": 80,
+		"price": 100,
 		"manaCost": 25,
 		"type": "healing spell",
 		"element": "light",
@@ -111,7 +111,7 @@
 	{
 		"name": "Poisonous Cloud",
 		"damage": 6,
-		"price": 80,
+		"price": 105,
 		"manaCost": 25,
 		"type": "destruction spell",
 		"element": "toxic",
@@ -129,7 +129,7 @@
 	{
 		"name": "Acid Rain",
 		"damage": 6,
-		"price": 80,
+		"price": 105,
 		"manaCost": 25,
 		"type": "destruction spell",
 		"element": "toxic",
@@ -138,7 +138,7 @@
 	{
 		"name": "Inferno Burst",
 		"damage": 6,
-		"price": 80,
+		"price": 105,
 		"manaCost": 25,
 		"type": "destruction spell",
 		"element": "fire",
@@ -147,7 +147,7 @@
 	{
 		"name": "Storm Surge",
 		"damage": 5,
-		"price": 65,
+		"price": 75,
 		"manaCost": 20,
 		"type": "destruction spell",
 		"element": "lightning",
@@ -165,7 +165,7 @@
 	{
 		"name": "Necrotic Touch",
 		"damage": 5,
-		"price": 65,
+		"price": 75,
 		"manaCost": 20,
 		"type": "destruction spell",
 		"element": "dark",
@@ -174,7 +174,7 @@
 	{
 		"name": "Soul Drain",
 		"damage": 5,
-		"price": 65,
+		"price": 75,
 		"manaCost": 20,
 		"type": "destruction spell",
 		"element": "dark",

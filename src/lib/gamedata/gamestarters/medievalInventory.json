@@ -1,0 +1,9 @@
+[
+	{
+		"name": "Wooden Sword",
+		"damage": 3,
+		"price": 10,
+		"type": "weapon",
+		"weaponClass": "sword"
+	}
+]

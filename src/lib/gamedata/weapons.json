@@ -2,28 +2,28 @@
 	{
 		"name": "Bronze Sword",
 		"damage": 4,
-		"price": 35,
+		"price": 60,
 		"type": "weapon",
 		"weaponClass": "sword"
 	},
 	{
 		"name": "Bronze Dagger",
 		"damage": 5,
-		"price": 55,
+		"price": 85,
 		"type": "weapon",
 		"weaponClass": "dagger"
 	},
 	{
 		"name": "Wooden Bow",
 		"damage": 4,
-		"price": 35,
+		"price": 60,
 		"type": "weapon",
 		"weaponClass": "bow"
 	},
 	{
 		"name": "Iron Mace",
 		"damage": 4,
-		"price": 35,
+		"price": 60,
 		"type": "weapon",
 		"weaponClass": "mace"
 	},
@@ -44,84 +44,84 @@
 	{
 		"name": "Iron Battle Axe",
 		"damage": 4,
-		"price": 35,
+		"price": 60,
 		"type": "weapon",
 		"weaponClass": "axe"
 	},
 	{
 		"name": "Steel Axe",
 		"damage": 6,
-		"price": 85,
+		"price": 110,
 		"type": "weapon",
 		"weaponClass": "axe"
 	},
 	{
 		"name": "Copper Flail",
 		"damage": 4,
-		"price": 35,
+		"price": 60,
 		"type": "weapon",
 		"weaponClass": "flail"
 	},
 	{
 		"name": "Iron Warhammer",
 		"damage": 5,
-		"price": 55,
+		"price": 85,
 		"type": "weapon",
 		"weaponClass": "axe"
 	},
 	{
 		"name": "Bronze Shortsword",
 		"damage": 5,
-		"price": 55,
+		"price": 85,
 		"type": "weapon",
 		"weaponClass": "sword"
 	},
 	{
 		"name": "Silver Shortbow",
 		"damage": 5,
-		"price": 55,
+		"price": 85,
 		"type": "weapon",
 		"weaponClass": "bow"
 	},
 	{
 		"name": "Steel Dagger",
 		"damage": 6,
-		"price": 85,
+		"price": 110,
 		"type": "weapon",
 		"weaponClass": "dagger"
 	},
 	{
 		"name": "Iron Flail",
 		"damage": 6,
-		"price": 85,
+		"price": 110,
 		"type": "weapon",
 		"weaponClass": "flail"
 	},
 	{
 		"name": "Bronze Battle Axe",
 		"damage": 6,
-		"price": 85,
+		"price": 110,
 		"type": "weapon",
 		"weaponClass": "axe"
 	},
 	{
 		"name": "Steel Mace",
 		"damage": 7,
-		"price": 110,
+		"price": 130,
 		"type": "weapon",
 		"weaponClass": "mace"
 	},
 	{
 		"name": "Iron Shortsword",
 		"damage": 7,
-		"price": 110,
+		"price": 130,
 		"type": "weapon",
 		"weaponClass": "sword"
 	},
 	{
 		"name": "Copper Spear",
 		"damage": 7,
-		"price": 110,
+		"price": 130,
 		"type": "weapon",
 		"weaponClass": "spear"
 	},

@@ -53,7 +53,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
 
 Use these races for monsters randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
-use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
+Use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
+There are 2 unique spells in this game; Teleportation and Summon spells.
+
 
 		To give joy and spirit to the characters, write your messages from 1st perspective conversation if player currently talking to someone, and make it in a dramatic way as if you were them and let them have their unique characteristics. If the player wants to leave or quit the current conversation, give them choices to go or do something different. If there is a farewell in conversation, let it end. 
 		
@@ -66,9 +68,11 @@ use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings',
 		Do not start the fight before turning "inCombat" to true! Don't just start and end the combat with one @story, let player use some skills or weapons to fight. Say something like "you are now in battle!", and then change "inCombat" to true.
 		if "inCombat" is true, fill the @enemy array. But fill it only with 1 enemy object even if there are more than 1 enemy, just increase the hp parameter instead and give it an "s" letter in the end, so if the enemy is "goblin" but a group of goblins, make the enemy name "goblins". 
 
-		If player starts talking with a seller npc about buying things, switch "shopMode" to a specific shop name from null. 
-       "shopMode" can only be null, 'Weaponsmith', 'SpellShop', 'Armorsmith', 'PotionShop', 'Merchant', 'Market' and 'Shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation in @story and @choices.
-shopMode will stay null at "Tavern"! You sometimes change shopMode to "PotionShop" or "Merchant" when player goes into tavern, do not do that. Tavern is not a shop. Everything in tavern will be free, so drinks, foods and a room to sleep will be free, innkeepers can't take money from player for those.
+		If player starts talking with a market character about buying things, switch "shopMode" to a specific shop name from null. 
+       "shopMode" can only be null, 'Weaponsmith', 'SpellShop', 'Armorsmith', 'PotionShop', 'Merchant', 'Market' and 'Shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation happening in @story.
+shopMode will stay null at "Tavern" and out of the town! You sometimes change shopMode to "PotionShop" or "Merchant" when player goes into tavern, or when player is out of the town. Do not do that. Tavern is not a shop. Anywhere out of the town is not a shop aswell.
+Everything in tavern will be free, so drinks, foods and a room to sleep will be free, innkeepers can't take money from player for those.
+
 
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!

@@ -15,22 +15,51 @@
 		return str.charAt(0).toUpperCase() + str.slice(1)
 	}
 
-	function throwDice(combatEvent: any) {
+	let diceThrown: boolean = false
+	async function throwDice(combatEvent: any) {
 		if (!combatEvent.name) return ($ui.errorWarnMsg = 'You need to choose a weapon or spell.')
 
+		//give it a cooldown time
 		if ($coolDowns[combatEvent.name]) {
 			$coolDowns[combatEvent.name] = 0
 		}
 
-		//zar numarasını bi süre göstermek için 1-2 saniyelik bi timeout
-		//içine alıncak giveYourAnswer
-		console.log(combatEvent.prompt)
-		emitAnswer(combatEvent.prompt)
+		//lower the player hp (with a little buff if the dice is 1)
+		if ($selectedItem.damage != 0 && !$selectedItem.other) {
+			if ($misc.diceNumber == 1) {
+				$misc.diceNumber = 2
+				$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+			} else {
+				//if dice is greater than 15, do not lower hp
+				if ($misc.diceNumber > 15) {
+					$character.stats[0].hp = $character.stats[0].hp
+				} else {
+					$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+				}
+			}
+		}
+
+		//a timeout to show the dice number to player for a sec.
+		diceThrown = true
+		function wait(ms: number) {
+			return new Promise((resolve) => setTimeout(resolve, ms))
+		}
+		await wait(1000)
+
+		//if player dies, give the end-game prompt.
+		if ($character.stats[0].hp > 0) {
+			emitAnswer(combatEvent.prompt)
+		} else {
+			emitAnswer('give a sad @story, because player dies in the last combat event.')
+			$misc.death = true
+		}
 
 		//lower the player mana
 		if (combatEvent.manaCost) {
 			$character.stats[0].mp -= combatEvent.manaCost
 		}
+
+		$misc.diceNumber = 0
 
 		//if heal skill used, heal player
 		if (combatEvent.healing) {
@@ -40,29 +69,16 @@
 			}
 		}
 
-		//lower the player hp (with a little buff if the dice is 1)
-		if ($misc.diceNumber == 1) {
-			$misc.diceNumber = 2
-			$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
-		} else {
-			$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
-		}
-
-		$misc.diceNumber = 0
-
 		//empty the object after
 		$selectedItem.name = ''
 		$selectedItem.damage = undefined
 		$selectedItem.healing = undefined
+		$selectedItem.mana = undefined
 		$selectedItem.prompt = ''
 		$selectedItem.combatScore = undefined
 		$selectedItem.manaCost = 0
 
-		//close combatmode and empty the enemy array if enemy dies
-		// if ($game.enemy[0] && $game.enemy[0].enemyHp <= 0) {
-		// 	$game.event[0].inCombat = false
-		// 	$game.enemy = []
-		// }
+		diceThrown = false
 	}
 
 	function emitAnswer(answer: any) {
@@ -110,18 +126,38 @@
 							You chose <span class="g-span">{$selectedItem.name}</span> with
 							<span class="g-span">x{$selectedItem.healing}</span> heal power!
 						</li>
+					{:else}
+						<li>
+							You chose <span class="g-span">{$selectedItem.name}</span> with
+							<span class="g-span">unique</span> power!
+						</li>
 					{/if}
 
 					<li>
 						Then, press the <span class="g-span">dice</span> to learn your fate!
-						<span class="g-span">&nbsp;➜</span>
 					</li>
 					<li>
-						Or, just try to <span class="red-span">Retreat!</span>
+						<!-- Or, just try to <span class="red-span">Retreat!</span> -->
+						Success is related to <span class="g-span">damage</span> and the
+						<span class="g-span">dice number.</span>
 					</li>
 				</ul>
-				<button on:click={() => throwDice($selectedItem)} class="combat-button">
-					<img src="images/dice.webp" alt="throw dice button" />
+				<button
+					transition:fade={{ duration: 200 }}
+					on:click={() => throwDice($selectedItem)}
+					class="combat-button"
+				>
+					{#if !diceThrown}
+						<img
+							transition:fade={{ duration: 300 }}
+							src="images/dice.webp"
+							alt="throw dice button"
+						/>
+					{:else}
+						<p transition:fade={{ duration: 300 }} class="diceNumber">
+							{$misc.diceNumber}<span>/20</span>
+						</p>
+					{/if}
 				</button>
 			</div>
 		</div>
@@ -176,17 +212,39 @@
 	.combat-button {
 		border: none;
 		background-color: rgba(19, 19, 19, 0.525);
-		border-radius: 0.6rem;
 		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
+		width: 4.5rem;
+		height: 4.5rem;
 		cursor: pointer;
 		transition: 0.2s;
+		border-radius: 0.6rem;
+		position: relative;
 	}
 	.combat-button:hover {
 		transform: scale(1.05);
 	}
+	/* .combat-button:active {
+		animation: button-pop 0.3s ease-out;
+	} */
 
 	.combat-button img {
 		width: 3.5rem;
+	}
+	.diceNumber {
+		font-size: 2rem;
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 4.3rem;
+		height: 4.3rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #3fcf8e;
+	}
+	.diceNumber span {
+		color: #999;
+		font-size: 0.8rem;
 	}
 	.combat-but-and-info {
 		display: flex;

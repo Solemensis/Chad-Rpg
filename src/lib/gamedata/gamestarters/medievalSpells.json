@@ -1,0 +1,20 @@
+[
+	{
+		"name": "Fireball",
+		"damage": 4,
+		"price": 15,
+		"manaCost": 12,
+		"type": "destruction spell",
+		"element": "fire",
+		"cooldown": 2
+	},
+	{
+		"name": "Light Heal",
+		"healing": 2,
+		"price": 10,
+		"manaCost": 12,
+		"type": "healing spell",
+		"element": "light",
+		"cooldown": 2
+	}
+]

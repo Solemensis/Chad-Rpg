@@ -50,13 +50,16 @@
 			</div>
 
 			{#if $game.event[0].inCombat}
-				<button
-					disabled={$misc.loading}
-					class="leave-button"
-					style="opacity: {$game.choices.length ? '1' : '0'};"
-					on:click={() => calculateRetreat()}
-					>🎲 Try to <span class="red-span">Retreat.</span></button
-				>
+				<button class="leave-button run-button">
+					<img src="images/run.svg" alt="retreat button" />
+					<p
+						disabled={$misc.loading}
+						style="opacity: {$game.choices.length ? '1' : '0'};"
+						on:click={() => calculateRetreat()}
+					>
+						Try to <span class="red-span">Retreat.</span>
+					</p>
+				</button>
 			{:else if $game.event[0].shopMode}
 				<button
 					disabled={$misc.loading}
@@ -112,6 +115,15 @@
 
 	.leave-button:hover {
 		background-color: rgba(49, 49, 49, 0.83);
+	}
+	.run-button img {
+		width: 1rem;
+	}
+	.run-button {
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
 	}
 
 	.night-time {

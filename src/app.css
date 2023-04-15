@@ -45,19 +45,51 @@ button {
 	background-color: hsl(22, 8%, 20%);
 }
 
-/* responsive */
-/* @media (min-width: 1024px) and (max-width: 1500px) {
-	html {
-		font-size: 85%;
-	}
-} */
-/* @media (min-width: 1024px) {
-	html {
-		font-size: 85%;
-	}
-} */
-
 .red-span {
 	color: rgb(228, 55, 55);
 	font-weight: 400;
+}
+
+/* pc responsive */
+@media (orientation: landscape) and (min-width: 1024px) and (max-width: 1279px) and (min-height: 520px) and (max-height: 759px) {
+	html {
+		font-size: 85%;
+	}
+}
+@media (orientation: landscape) and (min-width: 1280px) and (max-width: 1449px) and (min-height: 520px) and (max-height: 759px) {
+	html {
+		font-size: 88%;
+	}
+}
+@media (orientation: landscape) and (min-width: 1450px) and (max-width: 1679px) {
+	html {
+		font-size: 100%;
+	}
+}
+@media (min-width: 1280px) and (max-width: 1679px) and (min-height: 760px) and (max-height: 1100px) {
+	html {
+		font-size: 110%;
+	}
+}
+@media (min-width: 1680px) and (max-width: 1919px) {
+	html {
+		font-size: 120%;
+	}
+}
+@media (min-width: 1920px) and (max-width: 2199px) {
+	html {
+		font-size: 130%;
+	}
+}
+@media (min-width: 2200px) and (max-width: 2650px) {
+	html {
+		font-size: 190%;
+	}
+}
+
+/* mobile responsive */
+@media (orientation: portrait) {
+	html {
+		font-size: 85%;
+	}
 }

@@ -11,37 +11,10 @@ export const game = writable({
 })
 
 export const character = writable({
-	stats: [{ hp: 110, maxHp: 110, mp: 900, maxMp: 900 }],
-	gold: 2000,
-	spells: [
-		{
-			name: 'Fireball',
-			damage: 4,
-			price: 15,
-			manaCost: 12,
-			type: 'destruction spell',
-			element: 'fire',
-			cooldown: 2
-		},
-		{
-			name: 'Light Heal',
-			healing: 2,
-			price: 10,
-			manaCost: 12,
-			type: 'healing spell',
-			element: 'light',
-			cooldown: 2
-		}
-	],
-	inventory: [
-		{
-			name: 'Wooden Sword',
-			damage: 3,
-			price: 10,
-			type: 'weapon',
-			weaponClass: 'sword'
-		}
-	]
+	stats: [{ hp: 0, maxHp: 0, mp: 0, maxMp: 0 }],
+	gold: 0,
+	spells: [],
+	inventory: []
 })
 
 export const ui = writable({ errorWarnMsg: '', buyWarnMsg: '', sellWarnMsg: '' })
@@ -61,7 +34,8 @@ export const misc = writable({
 	query: '',
 	time: '00:00',
 	place: '',
-	currentImg: ''
+	currentImg: '',
+	death: false
 })
 
 export const bgImage = writable({

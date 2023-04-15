@@ -82,29 +82,29 @@
 
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${$selectedItem.combatScore} damage back.)`
+					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${$selectedItem.combatScore} damage back. Combat goes on.)`
 				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-					$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy but taking ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.)`
+					$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy but taking ${takenDamage} damage back. Combat goes on.)`
 				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 
 			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage but receiving ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.))`
+					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage but receiving ${takenDamage} damage back. Combat goes on.)`
 				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 
 			if ($selectedItem.combatScore >= 85) {
-				$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the fight.)`
+				$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the combat. )`
 			}
 
 			$selectedItem.name = name
@@ -121,7 +121,7 @@
 			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
 			if ($coolDowns[name] && $coolDowns[name] < cooldown)
 				return ($ui.errorWarnMsg =
-					'This skill is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
+					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
 			$coolDowns[name] = cooldown
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
@@ -135,29 +135,29 @@
 
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${$selectedItem.combatScore} damage back.)`
+					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} damage but giving ${$selectedItem.combatScore} damage back. Combat goes on.)`
 				} else {
-					$selectedItem.prompt = `Attack with ${name} spell! (this blow kills the enemy and ends the combat successfully!)`
+					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy but taking ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.)`
+					$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy but taking ${takenDamage} damage back. Combat goes on.)`
 				} else {
-					$selectedItem.prompt = `Attack with ${name} spell! (this blow kills the enemy and ends the combat successfully!)`
+					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 
 			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
 				if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage but receiving ${takenDamage} damage back. If enemy hp drops down to 0, end the fight.))`
+					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage but receiving ${takenDamage} damage back. Combat goes on.)`
 				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow kills the enemy and ends the combat successfully!)`
+					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 
 			if ($selectedItem.combatScore >= 85) {
-				$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the fight.)`
+				$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the combat.)`
 			}
 
 			$selectedItem.name = name
@@ -203,32 +203,32 @@
 			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
 			if ($coolDowns[name] && $coolDowns[name] < cooldown)
 				return ($ui.errorWarnMsg =
-					'This skill is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
+					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
 			$coolDowns[name] = cooldown
 			$selectedItem.combatScore = calculateCombatScore(1)
 
 			if (name == 'Summon') {
 				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 5) {
-					$selectedItem.prompt = `Use "Summon" skill and summon a little bird to help me in this fight.`
+					$selectedItem.prompt = `Use my Summon spell and summon a little bird to help me in this combat.`
 				}
 				if ($selectedItem.combatScore >= 5 && $selectedItem.combatScore < 10) {
-					$selectedItem.prompt = `Use "Summon" skill and summon a powerful tiger to help me in this fight.`
+					$selectedItem.prompt = `Use my Summon spell and summon a powerful tiger to help me in this combat.`
 				}
 				if ($selectedItem.combatScore >= 10 && $selectedItem.combatScore < 15) {
-					$selectedItem.prompt = `Use "Summon" skill and summon a storm spirit (which is a magician) to help me in this fight.`
+					$selectedItem.prompt = `Use my Summon spell and summon a storm spirit (which is a magician) to help me in this combat.`
 				}
 				if ($selectedItem.combatScore >= 15 && $selectedItem.combatScore <= 20) {
-					$selectedItem.prompt = `Use "Summon" skill and summon an ultimate demon to help me in this fight. (fight immedietaly ends with the power of the demon)`
+					$selectedItem.prompt = `Use my Summon spell and summon an ultimate demon to help me in this combat. (combat immedietaly ends with the power of the demon)`
 				}
 			}
 			if (name == 'Teleportation') {
-				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore <= 20) {
-					$selectedItem.prompt = `Use "Teleportation" skill and teleport myself to a secure place away from fight.`
-				}
+				// if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore <= 20) {
+				$selectedItem.prompt = `Use my Teleportation spell and teleport myself to a secure place away from combat.`
+				// }
 			}
 
 			$selectedItem.name = name
-			$selectedItem.damage = 1
+			$selectedItem.damage = 0
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
 			console.log($selectedItem)
@@ -244,9 +244,10 @@
 
 			if (healing && hp < maxHp) {
 				// emitAnswer(`Drink a ${name} from your inventory to heal by ${healing}.`)
-				hp += parseInt(healing)
-				if (hp > maxHp) {
-					hp = maxHp
+
+				$character.stats[0].hp += parseInt(healing)
+				if ($character.stats[0].hp > $character.stats[0].maxHp) {
+					$character.stats[0].hp = $character.stats[0].maxHp
 				}
 
 				//delete the potion from inventory
@@ -259,9 +260,9 @@
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 			if (mana && mp < maxMp) {
 				// emitAnswer(`Drink a ${name} from your inventory to fill up mana by ${mana}.`)
-				mp += parseInt(mana)
-				if (mp > maxMp) {
-					mp = maxMp
+				$character.stats[0].mp += parseInt(mana)
+				if ($character.stats[0].mp > $character.stats[0].maxMp) {
+					$character.stats[0].mp = $character.stats[0].maxMp
 				}
 
 				//delete the potion from inventory
@@ -269,6 +270,61 @@
 				$character.inventory = newArray
 				hideWindow()
 
+				return
+			}
+		}
+
+		//for the items which are not implemented (like consumable foods or magic scrolls etc)
+		if (
+			type !== 'potion' &&
+			type !== 'weapon' &&
+			type !== 'destruction spell' &&
+			type !== 'healing spell' &&
+			type !== 'unique spell'
+		) {
+			if (shopMode) return
+			if (healing && hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
+			if (mana && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
+			if (healing || (mana && inCombat)) return ($ui.errorWarnMsg = "You can't consume in combat.")
+			if (damage) {
+				$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
+
+				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
+					if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+						$selectedItem.prompt = `Attack with ${name}! (give a bad @story, where player lands a unlucky attack, which leads to player giving only ${$selectedItem.combatScore} damage to enemy.)`
+					} else {
+						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
+					}
+				}
+				if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
+					if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+						$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy.)`
+					} else {
+						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
+					}
+				}
+
+				if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
+					if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
+						$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage.)`
+					} else {
+						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
+					}
+				}
+
+				if ($selectedItem.combatScore >= 85) {
+					$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the combat.)`
+				}
+
+				$selectedItem.name = name
+				$selectedItem.damage = damage
+				$selectedItem.other = true
+				$selectedItem.healing = undefined
+				console.log($selectedItem)
+
+				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
+				$character.inventory = newArray
+				hideWindow()
 				return
 			}
 		}
@@ -309,7 +365,7 @@
 		<h3>{title}</h3>
 		{#each actions as action}
 			<button
-				disabled={$misc.loading}
+				disabled={$misc.loading || $misc.death}
 				on:click={() => {
 					useItem(action)
 					handleSell(`You sure to sell ${action.name}?`, action)

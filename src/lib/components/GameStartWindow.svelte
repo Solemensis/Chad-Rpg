@@ -3,10 +3,15 @@
 	import { fade } from 'svelte/transition'
 
 	import { misc } from '../../stores.js'
+	import { character } from '../../stores.js'
 
 	const dispatch = createEventDispatcher()
 
 	function emitAnswer(answer: any) {
+		//this is just to revive player, hp will be set after the prompt.
+		$character.stats[0].hp = 1
+
+		//start the game
 		dispatch('emittedAnswer', {
 			answer: answer
 		})

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { game } from '../../stores.js'
+	import { misc } from '../../stores.js'
 
 	import PickChoice from '$lib/components/choices/PickChoice.svelte'
 	import Combat from '$lib/components/choices/Combat.svelte'
 	import Shop from '$lib/components/choices/Shop.svelte'
 	import Loot from '$lib/components/choices/Loot.svelte'
+	import Death from '$lib/components/choices/Death.svelte'
 
 	import GoldTime from '$lib/components/choices/GoldTime.svelte'
 
@@ -24,14 +26,16 @@
 </script>
 
 <div class="ui-mid">
-	{#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode}
+	{#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode && !$misc.death}
 		<PickChoice on:emittedAnswer={handleEmittedAnswer} />
-	{:else if $game.event[0] && $game.event[0].inCombat}
+	{:else if $game.event[0] && $game.event[0].inCombat && !$misc.death}
 		<Combat on:emittedAnswer={handleEmittedAnswer} />
-	{:else if $game.event[0] && $game.event[0].shopMode}
+	{:else if $game.event[0] && $game.event[0].shopMode && !$misc.death}
 		<Shop />
-	{:else if $game.event[0] && $game.event[0].lootMode}
+	{:else if $game.event[0] && $game.event[0].lootMode && !$misc.death}
 		<Loot on:emittedAnswer={handleEmittedAnswer} />
+	{:else if $misc.death}
+		<Death />
 	{/if}
 	<GoldTime on:emittedAnswer={handleEmittedAnswer} />
 </div>

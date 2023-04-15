@@ -7,6 +7,7 @@
 	import ActionBox from '$lib/components/ActionBox.svelte'
 	import Choices from '$lib/components/Choices.svelte'
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
+	import StaticPrompts from '$lib/components/StaticPrompts.svelte'
 
 	import { game } from '../stores.js'
 	import { character } from '../stores.js'
@@ -27,6 +28,9 @@
 	import buyWeapons from '$lib/gamedata/weapons.json'
 	import buySpells from '$lib/gamedata/spells.json'
 	import buyPotions from '$lib/gamedata/potions.json'
+
+	import medievalStarterInventory from '$lib/gamedata/gamestarters/medievalInventory.json'
+	import medievalStarterSpells from '$lib/gamedata/gamestarters/medievalSpells.json'
 
 	// import buyArmors from '$lib/gamedata/armors.json'
 
@@ -81,8 +85,13 @@
 						chatMessages.splice(1, 2)
 					}
 
-					//heal player if currently in Tavern or Inn
-					if ($misc.place.includes('Inn') || $misc.place.includes('Tavern')) {
+					//heal player if currently at Tavern or Inn or Town
+					if (
+						$misc.place.includes('Inn') ||
+						$misc.place.includes('Tavern') ||
+						$misc.place == 'Town' ||
+						$misc.place.includes('City')
+					) {
 						if ($character.stats[0].hp < $character.stats[0].maxHp) {
 							$character.stats[0].hp += 25
 
@@ -256,6 +265,24 @@
 		giveYourAnswer(event.detail.answer)
 	}
 
+	function startMedievalGame(event: any) {
+		chatMessages = []
+		$game.lootBox = []
+		$game.placeAndTime = []
+
+		$game.shop = []
+		$game.choices = []
+		$game.enemy = []
+		$game.event = []
+		$selectedItem = {}
+		$character.stats = [{ hp: 110, maxHp: 110, mp: 110, maxMp: 110 }]
+		$character.gold = 100
+		$character.spells = [...medievalStarterSpells]
+		$character.inventory = [...medievalStarterInventory]
+
+		giveYourAnswer(event.detail.answer)
+	}
+
 	function getRandomNumber(num: any) {
 		return Math.floor(Math.random() * num) + 1
 	}
@@ -296,12 +323,13 @@
 			'Merchant',
 			'Market',
 			'Tavern',
-			'Inn'
+			'Inn',
+			'Outskirts'
 		]
 		function checkPlace(str: any) {
 			let matchingPlaces: any = places.filter((place) => str.includes(place))
 
-			if (matchingPlaces == 'Town Inn') {
+			if (matchingPlaces == 'Town Inn' || matchingPlaces == 'Town Tavern') {
 				matchingPlaces = 'Inn'
 			} else if (matchingPlaces.includes('Outskirts')) {
 				matchingPlaces = 'Forest'
@@ -370,7 +398,7 @@
 	<BackgroundImgs />
 
 	{#if !$game.started}
-		<GameStartWindow on:emittedAnswer={handleEmittedAnswer} />
+		<GameStartWindow on:emittedAnswer={startMedievalGame} />
 	{/if}
 
 	<MessageWindows />
@@ -406,6 +434,11 @@
 			</div>
 			<!-- game controls ui ends here-->
 		</div>
+		{#if (!$misc.loading && $game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Tavern')) || ($game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Inn'))}
+			<div transition:fade={{ duration: 3000 }}>
+				<StaticPrompts on:emittedAnswer={handleEmittedAnswer} />
+			</div>
+		{/if}
 	{/if}
 	<!-- game ui ends here -->
 

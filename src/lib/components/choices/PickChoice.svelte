@@ -78,10 +78,6 @@
 		transition: 0.2s;
 	}
 
-	.choice:active:not(:last-child) {
-		animation: button-pop 0.2s ease-out;
-	}
-
 	.choice:hover:not(:last-child) {
 		background-color: #201919cc;
 	}
