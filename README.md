@@ -11,7 +11,7 @@
 - You can see the game planning screen on top.
 - There is just 1 stable world type to play for now, but other starting conditions and world types will be added with time.
 
-## Play Your Own Story - a simple storytelling footage from the game:
+## Play Your Own Story | A simple storytelling footage from the game:
 
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/main.jpg" alt="UI of the Game" width="600">
@@ -20,8 +20,9 @@
 - You'll give your own choices to events throughout the game, and then, AI will shape the story based on your choices (and combat success).
 - Possibilities are endless; player can fight with creatures, wonder around the world, or just chill and meet a great friend at the tavern.
 
-### Interactivity At Its Finest
+### Interactivity At Its Finest!
 - Player can write his/her own answer into input too! The input box can be seen at the top, with a placeholder.
+- But it can get bugged if player writes something so out of context.
 
 
 
