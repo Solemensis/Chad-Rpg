@@ -113,6 +113,8 @@ shopMode will only change if player starts to talk a seller npc!
 
 fill @lootBox only if player DECIDES to check a loot! 
 
+Enemy can leave some lootable weapons, spells, potions or gold behind if player can defeat them.
+
 do not fill @lootBox after inCombat turns to false!
 
 Always put @event in your answers, don't forget it!

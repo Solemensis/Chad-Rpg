@@ -2,6 +2,8 @@
 	import { game } from '../../../stores'
 	import { misc } from '../../../stores'
 
+	import { fade } from 'svelte/transition'
+
 	function restartGame() {
 		$misc.death = false
 		$game.started = false
@@ -9,7 +11,7 @@
 </script>
 
 {#if !$misc.loading}
-	<div class="death">
+	<div transition:fade={{ duration: 2000 }} class="death">
 		<div class="death-box">
 			<h3 class="you-died">You Died.</h3>
 			<button on:click={() => restartGame()} class="new-game">Start a New Game!</button>

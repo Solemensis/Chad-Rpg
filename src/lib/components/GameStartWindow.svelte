@@ -40,7 +40,6 @@
 		</div>
 		<div class="game-starter">
 			<img src="images/landscape-svgs/cyberpunk.webp" alt="game mode img" />
-
 			<div class="game-explanation">
 				<h3>Cyberpunk Starter</h3>
 				<p>Start as a capable human being at a neon city in a Cyberpunk world.</p>

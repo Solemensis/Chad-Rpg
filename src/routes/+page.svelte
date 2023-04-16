@@ -74,6 +74,11 @@
 						}
 					}
 
+					//to handle a possible combat bug
+					if ($game.event[0].inCombat && !$game.enemy[0]) {
+						$game.event[0].inCombat = false
+					}
+
 					//to handle a possible noLoot bug
 					if ($game.event[0].lootMode && !$game.lootBox.length) {
 						$game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
@@ -328,6 +333,8 @@
 				matchingPlaces = 'Garden'
 			} else if (matchingPlaces.includes('River')) {
 				matchingPlaces = 'River'
+			} else if (matchingPlaces.includes('Island')) {
+				matchingPlaces = 'Island'
 			}
 			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
 		}
@@ -417,10 +424,11 @@
 					actions={$character.inventory}
 					on:emittedAnswer={handleEmittedAnswer}
 				/>
-
-				<div class="choices">
-					<Choices on:emittedAnswer={handleEmittedAnswer} />
-				</div>
+				{#if $game.started}
+					<div class="choices">
+						<Choices on:emittedAnswer={handleEmittedAnswer} />
+					</div>
+				{/if}
 
 				<ActionBox
 					title={'Spells'}

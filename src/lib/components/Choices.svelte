@@ -25,20 +25,22 @@
 	}
 </script>
 
-<div class="ui-mid">
-	{#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode && !$misc.death}
-		<PickChoice on:emittedAnswer={handleEmittedAnswer} />
-	{:else if $game.event[0] && $game.event[0].inCombat && !$misc.death}
-		<Combat on:emittedAnswer={handleEmittedAnswer} />
-	{:else if $game.event[0] && $game.event[0].shopMode && !$misc.death}
-		<Shop />
-	{:else if $game.event[0] && $game.event[0].lootMode && !$misc.death}
-		<Loot on:emittedAnswer={handleEmittedAnswer} />
-	{:else if $misc.death}
-		<Death />
-	{/if}
-	<GoldTime on:emittedAnswer={handleEmittedAnswer} />
-</div>
+{#if $game.started}
+	<div class="ui-mid">
+		{#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode && !$misc.death}
+			<PickChoice on:emittedAnswer={handleEmittedAnswer} />
+		{:else if $game.event[0] && $game.event[0].inCombat && !$misc.death}
+			<Combat on:emittedAnswer={handleEmittedAnswer} />
+		{:else if $game.event[0] && $game.event[0].shopMode && !$misc.death}
+			<Shop />
+		{:else if $game.event[0] && $game.event[0].lootMode && !$misc.death}
+			<Loot on:emittedAnswer={handleEmittedAnswer} />
+		{:else if $misc.death}
+			<Death />
+		{/if}
+		<GoldTime on:emittedAnswer={handleEmittedAnswer} />
+	</div>
+{/if}
 
 <style>
 	.ui-mid {

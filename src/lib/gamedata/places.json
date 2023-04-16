@@ -22,9 +22,15 @@
 	"Blacksmith",
 	"PotionShop",
 	"SpellShop",
+	"Spell Shop",
+	"Potion Shop",
 	"Merchant",
 	"Market",
+	"Marketplace",
 	"Tavern",
 	"Inn",
-	"Outskirts"
+	"Outskirts",
+	"River",
+	"Garden",
+	"Island"
 ]
