@@ -76,4 +76,4 @@
 
 - There are some minor bugs in the game, the gpt model i use (gpt-3.5) has 4k token limit and i'm deleting the context from the first indexes of the array if token limit is high. I really want to keep developing this project, and if i can achieve a little financial support, i want to update whole game prompt with the gpt-4 model, which has so much more context limit (enough to resolve many bugs) and much more powerful than gpt-3.5. It can be easier to save games to the database too with the huge context limit of the new model.
 
-- I want to clean the source code and ts type errors, but i'm fairly new to svelte, i'll get used to it.
+- I want to clean the svelte source code and ts type errors, but i'm fairly new to svelte, i'll get used to it.
