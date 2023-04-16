@@ -61,7 +61,7 @@
 ## Miscellaneous
 
 - Backgrounds are changing automatically according to characters places to give more of the ambiance.
-- A tavern/medieval vibish song can be played with a click, it's now uses html5 audio so it does not seemlessly looping but it will be seemlessly looping itself with the power of the web audio api when i implement it. The song is "Tavern Loop One" from Alexander Nakarada.
+- A tavern/medieval vibish song can be played with a click, it uses html5 audio for now so it does not seemlessly looping but it will be seemlessly looping itself with the power of the web audio api when i implement it. The song is "Tavern Loop One" from Alexander Nakarada.
 
 ## What's Next?
 
