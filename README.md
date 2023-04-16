@@ -66,7 +66,7 @@
 - A tavern/medieval vibish song can be played with a click, it will be seemlessly looping itself with the power of the web audio api.
 
 
-## What Next?
+## What's Next?
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/cyberpunk.jpg" alt="UI of the Game" width="600">
 
