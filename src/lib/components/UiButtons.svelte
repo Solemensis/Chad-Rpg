@@ -360,5 +360,10 @@
 		.game-info-button {
 			display: none;
 		}
+
+		.fullscreen-icon {
+			right: 6.5rem;
+			top: 2.2rem;
+		}
 	}
 </style>

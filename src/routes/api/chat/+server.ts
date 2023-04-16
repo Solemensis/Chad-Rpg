@@ -155,7 +155,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		const chatRequestOpts: CreateChatCompletionRequest = {
 			model: 'gpt-3.5-turbo',
 			messages,
-			temperature: 0.6,
+			temperature: 0.7,
 			stream: true
 		}
 
