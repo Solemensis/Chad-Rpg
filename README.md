@@ -45,7 +45,7 @@
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/shopui.jpg" alt="UI of the Game" width="600">
 
-- Player can buy items, spells and potions from seller npcs with the gold.
+- Player can buy items, spells and potions from seller npcs using earned gold.
 
 ## Loot UI
 
