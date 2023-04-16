@@ -120,7 +120,7 @@
 
 	<!-- game info window -->
 	{#if $misc.showInfoWindow}
-		<div transition:fade={{ duration: 200 }}>
+		<div transition:fade={{ duration: 50 }}>
 			<div class="info-window">
 				<button on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>
 					<img src="/images/close-button.svg" alt="close info window" />
@@ -194,6 +194,7 @@
 		background-color: #2e2e2ecc;
 		backdrop-filter: blur(8px);
 		border-radius: 1rem;
+		z-index: 1000;
 
 		position: absolute;
 		left: 50%;
@@ -222,7 +223,6 @@
 		display: flex;
 		justify-content: space-around;
 		margin-top: 2.2rem;
-
 		/* padding: 0 5rem; */
 		padding: 0 8rem;
 		gap: 5rem;
@@ -355,7 +355,10 @@
 
 	@media (orientation: portrait) {
 		.map-and-places {
-			display: none;
+			/* display: none; */
+		}
+		.map-and-places p {
+			color: yellow;
 		}
 		.game-info-button {
 			display: none;

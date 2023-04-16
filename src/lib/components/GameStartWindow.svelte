@@ -77,7 +77,7 @@
 		height: 60%;
 		border-radius: 1rem;
 		backdrop-filter: blur(4px);
-
+		z-index: 999;
 		position: absolute;
 		left: 50%;
 		top: 50%;
