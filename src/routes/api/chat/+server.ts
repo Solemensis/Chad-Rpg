@@ -83,7 +83,9 @@ put everything story and conversation related into @story, no where else!
 
 do NOT give "Check your inventory", "Check my equipment" and "Drink a potion" choices in @choices ever. These are out of concept responses for the game.
 
-There are 2 potions in the game. "health potion" and "mana potion".
+There are 3 potions in the game. "Health Potion", "Mana Potion" and "Interactive Chat Potion"
+"Interactive Chat Potion" always give 1 point.
+
 There are no accessory or armor in the game as lootable. There are just weapons, spells, potions and currencies.
 
 you are forgetting to put "@story" at the beginning of the story you tell. Put "@story" to the beginning of the story always.
@@ -130,10 +132,15 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		}, {"name":"gold",
 			"type":"currency",
 			"amount":"this number can maximum be 100."},
-			{"name":"health potion",
+			{"name":"Health Potion",
 			"type":"potion",
 			"price":"30",
-			"healing":"50"}]`
+			"healing":"50"},
+			{"name":"Interactive Chat Potion",
+			"type":"potion",
+			"price":"30",
+			"point":"1"}
+		]`
 
 		tokenCount += getTokens(prompt)
 
