@@ -128,7 +128,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 			"type": "weapon",
 			"weaponClass": "axe"
 		}, 	{
-			"name": "Solar Flare",
+			"name": "Solar Bomb",
 			"damage": "this number can maximum be 10.",
 			"price": 130,
 			"manaCost": 20, 
