@@ -2,8 +2,8 @@
 	import ChatMessage from '$lib/components/ChatMessage.svelte'
 	import UiButtons from '$lib/components/UiButtons.svelte'
 	import GameStartWindow from '$lib/components/GameStartWindow.svelte'
-	import DescriptionWindow from '$lib/components/DescriptionWindow.svelte'
-	import MessageWindows from '$lib/components/MessageWindows.svelte'
+	import DescriptionWindow from '$lib/components/ItemDescWindow.svelte'
+	import MessageWindows from '$lib/components/InGameWarnMsgs.svelte'
 	import ActionBox from '$lib/components/ActionBox.svelte'
 	import Choices from '$lib/components/Choices.svelte'
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
@@ -400,7 +400,9 @@
 					on:emittedAnswer={handleEmittedAnswer}
 				/>
 
-				<Choices on:emittedAnswer={handleEmittedAnswer} />
+				<div class="choices">
+					<Choices on:emittedAnswer={handleEmittedAnswer} />
+				</div>
 
 				<ActionBox
 					title={'Spells'}
@@ -450,5 +452,31 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 2rem;
+	}
+
+	.choices {
+		width: 100%;
+		height: 100%;
+	}
+	/* responsive */
+	@media (orientation: portrait) {
+		.game-master {
+			width: 85%;
+		}
+		.main-game {
+			height: 100vh;
+		}
+		.game-controls {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			width: 85%;
+		}
+		.choices {
+			grid-column-start: 1;
+			grid-column-end: 3;
+			grid-row-end: 1;
+			grid-row-end: 2;
+			padding-bottom: 2rem;
+		}
 	}
 </style>

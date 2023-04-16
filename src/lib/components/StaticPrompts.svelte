@@ -21,7 +21,7 @@
 	</button>
 	<button
 		disabled={$misc.loading}
-		on:click={() => emitAnswer('Ask for a room to stay for the night')}
+		on:click={() => emitAnswer("Ask the bartender about the town and it's mysteries")}
 	>
 		<p>Ask the bartender about the town and it's mysteries</p>
 	</button>

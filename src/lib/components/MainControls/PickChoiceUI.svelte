@@ -50,6 +50,7 @@
 		</div>
 	{/if}
 </div>
+
 <!-- choices ui ends here -->
 
 <!-- {/if} -->
@@ -65,9 +66,9 @@
 		padding: 0;
 	}
 	.choice {
-		/* background-color: rgba(49, 49, 49, 0.83); */
 		backdrop-filter: blur(3px);
 		background-color: #2d1e1ecc;
+		/* background-color: #282424cc; */
 		border-radius: 0.5rem;
 		font-size: 1.35rem;
 		color: #ccc;

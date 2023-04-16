@@ -2,13 +2,13 @@
 	import { game } from '../../stores.js'
 	import { misc } from '../../stores.js'
 
-	import PickChoice from '$lib/components/choices/PickChoice.svelte'
-	import Combat from '$lib/components/choices/Combat.svelte'
-	import Shop from '$lib/components/choices/Shop.svelte'
-	import Loot from '$lib/components/choices/Loot.svelte'
-	import Death from '$lib/components/choices/Death.svelte'
+	import PickChoice from '$lib/components/MainControls/PickChoiceUI.svelte'
+	import Combat from '$lib/components/MainControls/CombatUI.svelte'
+	import Shop from '$lib/components/MainControls/ShopUI.svelte'
+	import Loot from '$lib/components/MainControls/LootUI.svelte'
+	import Death from '$lib/components/MainControls/DeathUI.svelte'
 
-	import GoldTime from '$lib/components/choices/GoldTime.svelte'
+	import GoldTime from '$lib/components/MainControls/BottomUIBar.svelte'
 
 	import { createEventDispatcher } from 'svelte'
 

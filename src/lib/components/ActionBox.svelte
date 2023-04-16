@@ -433,7 +433,8 @@
 		justify-items: center;
 		grid-template-columns: 1fr 1fr 1fr;
 		grid-template-rows: 1fr 1fr 1fr 1fr;
-		background-color: #362525bc;
+		/* background-color: #362525bc; */
+		background-color: #242323bc;
 
 		border-radius: 0.2rem;
 		min-height: 25vh;
@@ -467,5 +468,29 @@
 		width: 85%;
 		height: 85%;
 		cursor: pointer;
+	}
+
+	@media (orientation: portrait) {
+		.box {
+			min-height: 1rem;
+			height: 15vh;
+			width: 100%;
+		}
+		.box h3 {
+			/* font-size: 1.1rem; */
+			padding: 0.3rem 0 0.6rem 0;
+		}
+		.box img {
+			padding: 0.4rem;
+			width: 80%;
+		}
+		.container-box {
+			width: 100%;
+		}
+		.hp-bar,
+		.mp-bar {
+			padding: 0;
+			/* font-size: 1.1rem; */
+		}
 	}
 </style>

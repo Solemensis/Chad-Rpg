@@ -186,4 +186,29 @@
 	.game-starter:nth-child(4) button:hover {
 		background-color: rgb(180, 46, 224, 0.5);
 	}
+
+	@media (orientation: portrait) {
+		.starting-screen {
+			width: 85%;
+			height: 85%;
+		}
+		.heading-box {
+			top: 2rem;
+		}
+		.game-starters {
+			bottom: 5rem;
+		}
+		.game-starter {
+			flex-direction: column;
+			gap: 1rem;
+			width: 80%;
+			align-items: start;
+		}
+		h1 {
+			font-size: 2.1rem;
+		}
+		.game-explanation button {
+			font-size: 1rem;
+		}
+	}
 </style>

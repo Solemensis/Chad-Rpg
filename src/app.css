@@ -90,6 +90,6 @@ button {
 /* mobile responsive */
 @media (orientation: portrait) {
 	html {
-		font-size: 85%;
+		font-size: 75%;
 	}
 }

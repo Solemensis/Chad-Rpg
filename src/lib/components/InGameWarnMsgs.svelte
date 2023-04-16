@@ -105,7 +105,7 @@
 		background-color: rgba(48, 41, 50, 0.75);
 		backdrop-filter: blur(4px);
 		padding: 3rem 6rem;
-		border-radius: 1rem;
+		border-radius: 0.7rem;
 		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 		position: absolute;
 		left: 50%;
@@ -117,10 +117,11 @@
 		justify-content: center;
 		gap: 1rem;
 		font-size: 1.2rem;
-		color: #ddd;
 		z-index: 999;
 	}
-
+	.notification-window p {
+		color: #ddd;
+	}
 	.notification-window button {
 		border: 2px solid rgb(65, 107, 65);
 		background-color: transparent;
@@ -128,7 +129,7 @@
 		border-radius: 0.5rem;
 		padding: 0.4rem 1rem;
 		transition: 0.2s;
-
+		cursor: pointer;
 		display: flex;
 		justify-content: center;
 	}

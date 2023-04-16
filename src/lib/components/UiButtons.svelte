@@ -13,6 +13,8 @@
 		dispatch('emittedAnswer', {
 			answer: answer
 		})
+
+		$game.event[0].shopMode = null
 	}
 
 	let mapOn: any
@@ -318,6 +320,9 @@
 
 	@media (orientation: portrait) {
 		.map-and-places {
+			display: none;
+		}
+		.game-info-button {
 			display: none;
 		}
 	}
