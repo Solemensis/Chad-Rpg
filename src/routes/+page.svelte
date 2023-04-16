@@ -147,22 +147,29 @@
 	}
 
 	function mixBuyables(category: any) {
-		if (category == 'Weaponsmith' || category == 'Armorsmith' || category == 'Blacksmith')
-			return ($game.shop = shuffleItems(buyWeapons))
-		if (
-			category == 'SpellShop' ||
-			category == 'Spell Shop' ||
-			category == 'Shop' ||
-			category == 'Marketplace'
-		)
-			return ($game.shop = shuffleItems(buySpells))
-		if (
-			category == 'PotionShop' ||
-			category == 'Potion Shop' ||
-			category == 'Market' ||
-			category == 'Merchant'
-		)
-			return ($game.shop = shuffleItems(buyPotions))
+		let items
+		switch (category) {
+			case 'Weaponsmith':
+			case 'Armorsmith':
+			case 'Blacksmith':
+				items = buyWeapons
+				break
+			case 'SpellShop':
+			case 'Spell Shop':
+			case 'Shop':
+			case 'Marketplace':
+				items = buySpells
+				break
+			case 'PotionShop':
+			case 'Potion Shop':
+			case 'Market':
+			case 'Merchant':
+				items = buyPotions
+				break
+			default:
+				return
+		}
+		$game.shop = shuffleItems(items)
 	}
 
 	//a function to take the chatgpt response and give it a structure to use it on frontend
