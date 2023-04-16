@@ -3,12 +3,18 @@
 		"name": "Health Potion",
 		"price": 30,
 		"type": "potion",
-		"healing": "5"
+		"healing": "60"
 	},
 	{
 		"name": "Mana Potion",
 		"price": 30,
 		"type": "potion",
-		"mana": "5"
+		"mana": "40"
+	},
+	{
+		"name": "Interactive Chat Point",
+		"price": 30,
+		"type": "potion",
+		"point": 1
 	}
 ]

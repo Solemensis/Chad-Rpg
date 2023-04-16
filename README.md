@@ -7,12 +7,10 @@
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/entry.jpg" alt="UI of the Game" width="600">
 
-
 - Game planning screen can be seen on top.
 - There is just 1 stable world type to play for now, but other starting conditions and world types will be added with time.
 
 ## Play Your Own Story | A simple storytelling footage from the game:
-
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/main.jpg" alt="UI of the Game" width="600">
 
@@ -21,10 +19,10 @@
 - Possibilities are endless; player can fight with creatures, wonder around the world, or just chill and meet a great friend at the tavern without choosing combat in his/her play time.
 
 ### Interactivity At Its Finest!
+
 - Player can write his/her own answer into input too. Input box can be seen at the top, with a placeholder.
-- But game can get buggy if player writes something so out of context.
-
-
+- This only works if player got any interactive chat points left. They can be bought from potion shops or some merchants. (I changed placeholder after this implementation, so the above images do not have that.)
+- Note: Game can get buggy if player writes something so out of context.
 
 ## Combat UI
 
@@ -63,8 +61,7 @@
 ## Miscellaneous
 
 - Backgrounds are changing automatically according to characters places to give more of the ambiance.
-- A tavern/medieval vibish song can be played with a click, it will be seemlessly looping itself with the power of the web audio api.
-
+- A tavern/medieval vibish song can be played with a click, it's now uses html5 audio so it does not seemlessly looping but it will be seemlessly looping itself with the power of the web audio api when i implement it. The song is "Tavern Loop One" from Alexander Nakarada.
 
 ## What's Next?
 

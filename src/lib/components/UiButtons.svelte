@@ -122,6 +122,10 @@
 								story based on your choices (and combat success).
 							</li>
 							<li>
+								You can write your own answer too, if you got any "interactive chat points". You can
+								buy them from potion shops and some merchants.
+							</li>
+							<li>
 								To fill your hp and mana; you can rest at a Inn, have time in a Tavern, or wonder in
 								a Town.
 							</li>

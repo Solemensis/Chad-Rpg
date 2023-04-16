@@ -70,7 +70,7 @@
 						$game.event[0].shopMode = null
 					}}>Leave the Shop</button
 				>
-			{:else if $game.lootBox.length}
+			{:else if $game.event[0].lootMode}
 				<button
 					disabled={$misc.loading}
 					class="leave-button"

@@ -7,7 +7,7 @@
 	import ActionBox from '$lib/components/ActionBox.svelte'
 	import Choices from '$lib/components/Choices.svelte'
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
-	import StaticPrompts from '$lib/components/StaticPrompts.svelte'
+	// import StaticPrompts from '$lib/components/StaticPrompts.svelte'
 
 	import { game } from '../stores.js'
 	import { character } from '../stores.js'
@@ -144,7 +144,7 @@
 		}
 
 		// return the first six shuffled items
-		return items.slice(0, 6)
+		return items.slice(0, 4)
 	}
 
 	function mixBuyables(category: any) {
@@ -422,11 +422,13 @@
 			</div>
 			<!-- game controls ui ends here-->
 		</div>
-		{#if (!$misc.loading && $game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Tavern')) || ($game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Inn'))}
+
+		<!-- Static tavern prompts -->
+		<!-- {#if (!$misc.loading && $game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Tavern')) || ($game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Inn'))}
 			<div transition:fade={{ duration: 3000 }}>
 				<StaticPrompts on:emittedAnswer={handleEmittedAnswer} />
 			</div>
-		{/if}
+		{/if} -->
 	{/if}
 	<!-- game ui ends here -->
 

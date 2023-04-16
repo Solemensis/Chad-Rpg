@@ -6,7 +6,7 @@ export const game = writable({
 	shop: [],
 	choices: [],
 	enemy: [],
-	event: [{ inCombat: false, shopMode: null }],
+	event: [{ inCombat: false, shopMode: null, lootMode: false }],
 	started: false
 })
 
@@ -57,5 +57,6 @@ export const descWindow = writable({
 	weaponClass: undefined,
 	manaCost: undefined,
 	price: undefined,
-	amount: undefined
+	amount: undefined,
+	point: undefined
 })

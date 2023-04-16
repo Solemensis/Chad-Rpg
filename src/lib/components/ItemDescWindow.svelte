@@ -22,6 +22,9 @@
 	{#if $descWindow.mana && $descWindow.type == 'potion'}
 		<p class="desc-all">mana: +{$descWindow.mana}</p>
 	{/if}
+	{#if $descWindow.point && $descWindow.type == 'potion'}
+		<p class="desc-all">point: {$descWindow.point}</p>
+	{/if}
 
 	{#if $descWindow.armor}
 		<p class="desc-all">armor: x{$descWindow.armor}</p>
