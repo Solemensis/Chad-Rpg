@@ -73,6 +73,8 @@ There are 2 unique spells in this game; Teleportation and Summon spells.
 shopMode will stay null at "Tavern" and out of the town! You sometimes change shopMode to "PotionShop" or "Merchant" when player goes into tavern, or when player is out of the town. Do not do that. Tavern is not a shop. Anywhere out of the town is not a shop aswell.
 Everything in tavern will be free, so drinks, foods and a room to sleep will be free, innkeepers can't take money from player for those.
 
+Damage points of items in @lootBox can be maximum 9.
+Gold in @lootBox can be maximum 200.
 
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!
