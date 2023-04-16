@@ -28,6 +28,7 @@
 	import buyWeapons from '$lib/gamedata/weapons.json'
 	import buySpells from '$lib/gamedata/spells.json'
 	import buyPotions from '$lib/gamedata/potions.json'
+	import staticPlaces from '$lib/gamedata/places.json'
 
 	import medievalStarterInventory from '$lib/gamedata/gamestarters/medievalInventory.json'
 	import medievalStarterSpells from '$lib/gamedata/gamestarters/medievalSpells.json'
@@ -131,18 +132,19 @@
 		handleErr = true
 	}
 
+	//logic to shuffle shop items at shop
 	function shuffleItems(items: any) {
-		// Start at the end of the array and work backwards
+		// start at the end of the array and work backwards
 		for (let i = items.length - 1; i > 0; i--) {
-			// Pick a random index between 0 and i (inclusive)
+			// pick a random index between 0 and i (inclusive)
 			const j = Math.floor(Math.random() * (i + 1))
 
-			// Swap the current element with the randomly selected one
+			// swap the current element with the randomly selected one
 			;[items[i], items[j]] = [items[j], items[i]]
 		}
 
-		// Return the first four shuffled items
-		return items.slice(0, 10)
+		// return the first six shuffled items
+		return items.slice(0, 6)
 	}
 
 	function mixBuyables(category: any) {
@@ -154,6 +156,7 @@
 			return ($game.shop = shuffleItems(buyPotions))
 	}
 
+	//a function to take the chatgpt response and give it a structure to use it on frontend
 	function parseText(text: string) {
 		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
 		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
@@ -171,7 +174,6 @@
 			$game.placeAndTime = JSON.parse(placeAndTimeMatch[1])
 
 			if (!logged) {
-				// $misc.place = checkWordsForImg($game.placeAndTime[0].place)
 				$misc.place = $game.placeAndTime[0].place
 				$misc.time = $game.placeAndTime[0].time
 				fetchImg()
@@ -181,8 +183,6 @@
 		}
 
 		if (enemyMatch) {
-			//  if( $game.enemy[0] && $game.enemy[0].enemyName && $game.enemy[0].enemyHp) return;
-
 			$game.enemy = JSON.parse(enemyMatch[1])
 		}
 
@@ -191,21 +191,18 @@
 		}
 
 		if (eventMatch) {
-			// $game.event[0] = JSON.parse(eventMatch[1])
 			$game.event = JSON.parse(eventMatch[1])
 			if ($game.event[0].shopMode && $game.shop.length != 4) {
 				mixBuyables($game.event[0].shopMode)
 			}
 		}
 		if (choiceMatch) {
-			//bunlar çat çat çat yazılıyo galiba. tek 1 kere yazılcak şekilde optimize et
-
 			$game.choices = JSON.parse(choiceMatch[1])
 		}
-
 		return
 	}
 
+	//pull the story from chat response, to show it on UI
 	function extractStory(str: any) {
 		const storyIndex = str.indexOf('@story')
 		if (storyIndex === -1) {
@@ -219,6 +216,7 @@
 		return str.slice(startIndex, endIndex).trim()
 	}
 
+	//this is the function to canalize player's answer to chatGPT
 	function giveYourAnswer(choice: any) {
 		if (!choice || choice.includes('sex') || choice.includes('kill')) {
 			return
@@ -261,10 +259,12 @@
 		dotty += '.'
 	}, 400)
 
+	//function to handle emittedAnswers
 	function handleEmittedAnswer(event: any) {
 		giveYourAnswer(event.detail.answer)
 	}
 
+	//function to start the game in "medieval starter" conditions
 	function startMedievalGame(event: any) {
 		chatMessages = []
 		$game.lootBox = []
@@ -275,8 +275,8 @@
 		$game.enemy = []
 		$game.event = []
 		$selectedItem = {}
-		$character.stats = [{ hp: 110, maxHp: 110, mp: 110, maxMp: 110 }]
-		$character.gold = 100
+		$character.stats = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
+		$character.gold = 1900
 		$character.spells = [...medievalStarterSpells]
 		$character.inventory = [...medievalStarterInventory]
 
@@ -287,45 +287,20 @@
 		return Math.floor(Math.random() * num) + 1
 	}
 
+	//extract game hour from chatGPT response
 	function extractHours(timeString: any) {
 		const hour = parseInt(timeString.split(':')[0], 10)
 		return hour
 	}
 
+	//fetch img according to player's current place from database
 	async function fetchImg() {
 		// check if place is the same
 		if ($game.placeAndTime[0].place == $misc.curentImg) return
 
-		const places: any = [
-			'Town',
-			'City',
-			'Forest',
-			'Woods',
-			'Academy',
-			'Beach',
-			'Castle',
-			'Cathedral',
-			'Cave',
-			'Dungeon',
-			'Harbor',
-			'Shore',
-			'Dock',
-			'Library',
-			'Monastery',
-			'Mansion',
-			'Mountain',
-			'Shop',
-			'Weaponsmith',
-			'Armorsmith',
-			'Blacksmith',
-			'PotionShop',
-			'SpellShop',
-			'Merchant',
-			'Market',
-			'Tavern',
-			'Inn',
-			'Outskirts'
-		]
+		const places: any = [...staticPlaces]
+
+		// check current place of player
 		function checkPlace(str: any) {
 			let matchingPlaces: any = places.filter((place) => str.includes(place))
 
@@ -338,17 +313,16 @@
 			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
 		}
 
-		//list imgs
+		//list images to get the image amount
 		const { data: imgs } = await supabase.storage.from('imgs').list(checkPlace($misc.place), {
 			limit: 100,
 			offset: 0,
 			sortBy: { column: 'name', order: 'asc' }
 		})
 
-		//fetch img based on time and place
+		//fetch images based on time and place
 		let finalImg: any
 		if (imgs) {
-			// if ($misc.place.includes('Town') ||$misc.place.includes('Forest')&& extractHours($misc.time) >= 18 && extractHours($misc.time) <= 6) {
 			if (
 				(checkPlace($misc.place) == 'Town' ||
 					checkPlace($misc.place) == 'City' ||
@@ -373,10 +347,11 @@
 		if (finalImg) {
 			reader.readAsDataURL(finalImg)
 		} else {
-			console.log('no img')
+			console.log('no image')
 			return
 		}
 
+		//fade in and out across the fetched images
 		reader.onload = () => {
 			if (!$bgImage.img1active) {
 				$bgImage.fetchedBg1 = reader.result
@@ -391,6 +366,7 @@
 
 		$misc.curentImg = $misc.place
 	}
+
 	let logged: boolean = false
 </script>
 
@@ -410,11 +386,11 @@
 	<!-- game ui starts here -->
 	{#if $game.started}
 		<div class="main-game">
-			<!-- chat ui starts here -->
+			<!-- chatGPT answer box starts here -->
 			<div transition:fade={{ duration: 1000 }} class="game-master">
 				<ChatMessage type="assistant" message={story ? story : dotty} />
 			</div>
-			<!-- chat ui ends here -->
+			<!-- chatGPT answer box ends here -->
 
 			<!-- game controls ui starts here-->
 			<div transition:fade={{ duration: 2000 }} class="game-controls">

@@ -211,11 +211,11 @@
 		font-weight: 400;
 		font-size: 1.8rem;
 		text-align: center;
-		margin-bottom: 1.5rem;
+		margin-bottom: 1.8rem;
 	}
 	.text-box h3::before {
 		padding-right: 0.2rem;
-		margin-left: -0.5rem;
+		margin-left: -5rem;
 	}
 	.rules {
 		color: #d6d631;
@@ -233,7 +233,7 @@
 		list-style: circle;
 	}
 	.text-box li {
-		margin-bottom: 1rem;
+		margin-bottom: 0.9rem;
 		font-size: 1.1rem;
 		color: #ccc;
 	}
