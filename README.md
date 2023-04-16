@@ -7,6 +7,7 @@
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/entry.jpg" alt="UI of the Game" width="600">
 
+
 - You can see the game planning screen on top.
 - There is just 1 stable world type to play for now, but other starting conditions and world types will be added with time.
 
@@ -65,6 +66,6 @@
 
 ## Final Thoughts
 
--There is no save game functionality for now, as the current version is some kind of a tastement-demo.
+- There is no save game functionality for now, as the current version is some kind of a tastement-demo.
 
 - There are some minor bugs in the game, the gpt model i use (gpt-3.5) has 4k token limit and i'm deleting the context from the first indexes of the array if token limit is high. I really want to keep developing this project, and if i can achieve financial support, i want to update whole game prompt with the gpt-4 model, which has so much more context limit (enough to resolve bugs) and much more powerful than gpt-3.5.
