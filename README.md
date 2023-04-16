@@ -18,7 +18,7 @@
 
 - "Chad-Rpg" is an interactive role playing game, where you are the player and Artificial Intelligence is the storyteller of the game.
 - You'll give your own choices to events throughout the game, and then, AI will shape the story based on your choices (and combat success).
-- Possibilities are endless; player can fight with creatures, wonder around the world, or just chill and meet a great friend at the tavern.
+- Possibilities are endless; player can fight with creatures, wonder around the world, or just chill and meet a great friend at the tavern without choosing combat in his/her play time.
 
 ### Interactivity At Its Finest!
 - Player can write his/her own answer into input too! The input box can be seen at the top, with a placeholder.
