@@ -54,8 +54,8 @@ export const POST: RequestHandler = async ({ request }) => {
 
 Use these races for monsters randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
 Use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
-Use these weapon classes for lootBox weapons: ["sword", "dagger", "bow", "mace", "sword", "spear", "axe", "flail", "mace"]
-Use these spell elements for lootBox spells: ["light", "fire", "dark", "ice", "lightning", "toxic"]
+Use these weapon classes for @lootBox weapons: ["sword", "dagger", "bow", "mace", "sword", "spear", "axe", "flail", "mace"]
+Use these spell elements for @lootBox spells: ["light", "fire", "dark", "ice", "lightning", "toxic"]
 
 There are 2 unique spells in this game; Teleportation and Summon spells.
 

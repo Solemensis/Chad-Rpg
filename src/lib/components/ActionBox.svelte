@@ -75,8 +75,6 @@
 
 			let takenDamage: any
 			if ($game.enemy[0] && $game.enemy[0].enemyHp) {
-				console.log($misc.diceNumber)
-
 				if ($misc.diceNumber == 1) {
 					$misc.diceNumber = 2
 				}
@@ -127,7 +125,6 @@
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
-			console.log($selectedItem.prompt)
 
 			return
 		}
@@ -197,8 +194,6 @@
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
-
-			console.log($selectedItem.prompt)
 
 			return
 		}
