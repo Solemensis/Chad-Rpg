@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { descWindow } from '../../stores.js'
-	import { misc } from '../../stores.js'
+	import { descWindow } from '../../stores'
+	import { misc } from '../../stores'
 
 	// let {name,damage,type,healing,armor,element,weaponClass,manaCost,price,amount}=$descWindow
 </script>

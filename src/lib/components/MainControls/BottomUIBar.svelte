@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { misc } from '../../../stores.js'
-	import { game } from '../../../stores.js'
-	import { character } from '../../../stores.js'
+	import { misc } from '../../../stores'
+	import { game } from '../../../stores'
+	import { character } from '../../../stores'
 
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
@@ -50,13 +50,15 @@
 			</div>
 
 			{#if $game.event[0].inCombat}
-				<button class="leave-button run-button">
+				<button
+					style="opacity: {$game.choices.length ? '1' : '0'};"
+					disabled={$misc.loading}
+					on:click={() => calculateRetreat()}
+					class="leave-button run-button"
+				>
 					<img src="images/run.svg" alt="retreat button" />
-					<p
-						disabled={$misc.loading}
-						style="opacity: {$game.choices.length ? '1' : '0'};"
-						on:click={() => calculateRetreat()}
-					>
+
+					<p>
 						Try to <span class="red-span">Retreat.</span>
 					</p>
 				</button>

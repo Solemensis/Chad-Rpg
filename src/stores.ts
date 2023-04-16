@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store'
 
-export const game = writable({
+export const game: any = writable({
 	lootBox: [],
 	placeAndTime: [],
 	shop: [],
@@ -10,21 +10,21 @@ export const game = writable({
 	started: false
 })
 
-export const character = writable({
+export const character: any = writable({
 	stats: [{ hp: 0, maxHp: 0, mp: 0, maxMp: 0 }],
 	gold: 0,
 	spells: [],
 	inventory: []
 })
 
-export const ui = writable({ errorWarnMsg: '', buyWarnMsg: '', sellWarnMsg: '' })
+export const ui: any = writable({ errorWarnMsg: '', buyWarnMsg: '', sellWarnMsg: '' })
 
 //hem combat, hem sell, hem de (emin olduktan sonra) buy için kullanılabilir galiba
-export const selectedItem = writable({})
+export const selectedItem: any = writable({})
 
-export const coolDowns = writable({})
+export const coolDowns: any = writable({})
 
-export const misc = writable({
+export const misc: any = writable({
 	showInfoWindow: false,
 	loading: false,
 	showDescription: 'none',
@@ -39,14 +39,14 @@ export const misc = writable({
 	interactivePoints: 2
 })
 
-export const bgImage = writable({
+export const bgImage: any = writable({
 	fetchedBg1: '',
 	fetchedBg2: '',
 	img1active: false,
 	img2active: false
 })
 
-export const descWindow = writable({
+export const descWindow: any = writable({
 	name: undefined,
 	damage: undefined,
 	type: undefined,

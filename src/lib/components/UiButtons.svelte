@@ -2,8 +2,8 @@
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	import { misc } from '../../stores.js'
-	import { game } from '../../stores.js'
+	import { misc } from '../../stores'
+	import { game } from '../../stores'
 
 	import { supabase } from '$lib/supabaseClient'
 

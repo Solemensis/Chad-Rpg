@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { game } from '../../../stores.js'
-	import { misc } from '../../../stores.js'
-	import { ui } from '../../../stores.js'
+	import { game } from '../../../stores'
+	import { misc } from '../../../stores'
+	import { ui } from '../../../stores'
 
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'

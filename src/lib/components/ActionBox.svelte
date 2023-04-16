@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { game } from '../../stores.js'
-	import { ui } from '../../stores.js'
-	import { selectedItem } from '../../stores.js'
-	import { character } from '../../stores.js'
+	import { game } from '../../stores'
+	import { ui } from '../../stores'
+	import { selectedItem } from '../../stores'
+	import { character } from '../../stores'
 
-	import { misc } from '../../stores.js'
-	import { descWindow } from '../../stores.js'
-	import { coolDowns } from '../../stores.js'
+	import { misc } from '../../stores'
+	import { descWindow } from '../../stores'
+	import { coolDowns } from '../../stores'
 
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { game } from '../../../stores.js'
-	import { misc } from '../../../stores.js'
+	import { game } from '../../../stores'
+	import { misc } from '../../../stores'
 
 	function restartGame() {
 		$misc.death = false

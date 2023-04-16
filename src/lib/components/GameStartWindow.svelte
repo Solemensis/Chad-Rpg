@@ -2,8 +2,8 @@
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
 
-	import { misc } from '../../stores.js'
-	import { character } from '../../stores.js'
+	import { misc } from '../../stores'
+	import { character } from '../../stores'
 
 	const dispatch = createEventDispatcher()
 
@@ -32,7 +32,7 @@
 				<button
 					on:click={() => {
 						emitAnswer(
-							`Start off as a new adventurer in a fantasy role-playing world. Player enters a bustling tavern in a town.`
+							`Start off as a new adventurer in a fantasy role-playing world. Player enters a cozy tavern in a town.`
 						)
 					}}>Play</button
 				>

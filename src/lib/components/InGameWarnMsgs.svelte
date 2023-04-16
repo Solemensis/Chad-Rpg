@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { game } from '../../stores.js'
-	import { character } from '../../stores.js'
-	import { ui } from '../../stores.js'
-	import { selectedItem } from '../../stores.js'
+	import { game } from '../../stores'
+	import { character } from '../../stores'
+	import { ui } from '../../stores'
+	import { selectedItem } from '../../stores'
 
 	import { fade } from 'svelte/transition'
 

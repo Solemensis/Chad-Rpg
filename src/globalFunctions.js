@@ -1,6 +1,4 @@
-// import { selectedItem } from './stores.js';
-
-
+// import { selectedItem } from './stores';
 
 // export function hideWindow() {
 //     $selectedItem.showDescription = 'none'
@@ -33,5 +31,3 @@
 //     price = item && item.price ? item.price : undefined
 //     amount = item && item.amount ? item.amount : undefined
 // }
-
-

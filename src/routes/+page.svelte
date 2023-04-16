@@ -9,12 +9,12 @@
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
 	// import StaticPrompts from '$lib/components/StaticPrompts.svelte'
 
-	import { game } from '../stores.js'
-	import { character } from '../stores.js'
-	import { selectedItem } from '../stores.js'
-	import { misc } from '../stores.js'
-	import { coolDowns } from '../stores.js'
-	import { bgImage } from '../stores.js'
+	import { game } from '../stores'
+	import { character } from '../stores'
+	import { selectedItem } from '../stores'
+	import { misc } from '../stores'
+	import { coolDowns } from '../stores'
+	import { bgImage } from '../stores'
 
 	import { supabase } from '$lib/supabaseClient'
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { bgImage } from '../../stores.js'
+	import { bgImage } from '../../stores'
 </script>
 
 <!-- background images (out of ui)-->

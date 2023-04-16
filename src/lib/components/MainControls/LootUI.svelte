@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { game } from '../../../stores.js'
-	import { misc } from '../../../stores.js'
-	import { descWindow } from '../../../stores.js'
-	import { character } from '../../../stores.js'
+	import { game } from '../../../stores'
+	import { misc } from '../../../stores'
+	import { descWindow } from '../../../stores'
+	import { character } from '../../../stores'
 
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
