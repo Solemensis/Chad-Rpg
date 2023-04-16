@@ -56,6 +56,7 @@ Use these races for monsters randomly: ['bandit', 'golem', 'kobold', 'satyr', 's
 Use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
 Use these weapon classes for @lootBox weapons: ["sword", "dagger", "bow", "mace", "sword", "spear", "axe", "flail", "mace"]
 Use these spell elements for @lootBox spells: ["light", "fire", "dark", "ice", "lightning", "toxic"]
+Every spell in the game has manaCost.
 
 There are 2 unique spells in this game; Teleportation and Summon spells.
 
