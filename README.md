@@ -29,9 +29,24 @@
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/combatui.jpg" alt="UI of the Game" width="800">
 
 - When enemies are ahead, choice ui will change, and player will be asked to select an action item or spell from the inventory/spells.
-- Then, player will throw a d20 dice (1 to 20); and combat story will be calculated based on the damage/healing of the selected item and the dice number, and some element of surprise sometimes.
+- Then, player will throw a d20 dice (1 to 20); and combat story will be calculated based on the damage/healing of the selected item and the dice number, plus, some element of surprise sometimes.
 
 <div style="display:flex; justify-content:space-around;">
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/combat2.jpg" alt="UI of the Game" width="400">
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/combat3.jpg" alt="UI of the Game" width="400">
 </div>
+
+- Player throw 9/20 on the top left image, and the response came from server (so chatGPT) in a moment, based on the damage and the dice score.
+- In the response picture on the right, combat outcome can be seen in story box & hp/mp difference.
+
+## Shop UI
+
+<img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/shopui.jpg" alt="UI of the Game" width="800">
+
+- Player can buy items, spells and potions from seller npcs with the gold.
+
+## Loot UI
+
+<img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/lootui.jpg" alt="UI of the Game" width="800">
+
+- There can be lootables after a successful combat, an example can be seen on top.
