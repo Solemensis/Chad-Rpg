@@ -21,8 +21,8 @@
 - Possibilities are endless; player can fight with creatures, wonder around the world, or just chill and meet a great friend at the tavern without choosing combat in his/her play time.
 
 ### Interactivity At Its Finest!
-- Player can write his/her own answer into input too! The input box can be seen at the top, with a placeholder.
-- But it can get bugged if player writes something so out of context.
+- Player can write his/her own answer into input too. Input box can be seen at the top, with a placeholder.
+- But game can get buggy if player writes something so out of context.
 
 
 
