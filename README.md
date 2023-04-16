@@ -65,6 +65,14 @@
 - Backgrounds are changing automatically according to characters places to give more of the ambiance.
 - A tavern/medieval vibish song can be played with a click, it will be seemlessly looping itself with the power of the web audio api.
 
+
+## What Next?
+
+<img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/cyberpunk.jpg" alt="UI of the Game" width="600">
+
+- An example storytelling scene from Cyberpunk world.
+- Note that Cyberpunk world is not currently playable, yet it'll be on the way for sure.
+
 ## Final Thoughts
 
 - There is no save game functionality for now, the current version is some kind of a tastement-demo.
