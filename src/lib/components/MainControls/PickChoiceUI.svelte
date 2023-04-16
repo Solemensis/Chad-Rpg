@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { game } from '../../../stores.js'
 	import { misc } from '../../../stores.js'
+	import { ui } from '../../../stores.js'
 
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
@@ -29,7 +30,9 @@
 	}
 
 	function emitInteractiveAnswer(answer: any) {
-		if ($misc.interactivePoints == 0) return
+		if ($misc.interactivePoints == 0)
+			$ui.errorWarnMsg =
+				'0 interactive chat points left. You can gain it by buying it from merchants or winnings battles.'
 
 		$misc.interactivePoints -= 1
 
