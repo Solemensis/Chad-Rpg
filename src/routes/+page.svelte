@@ -150,9 +150,19 @@
 	function mixBuyables(category: any) {
 		if (category == 'Weaponsmith' || category == 'Armorsmith' || category == 'Blacksmith')
 			return ($game.shop = shuffleItems(buyWeapons))
-		if (category == 'SpellShop' || category == 'Shop' || category == 'Marketplace')
+		if (
+			category == 'SpellShop' ||
+			category == 'Spell Shop' ||
+			category == 'Shop' ||
+			category == 'Marketplace'
+		)
 			return ($game.shop = shuffleItems(buySpells))
-		if (category == 'PotionShop' || category == 'Market' || category == 'Merchant')
+		if (
+			category == 'PotionShop' ||
+			category == 'Potion Shop' ||
+			category == 'Market' ||
+			category == 'Merchant'
+		)
 			return ($game.shop = shuffleItems(buyPotions))
 	}
 

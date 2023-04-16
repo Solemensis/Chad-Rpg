@@ -30,10 +30,11 @@
 	}
 
 	function emitInteractiveAnswer(answer: any) {
-		if ($misc.interactivePoints == 0)
+		if ($misc.interactivePoints == 0) {
 			$ui.errorWarnMsg =
 				'0 interactive chat points left. You can gain it by buying it from merchants or winnings battles.'
-
+			return
+		}
 		$misc.interactivePoints -= 1
 
 		if (!answer) return
