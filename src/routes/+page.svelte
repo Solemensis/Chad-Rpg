@@ -73,7 +73,6 @@
 							$coolDowns[key] = 50
 						}
 					}
-					console.log(answer)
 
 					//to handle a possible noLoot bug
 					if ($game.event[0].lootMode && !$game.lootBox.length) {
@@ -357,7 +356,6 @@
 		if (finalImg) {
 			reader.readAsDataURL(finalImg)
 		} else {
-			console.log('no image')
 			return
 		}
 
