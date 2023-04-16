@@ -70,7 +70,7 @@
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/cyberpunk.jpg" alt="UI of the Game" width="600">
 
-- An example storytelling scene from Cyberpunk world.
+- An example storytelling scene from upcoming Cyberpunk world.
 - Note that Cyberpunk world is not currently playable, yet it'll be on the way for sure.
 
 ## Final Thoughts
