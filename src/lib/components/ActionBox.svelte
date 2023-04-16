@@ -110,7 +110,6 @@
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
-			console.log($selectedItem)
 			return
 		}
 
@@ -164,7 +163,6 @@
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
-			console.log($selectedItem)
 
 			return
 		}
@@ -192,7 +190,6 @@
 			$selectedItem.healing = healing
 			$selectedItem.damage = undefined
 			$selectedItem.manaCost = manaCost
-			console.log($selectedItem)
 
 			return
 		}
@@ -231,7 +228,6 @@
 			$selectedItem.damage = 0
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
-			console.log($selectedItem)
 
 			return
 		}
@@ -328,7 +324,6 @@
 				$selectedItem.damage = damage
 				$selectedItem.other = true
 				$selectedItem.healing = undefined
-				console.log($selectedItem)
 
 				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
 				$character.inventory = newArray
@@ -340,10 +335,6 @@
 
 	function calculateCombatScore(damage: any) {
 		let dice = Math.floor(Math.random() * 20) + 1
-
-		console.log(damage)
-		console.log(dice)
-		console.log(damage * dice)
 
 		$misc.diceNumber = dice
 		return damage * dice
@@ -499,6 +490,12 @@
 		.mp-bar {
 			padding: 0;
 			/* font-size: 1.1rem; */
+		}
+	}
+
+	@media (orientation: portrait) and (min-width: 500px) {
+		.box img {
+			width: 60%;
 		}
 	}
 </style>

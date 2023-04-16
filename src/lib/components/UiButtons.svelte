@@ -197,14 +197,14 @@
 
 	.info-window span {
 		position: absolute;
-		bottom: 0.8rem;
-		left: 3%;
+		bottom: 0.4rem;
+		right: 2%;
 		color: #aaa;
 	}
 	.text-box {
 		display: flex;
 		justify-content: space-around;
-		margin-top: 3rem;
+		margin-top: 2.2rem;
 
 		/* padding: 0 5rem; */
 		padding: 0 8rem;

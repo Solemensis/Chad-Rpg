@@ -462,6 +462,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 2rem;
+		height: 30%;
 	}
 
 	.choices {
@@ -480,6 +481,7 @@
 			display: grid;
 			grid-template-columns: 1fr 1fr;
 			width: 85%;
+			height: 40%;
 		}
 		.choices {
 			grid-column-start: 1;
