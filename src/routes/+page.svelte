@@ -86,6 +86,8 @@
 
 					//to handle token limitation of gpt, delete the first 2 messages from array
 					//and do not exceed the limit of context tokens with this way.
+
+					// console.log(chatMessages.length)
 					if (chatMessages.length >= 16) {
 						chatMessages.splice(1, 2)
 					}
