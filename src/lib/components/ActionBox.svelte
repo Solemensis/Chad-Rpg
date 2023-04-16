@@ -125,7 +125,6 @@
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
-			console.log($misc.diceNumber)
 			return
 		}
 
