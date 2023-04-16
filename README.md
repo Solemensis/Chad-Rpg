@@ -1,10 +1,10 @@
-# An AI-driven interactive role-playing game.
+# An AI-driven interactive role-playing game
 
 - Working demo: https://chad-rpg.vercel.app/
 - Project video: ..
 
 
-## Play your own story! - A basic storytelling footage from the project:
+## Play Your Own Story - a simple storytelling footage from the game:
 
 
 
@@ -18,17 +18,17 @@
 
 ## Starting Screen
 
-<img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/main.jpg" alt="UI of the Game" width="800">
+<img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/entry.jpg" alt="UI of the Game" width="800">
 
 - You can see the game planning screen at top.
-- There is just 1 stable world type to play for now, but new starting conditions and world types will be added with time.
+- There is just 1 stable world type to play for now, but other starting conditions and world types will be added with time.
 
 
 ## Combat UI
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/combatui.jpg" alt="UI of the Game" width="800">
 
-- When enemies are ahead, choice ui will change to combat ui and player will be asked to select an action item or spell from the inventory/spells.
+- When enemies are ahead, choice ui will change, and player will be asked to select an action item or spell from the inventory/spells.
 - Then, player will throw a d20 dice (1 to 20); and combat story will be calculated based on the damage/healing of the selected item and the dice number, and some element of surprise sometimes.
 
 <div style="display:flex; justify-content:space-around;">
