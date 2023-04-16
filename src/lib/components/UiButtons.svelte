@@ -69,45 +69,53 @@
 			<div class="places-to-go">
 				<button
 					disabled={$misc.loading || $game.event[0].inCombat}
-					on:click={() => emitAnswer("I'll go to nearest Town.")}
+					on:click={() => emitAnswer("I'll go to nearest Tavern to rest.")}
 					transition:fade={{ delay: 0, duration: 100 }}
-					><img src="images/landscape-svgs/town.svg" alt="go town button" />
-					<p transition:fade={{ delay: 0, duration: 100 }}>Town</p></button
+					><img src="images/landscape-svgs/tavern.svg" alt="go tavern button" />
+					<p transition:fade={{ delay: 0, duration: 100 }}>Tavern</p></button
 				>
 				<button
 					disabled={$misc.loading || $game.event[0].inCombat}
-					on:click={() => emitAnswer("I'll go to nearest Woods.")}
+					on:click={() => emitAnswer("I'll go to nearest Town.")}
 					transition:fade={{ delay: 100, duration: 100 }}
+					><img src="images/landscape-svgs/town.svg" alt="go town button" />
+					<p transition:fade={{ delay: 100, duration: 100 }}>Town</p></button
+				>
+
+				<button
+					disabled={$misc.loading || $game.event[0].inCombat}
+					on:click={() => emitAnswer("I'll go to nearest Woods.")}
+					transition:fade={{ delay: 200, duration: 100 }}
 					><img src="images/landscape-svgs/forest.svg" alt="go woods button" />
-					<p transition:fade={{ delay: 100, duration: 100 }}>Woods</p></button
+					<p transition:fade={{ delay: 200, duration: 100 }}>Woods</p></button
 				>
 				<button
 					disabled={$misc.loading || $game.event[0].inCombat}
 					on:click={() => emitAnswer("I'll go to nearest Harbor.")}
-					transition:fade={{ delay: 200, duration: 100 }}
+					transition:fade={{ delay: 300, duration: 100 }}
 					><img src="images/landscape-svgs/dock.svg" alt="go harbor button" />
-					<p transition:fade={{ delay: 200, duration: 100 }}>Harbor</p></button
+					<p transition:fade={{ delay: 300, duration: 100 }}>Harbor</p></button
 				>
 				<button
 					disabled={$misc.loading || $game.event[0].inCombat}
 					on:click={() => emitAnswer("I'll go to weaponsmith.")}
-					transition:fade={{ delay: 300, duration: 100 }}
+					transition:fade={{ delay: 400, duration: 100 }}
 					><img src="images/landscape-svgs/shop1.svg" alt="go weaponsmith button" />
-					<p transition:fade={{ delay: 300, duration: 100 }}>Weaponsmith</p></button
+					<p transition:fade={{ delay: 400, duration: 100 }}>Weaponsmith</p></button
 				>
 				<button
 					disabled={$misc.loading || $game.event[0].inCombat}
 					on:click={() => emitAnswer("I'll go to spell shop.")}
-					transition:fade={{ delay: 400, duration: 100 }}
+					transition:fade={{ delay: 500, duration: 100 }}
 					><img src="images/landscape-svgs/shop2.svg" alt="go spell shop button" />
-					<p transition:fade={{ delay: 400, duration: 100 }}>Spell Shop</p></button
+					<p transition:fade={{ delay: 500, duration: 100 }}>Spell Shop</p></button
 				>
 				<button
 					disabled={$misc.loading || $game.event[0].inCombat}
 					on:click={() => emitAnswer("I'll go to potion shop.")}
-					transition:fade={{ delay: 500, duration: 100 }}
+					transition:fade={{ delay: 600, duration: 100 }}
 					><img src="images/landscape-svgs/shop3.svg" alt="go potion shop button" />
-					<p transition:fade={{ delay: 500, duration: 100 }}>Potion Shop</p></button
+					<p transition:fade={{ delay: 600, duration: 100 }}>Potion Shop</p></button
 				>
 			</div>
 		{/if}

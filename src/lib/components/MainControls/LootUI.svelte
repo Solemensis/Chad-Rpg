@@ -193,4 +193,10 @@
 	.g-span {
 		color: #3fcf8e;
 	}
+
+	/* @media (orientation: portrait) {
+		.shop-box {
+			height: 100%;
+		}
+	} */
 </style>
