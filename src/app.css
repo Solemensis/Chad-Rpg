@@ -86,9 +86,14 @@ button {
 		font-size: 130%;
 	}
 }
-@media (min-width: 2200px) and (max-width: 2650px) {
+@media (min-width: 2200px) and (max-width: 2649px) {
 	html {
 		font-size: 190%;
+	}
+}
+@media (min-width: 2650px) {
+	html {
+		font-size: 280%;
 	}
 }
 

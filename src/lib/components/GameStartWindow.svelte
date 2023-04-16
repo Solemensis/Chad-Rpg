@@ -216,4 +216,9 @@
 			font-size: 1rem;
 		}
 	}
+	@media (min-width: 2650px) {
+		button {
+			font-size: 0.9rem;
+		}
+	}
 </style>
