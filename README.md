@@ -8,7 +8,7 @@
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/entry.jpg" alt="UI of the Game" width="600">
 
 
-- You can see the game planning screen on top.
+- Game planning screen can be seen on top.
 - There is just 1 stable world type to play for now, but other starting conditions and world types will be added with time.
 
 ## Play Your Own Story | A simple storytelling footage from the game:
