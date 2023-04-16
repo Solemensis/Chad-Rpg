@@ -155,4 +155,11 @@
 	.dual-button button:nth-child(2):hover {
 		border: 2px solid rgb(129, 48, 18);
 	}
+
+	@media (orientation: portrait) {
+		.notification-window {
+			padding: 1.5rem 1.5rem;
+			border-radius: 0.2rem;
+		}
+	}
 </style>

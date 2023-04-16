@@ -132,7 +132,7 @@
 		align-items: start;
 
 		position: absolute;
-		bottom: 2.5rem;
+		bottom: 4.5rem;
 	}
 	.game-starter {
 		display: flex;
@@ -190,23 +190,28 @@
 	@media (orientation: portrait) {
 		.starting-screen {
 			width: 85%;
-			height: 85%;
+			height: 80%;
 		}
 		.heading-box {
-			top: 2rem;
+			top: 3rem;
+		}
+		.heading-box button {
+			display: none;
 		}
 		.game-starters {
-			bottom: 5rem;
+			top: 50%;
+			transform: translateY(-50%);
+			align-items: center;
+			bottom: 2rem;
 		}
 		.game-starter {
 			flex-direction: column;
-			gap: 1rem;
-			width: 80%;
-			align-items: start;
+			align-items: center;
 		}
 		h1 {
-			font-size: 2.1rem;
+			font-size: 2.2rem;
 		}
+
 		.game-explanation button {
 			font-size: 1rem;
 		}
