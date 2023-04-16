@@ -32,6 +32,16 @@
 		}
 		audioElement.paused ? audioElement.play() : audioElement.pause()
 	}
+
+	function toggleFullScreen() {
+		if (!document.fullscreenElement) {
+			document.documentElement.requestFullscreen()
+		} else {
+			if (document.exitFullscreen) {
+				document.exitFullscreen()
+			}
+		}
+	}
 </script>
 
 <div>
@@ -39,6 +49,13 @@
 	{#if $game.started}
 		<button class="song-icon" transition:fade={{ duration: 500 }} on:click={() => startSong()}>
 			<img src="images/music.svg" alt="music button" />
+		</button>
+		<button
+			transition:fade={{ duration: 500 }}
+			class="fullscreen-icon"
+			on:click={() => toggleFullScreen()}
+		>
+			<img src="images/fullscreen.svg" alt="fullscreen button" />
 		</button>
 	{/if}
 	<!--  map and places  -->
@@ -271,6 +288,20 @@
 	}
 	.song-icon img {
 		width: 4rem;
+	}
+	.fullscreen-icon {
+		position: absolute;
+		right: 2.2rem;
+		top: 6rem;
+		opacity: 0.5;
+		transition: 0.1s;
+		cursor: pointer;
+	}
+	.fullscreen-icon:hover {
+		opacity: 0.8;
+	}
+	.fullscreen-icon img {
+		width: 2.5rem;
 	}
 	.map-and-places button {
 		cursor: pointer;

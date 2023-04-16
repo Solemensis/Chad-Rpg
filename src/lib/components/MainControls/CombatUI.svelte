@@ -25,19 +25,22 @@
 		}
 
 		//lower the player hp (with a little buff if the dice is 1)
-		if ($selectedItem.damage != 0 && !$selectedItem.other) {
-			if ($misc.diceNumber == 1) {
-				$misc.diceNumber = 2
-				$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
-			} else {
-				//if dice is greater than 15, do not lower hp
-				if ($misc.diceNumber > 15) {
-					$character.stats[0].hp = $character.stats[0].hp
-				} else {
+		if ($game.enemy[0] && $game.enemy[0].enemyHp)
+			if ($selectedItem.damage != 0 && !$selectedItem.other) {
+				if ($misc.diceNumber == 1) {
+					$misc.diceNumber = 2
 					$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+				} else {
+					//if dice is greater than 15, do not lower hp
+					if ($misc.diceNumber > 15) {
+						$character.stats[0].hp = $character.stats[0].hp
+					} else {
+						$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+					}
 				}
+			} else {
+				$character.stats[0].hp -= 5
 			}
-		}
 
 		//a timeout to show the dice number to player for a sec.
 		diceThrown = true

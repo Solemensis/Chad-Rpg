@@ -317,8 +317,11 @@
 				matchingPlaces = 'Inn'
 			} else if (matchingPlaces.includes('Outskirts')) {
 				matchingPlaces = 'Forest'
+			} else if (matchingPlaces.includes('Garden')) {
+				matchingPlaces = 'Garden'
+			} else if (matchingPlaces.includes('River')) {
+				matchingPlaces = 'River'
 			}
-
 			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
 		}
 
