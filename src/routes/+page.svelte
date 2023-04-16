@@ -292,7 +292,7 @@
 		$game.event = []
 		$selectedItem = {}
 		$character.stats = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
-		$character.gold = 1900
+		$character.gold = 100
 		$character.spells = [...medievalStarterSpells]
 		$character.inventory = [...medievalStarterInventory]
 
