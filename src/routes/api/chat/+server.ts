@@ -54,6 +54,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
 Use these races for monsters randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
 Use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
+Use these weapon classes for lootBox weapons: ["sword", "dagger", "bow", "mace", "sword", "spear", "axe", "flail", "mace"]
+Use these spell elements for lootBox spells: ["light", "fire", "dark", "ice", "lightning", "toxic"]
+
 There are 2 unique spells in this game; Teleportation and Summon spells.
 
 
@@ -75,6 +78,7 @@ Everything in tavern will be free, so drinks, foods and a room to sleep will be 
 
 Damage points of items in @lootBox can be maximum 9.
 Gold in @lootBox can be maximum 200.
+
 
 if "shopMode" is not null, give no @choices! 
 if "inCombat" is true, give no @choices!
