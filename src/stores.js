@@ -35,7 +35,8 @@ export const misc = writable({
 	time: '00:00',
 	place: '',
 	currentImg: '',
-	death: false
+	death: false,
+	interactivePoints: 2
 })
 
 export const bgImage = writable({

@@ -23,8 +23,26 @@
 		})
 
 		//choice transition delay reset for every new conversation
-
 		delay = -300
+
+		//
+	}
+
+	function emitInteractiveAnswer(answer: any) {
+		if ($misc.interactivePoints == 0) return
+
+		$misc.interactivePoints -= 1
+
+		if (!answer) return
+
+		dispatch('emittedAnswer', {
+			answer: answer
+		})
+
+		//choice transition delay reset for every new conversation
+		delay = -300
+
+		//
 	}
 </script>
 
@@ -42,11 +60,13 @@
 	{#if $game.choices.length >= 2}
 		<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choice choiceInput">
 			<input
-				placeholder="Go to local Inn, find someone to talk to"
+				placeholder="Write your own answer. ({$misc.interactivePoints} interactive chat points left)"
 				type="text"
 				bind:value={$misc.query}
 			/>
-			<button disabled={$misc.loading} on:click={() => emitAnswer($misc.query)}>Answer</button>
+			<button disabled={$misc.loading} on:click={() => emitInteractiveAnswer($misc.query)}
+				>Answer</button
+			>
 		</div>
 	{/if}
 </div>
