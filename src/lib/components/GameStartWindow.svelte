@@ -132,7 +132,7 @@
 		align-items: start;
 
 		position: absolute;
-		bottom: 4.5rem;
+		bottom: 3.5rem;
 	}
 	.game-starter {
 		display: flex;
