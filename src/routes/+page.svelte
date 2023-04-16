@@ -305,7 +305,7 @@
 	//fetch img according to player's current place from database
 	async function fetchImg() {
 		// check if place is the same
-		if ($game.placeAndTime[0].place == $misc.curentImg) return
+		if ($game.placeAndTime[0].place == $misc.currentImg) return
 
 		const places: any = [...staticPlaces]
 
@@ -372,7 +372,7 @@
 			}
 		}
 
-		$misc.curentImg = $misc.place
+		$misc.currentImg = $misc.place
 	}
 
 	let logged: boolean = false

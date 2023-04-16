@@ -1,9 +1,5 @@
 <script lang="ts">
 	import { bgImage } from '../../stores.js'
-
-	// function to get a random number from imgs.length
-
-	// let time: string = ''
 </script>
 
 <!-- background images (out of ui)-->
