@@ -126,8 +126,8 @@
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
-			console.log($misc.diceNumber)
-			console.log($selectedItem.prompt)
+			// console.log($misc.diceNumber)
+			// console.log($selectedItem.prompt)
 
 			return
 		}
@@ -198,8 +198,8 @@
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
-			console.log($misc.diceNumber)
-			console.log($selectedItem.prompt)
+			// console.log($misc.diceNumber)
+			// console.log($selectedItem.prompt)
 			return
 		}
 

@@ -188,7 +188,8 @@
 						</ul>
 					</div>
 				</div>
-				<span>Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span>
+				<span class="span1">ulassacli@outlook.com - github/Solemensis</span>
+				<span class="span2">Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span>
 			</div>
 		</div>
 	{/if}
@@ -221,7 +222,13 @@
 		width: 2rem;
 	}
 
-	.info-window span {
+	.span1 {
+		position: absolute;
+		bottom: 0.4rem;
+		left: 2%;
+		color: #aaa;
+	}
+	.span2 {
 		position: absolute;
 		bottom: 0.4rem;
 		right: 2%;

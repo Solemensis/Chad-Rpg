@@ -95,6 +95,7 @@ There are 3 potions in the game. "Health Potion", "Mana Potion" and "Interactive
 
 There are no accessory or armor in the game as lootable. There are just weapons, spells, potions and currencies.
 
+
 you are forgetting to put "@story" at the beginning of the story you tell. Put "@story" to the beginning of the story always.
 you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is no enemy to fight.
 
@@ -111,6 +112,8 @@ do not end the game by yourself and give @choices always.
 
 inCombat will only be true when enemies have spotted the player!
 shopMode will only change if player starts to talk a seller npc!
+
+There is an escape functionality in the game. If player wants to escape from a combat, do not avoid it! Let the player escape.
 
 fill @lootBox only if player DECIDES to check a loot! 
 
@@ -156,7 +159,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		reqMessages.forEach((msg) => {
 			const tokens = getTokens(msg.content)
 			tokenCount += tokens
-			console.log('tokencount: ' + tokenCount)
+			// console.log('tokencount: ' + tokenCount)
 		})
 
 		if (tokenCount >= 4000) {
