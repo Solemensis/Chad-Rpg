@@ -33,7 +33,7 @@
 			<Combat on:emittedAnswer={handleEmittedAnswer} />
 		{:else if $game.event[0] && $game.event[0].shopMode && !$misc.death}
 			<Shop />
-		{:else if $game.event[0] && $game.event[0].lootMode && $game.lootBox.length && !$misc.death}
+		{:else if $game.event[0] && $game.event[0].lootMode && !$misc.death}
 			<Loot on:emittedAnswer={handleEmittedAnswer} />
 		{:else if $misc.death}
 			<Death />
