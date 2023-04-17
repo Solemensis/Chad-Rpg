@@ -108,6 +108,7 @@
 			{:else}
 				{#each $game.lootBox as item}
 					<button
+						disabled={$misc.loading}
 						class="item-button"
 						on:click={() => lootItem(item)}
 						on:mousemove={(event) => handleMouseMove(event, item)}
@@ -124,7 +125,7 @@
 						{/if}
 					</button>
 				{/each}
-				<button on:click={() => lootAll()}>Loot All</button>
+				<button disabled={$misc.loading} on:click={() => lootAll()}>Loot All</button>
 			{/if}
 		</div>
 	</div>
