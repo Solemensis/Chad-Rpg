@@ -96,6 +96,7 @@ There are 3 potions in the game. "Health Potion", "Mana Potion" and "Interactive
 There are no accessory or armor in the game as lootable. There are just weapons, spells, potions and currencies.
 
 
+
 you are forgetting to put "@story" at the beginning of the story you tell. Put "@story" to the beginning of the story always.
 you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is no enemy to fight.
 

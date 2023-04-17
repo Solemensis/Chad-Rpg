@@ -376,10 +376,11 @@
 				matchingPlaces = 'River'
 			} else if (matchingPlaces.includes('Island')) {
 				matchingPlaces = 'Island'
+			} else if (matchingPlaces.includes('Village')) {
+				matchingPlaces = 'Village'
 			}
 			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
 		}
-
 		//list images to get the image amount
 		const { data: imgs } = await supabase.storage.from('imgs').list(checkPlace($misc.place), {
 			limit: 100,
