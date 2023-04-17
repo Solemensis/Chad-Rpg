@@ -119,7 +119,7 @@
 					//and do not exceed the limit of context tokens with this way.
 
 					// console.log(chatMessages.length)
-					if (chatMessages.length >= 16) {
+					if (chatMessages.length >= 14) {
 						chatMessages.splice(1, 2)
 					}
 
