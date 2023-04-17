@@ -151,4 +151,11 @@
 	.stat p {
 		font-size: 1.2rem;
 	}
+
+	@media (orientation: portrait) {
+		.night-time {
+			font-size: 0.9rem;
+			padding: 0.35rem 0.6rem;
+		}
+	}
 </style>

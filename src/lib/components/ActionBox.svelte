@@ -64,7 +64,7 @@
 	function useItem(item: any) {
 		$selectedItem = {}
 		const { type, name, damage, manaCost, healing, mana, cooldown, point } = item
-		let { mp, maxMp, hp, maxHp } = $character.stats[0]
+		const { mp, maxMp, hp, maxHp } = $character.stats[0]
 		const { inCombat, shopMode } = $game.event[0]
 
 		if (type === 'weapon') {
@@ -215,7 +215,7 @@
 			$coolDowns[name] = cooldown
 			$selectedItem.combatScore = calculateCombatScore(healing)
 
-			$selectedItem.prompt = `Heal myself with ${name} spell by ${$selectedItem.combatScore} amount.`
+			$selectedItem.prompt = `Heal myself with ${name} spell by ${$selectedItem.combatScore} amount, and continue combat.`
 			$selectedItem.name = name
 			$selectedItem.healing = healing
 			$selectedItem.damage = undefined

@@ -63,4 +63,28 @@
 	.new-game:hover {
 		transform: translate(-50%, -50%) scale(0.97);
 	}
+
+	@media (orientation: portrait) {
+		.death {
+			min-height: 95%;
+		}
+		.death-box {
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+		}
+		.you-died {
+			position: relative;
+			transform: none;
+			top: 0;
+			left: 0;
+		}
+		.new-game {
+			position: relative;
+			transform: none;
+			top: 0;
+			left: 0;
+			margin: 0;
+		}
+	}
 </style>

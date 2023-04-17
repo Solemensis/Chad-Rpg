@@ -318,4 +318,16 @@
 	.g-span {
 		color: #3fcf8e;
 	}
+
+	@media (orientation: portrait) {
+		.combat {
+			min-height: 90%;
+		}
+		li {
+			font-size: 0.9rem;
+		}
+		h3 {
+			font-size: 1.15rem !important;
+		}
+	}
 </style>

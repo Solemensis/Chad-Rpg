@@ -58,7 +58,7 @@
 			emitAnswer(
 				"I've looted all. What should i do now..? (clear the @lootBox array in your next response!)"
 			)
-			$game.event[0].lootMode = false
+			$game.event[0].lootMode = null
 		}
 
 		hideWindow()
@@ -86,7 +86,7 @@
 			emitAnswer(
 				"I've looted all. What should i do now..? (clear the @lootBox array in your next response!)"
 			)
-			$game.event[0].lootMode = false
+			$game.event[0].lootMode = null
 		}
 	}
 
@@ -194,9 +194,9 @@
 		color: #3fcf8e;
 	}
 
-	/* @media (orientation: portrait) {
-		.shop-box {
-			height: 100%;
+	@media (orientation: portrait) {
+		.shop {
+			min-height: 90%;
 		}
-	} */
+	}
 </style>

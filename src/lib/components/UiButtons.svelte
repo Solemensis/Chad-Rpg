@@ -60,7 +60,7 @@
 	{/if}
 	<!--  map and places  -->
 	<div class="map-and-places">
-		{#if $game.started}
+		{#if $game.started && !$misc.death}
 			<button transition:fade={{ duration: 500 }} on:click={() => (mapOn = !mapOn)}>
 				<img src="images/map.svg" alt="map button" />
 			</button>
@@ -362,12 +362,12 @@
 	}
 
 	@media (orientation: portrait) {
-		.map-and-places {
-			/* display: none; */
-		}
 		.map-and-places p {
-			color: yellow;
+			background-color: rgba(38, 38, 38, 0.878);
+			border-radius: 0.3rem;
+			color: #eee;
 		}
+
 		.game-info-button {
 			display: none;
 		}

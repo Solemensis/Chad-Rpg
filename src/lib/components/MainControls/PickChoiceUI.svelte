@@ -137,4 +137,10 @@
 	.choiceInput button:hover {
 		background-color: #a61ce186;
 	}
+
+	@media (orientation: portrait) {
+		.choiceInput button {
+			font-size: 1rem;
+		}
+	}
 </style>
