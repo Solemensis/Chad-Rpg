@@ -69,6 +69,7 @@
 
 		if (type === 'weapon') {
 			if (shopMode) return
+			if (!damage) return ($ui.errorWarnMsg = 'You can only sell that item.')
 			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
@@ -134,7 +135,7 @@
 
 		if (type === 'destruction spell') {
 			if (shopMode) return
-
+			if (!damage) return ($ui.errorWarnMsg = 'You can only sell that item.')
 			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
 			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
 			if ($coolDowns[name] && $coolDowns[name] < cooldown)
@@ -242,7 +243,7 @@
 				return ($ui.errorWarnMsg =
 					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
 			$coolDowns[name] = cooldown
-			$selectedItem.combatScore = calculateCombatScore(1)
+			$selectedItem.combatScore = calculateCombatScore(1, type)
 
 			if (name == 'Summon') {
 				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 5) {
@@ -335,14 +336,14 @@
 
 				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
 					if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-						$selectedItem.prompt = `Attack with ${name}! (give a bad @story, where player lands a unlucky attack, which leads to player giving only ${$selectedItem.combatScore} damage to enemy.)`
+						$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 					} else {
 						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 					}
 				}
 				if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
 					if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-						$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} damage to enemy.)`
+						$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
 					} else {
 						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 					}
@@ -350,7 +351,7 @@
 
 				if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
 					if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
-						$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} damage.)`
+						$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 					} else {
 						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 					}
@@ -369,6 +370,8 @@
 				$character.inventory = newArray
 				hideWindow()
 				return
+			} else {
+				return ($ui.errorWarnMsg = 'You can only sell this item.')
 			}
 		}
 	}

@@ -36,6 +36,11 @@
 		$selectedItem = {}
 		if (!$game.event[0].shopMode) return
 
+		if (!item.price) {
+			let newArray: any = $character.inventory.filter((obj: any) => obj.name !== item.name)
+			$character.inventory = newArray
+		}
+
 		$character.gold += item.price
 
 		if (!item.element) {

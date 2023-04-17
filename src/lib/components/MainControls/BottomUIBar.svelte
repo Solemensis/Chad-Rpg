@@ -69,7 +69,9 @@
 					class="leave-button"
 					style="opacity: {$game.event[0].shopMode ? '1' : '0'};"
 					on:click={() => {
-						leaveButton('Leave the shop')
+						leaveButton(
+							'I will leave to shop. (shopMode must be null in the next response, and player must be leaving the shop.)'
+						)
 						$game.event[0].shopMode = null
 					}}>Leave the Shop</button
 				>

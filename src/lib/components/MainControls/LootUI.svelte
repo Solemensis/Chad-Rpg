@@ -49,6 +49,9 @@
 			$character.spells = $character.spells
 		} else if (item.type == 'currency') {
 			$character.gold += parseInt(item.amount)
+		} else {
+			$character.inventory.push(item)
+			$character.inventory = $character.inventory
 		}
 
 		let newArray: any = $game.lootBox.filter((lootItem: any) => lootItem.name !== item.name)
@@ -77,6 +80,9 @@
 				$character.spells = $character.spells
 			} else if (item.type == 'currency') {
 				$character.gold += parseInt(item.amount)
+			} else {
+				$character.inventory.push(item)
+				$character.inventory = $character.inventory
 			}
 		})
 
@@ -116,12 +122,12 @@
 					>
 						{#if item.type == 'weapon'}
 							<img class="buyable-img" src="images/{item.weaponClass}.svg" alt="a weapon" />
-						{/if}
-						{#if item.element}
+						{:else if item.element}
 							<img class="buyable-img" src="images/{item.element}.svg" alt="a spell" />
-						{/if}
-						{#if item.type == 'potion' || item.type == 'currency'}
+						{:else if item.type == 'potion' || item.type == 'currency'}
 							<img class="buyable-img" src="images/{item.type}.svg" alt="a lootable item" />
+						{:else}
+							<img class="buyable-img" src="images/item.svg" alt="a lootable item" />
 						{/if}
 					</button>
 				{/each}
