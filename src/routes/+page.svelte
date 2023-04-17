@@ -39,6 +39,9 @@
 	let story: string = ''
 	let chatMessages: ChatCompletionRequestMessage[] = []
 
+	//a variable to carry the enemy into the client-side for app reliability
+	let enemyOnFrontend: boolean = false
+
 	const handleSubmit = async () => {
 		if ($misc.query === '') {
 			return
@@ -67,6 +70,7 @@
 					$misc.loading = false
 					logged = false
 
+					console.log(answer)
 					//if combat is over, reset the cooldowns of spells
 					if (!$game.event[0].inCombat) {
 						for (let key in $coolDowns) {
@@ -74,14 +78,41 @@
 						}
 					}
 
+					// if enemy dies, clear it from frontend
+					if (
+						$game.event[0] &&
+						$game.event[0].inCombat &&
+						$game.enemy[0] &&
+						$game.enemy[0].enemyHp
+					) {
+						if ($game.enemy[0].enemyHp <= 0) {
+							enemyOnFrontend = false
+						}
+					} else {
+						enemyOnFrontend = false
+					}
+
 					//to handle a possible combat bug
+					if ($game.event[0].inCombat && $game.enemy[0]) {
+						enemyOnFrontend = true
+					}
 					if ($game.event[0].inCombat && !$game.enemy[0]) {
 						$game.event[0].inCombat = false
+						$game.enemy = []
+						enemyOnFrontend = false
+					}
+					if (!$game.event[0].inCombat && $game.enemy[0]) {
+						$game.event[0].inCombat = false
+						$game.enemy = []
+
+						enemyOnFrontend = false
 					}
 
 					//to handle a possible noLoot bug
 					if ($game.event[0].lootMode && !$game.lootBox.length) {
-						$game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
+						// $game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
+						$game.event[0].lootMode = false
+						$game.lootBox = []
 					}
 
 					//to handle token limitation of gpt, delete the first 2 messages from array
@@ -206,7 +237,15 @@
 		}
 
 		if (enemyMatch) {
-			$game.enemy = JSON.parse(enemyMatch[1])
+			if (enemyOnFrontend == false) {
+				$game.enemy = JSON.parse(enemyMatch[1])
+
+				//
+				if ($game.enemy[0] && $game.enemy[0].enemyHp) {
+					$game.enemy[0].enemyMaxHp = $game.enemy[0].enemyHp
+				}
+				//
+			}
 		}
 
 		if (lootBoxMatch) {

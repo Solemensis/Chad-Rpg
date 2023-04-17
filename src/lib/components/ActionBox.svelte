@@ -76,9 +76,10 @@
 			let takenDamage: any
 			if ($game.enemy[0] && $game.enemy[0].enemyHp) {
 				if ($misc.diceNumber == 1) {
-					$misc.diceNumber = 2
+					takenDamage = Math.floor($game.enemy[0].enemyHp / 2)
+				} else {
+					takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
 				}
-				takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
 			} else {
 				takenDamage = 5
 			}
@@ -89,7 +90,7 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} total damage but giving ${$selectedItem.combatScore} total damage back. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving a massive damage but giving a little damage back at least. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
@@ -100,7 +101,7 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} total damage to enemy but taking ${takenDamage} total damage back. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
@@ -112,7 +113,7 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} total damage but receiving ${takenDamage} total damage back. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
@@ -125,6 +126,9 @@
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
+			console.log($misc.diceNumber)
+			console.log($selectedItem.prompt)
+
 			return
 		}
 
@@ -143,9 +147,10 @@
 			let takenDamage: any
 			if ($game.enemy[0] && $game.enemy[0].enemyHp) {
 				if ($misc.diceNumber == 1) {
-					$misc.diceNumber = 2
+					takenDamage = Math.floor($game.enemy[0].enemyHp / 2)
+				} else {
+					takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
 				}
-				takenDamage = Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
 			} else {
 				takenDamage = 5
 			}
@@ -156,7 +161,7 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving ${takenDamage} total damage but giving ${$selectedItem.combatScore} total damage back. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving a massive damage but giving a little damage back at least. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
 				}
@@ -167,7 +172,7 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving ${$selectedItem.combatScore} total damage to enemy but taking ${takenDamage} total damage back. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre @story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
 				}
@@ -179,21 +184,22 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name}! (give a great @story where player lands a powerful attack, giving ${$selectedItem.combatScore} total damage but receiving ${takenDamage} total damage back. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name}! spell! (give a great @story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
+					$selectedItem.prompt = `Attack with ${name}! spell! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 
 			if ($selectedItem.combatScore >= 85) {
-				$selectedItem.prompt = `Attack with ${name}! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the combat.)`
+				$selectedItem.prompt = `Attack with ${name}! spell! (Create an epic @story where player unleashes a devastating attack, wiping out the enemy end winning the combat.)`
 			}
 
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
-
+			console.log($misc.diceNumber)
+			console.log($selectedItem.prompt)
 			return
 		}
 
@@ -202,7 +208,9 @@
 
 			if (hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
 			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
-			if ($coolDowns[name] && $coolDowns[name] < cooldown) return ($ui.errorWarnMsg = 'On cooldown')
+			if ($coolDowns[name] && $coolDowns[name] < cooldown)
+				return ($ui.errorWarnMsg =
+					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
 			if (!inCombat) {
 				emitAnswer(`Heal myself with ${name} spell by ${calculateCombatScore(healing)} amount.)`)
 				$character.stats[0].hp += calculateCombatScore(healing)
@@ -215,7 +223,7 @@
 			$coolDowns[name] = cooldown
 			$selectedItem.combatScore = calculateCombatScore(healing)
 
-			$selectedItem.prompt = `Heal myself with ${name} spell by ${$selectedItem.combatScore} amount, and continue combat.`
+			$selectedItem.prompt = `Heal myself with ${name} spell by ${$selectedItem.combatScore} amount.`
 			$selectedItem.name = name
 			$selectedItem.healing = healing
 			$selectedItem.damage = undefined

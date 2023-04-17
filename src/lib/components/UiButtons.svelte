@@ -363,13 +363,14 @@
 
 	@media (orientation: portrait) {
 		.map-and-places p {
-			background-color: rgba(38, 38, 38, 0.878);
+			background-color: rgb(77, 19, 101, 0.8);
 			border-radius: 0.3rem;
 			color: #eee;
 		}
 
 		.game-info-button {
 			display: none;
+			padding: 0 0.1rem;
 		}
 
 		.fullscreen-icon {

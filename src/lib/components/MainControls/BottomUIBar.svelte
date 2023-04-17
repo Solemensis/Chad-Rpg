@@ -18,6 +18,7 @@
 		} else {
 			emitAnswer('You have escaped succesfully!')
 			$game.event[0].inCombat = false
+			$game.enemy = []
 		}
 	}
 

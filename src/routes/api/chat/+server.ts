@@ -88,7 +88,7 @@ if "inCombat" is true, give no @choices!
 
 put everything story and conversation related into @story, no where else!
 
-do NOT give "Check your inventory", "Check my equipment" and "Drink a potion" choices in @choices ever. These are out of concept responses for the game.
+"Check your inventory", "Check my equipment" and "Drink a potion" choices are forbidden. Do not give them as @choices.
 
 There are 3 potions in the game. "Health Potion", "Mana Potion" and "Interactive Chat Potion"
 "Interactive Chat Potion" always give 1 point.
@@ -156,7 +156,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		reqMessages.forEach((msg) => {
 			const tokens = getTokens(msg.content)
 			tokenCount += tokens
-			// console.log('tokencount: ' + tokenCount)
+			console.log('tokencount: ' + tokenCount)
 		})
 
 		if (tokenCount >= 4000) {

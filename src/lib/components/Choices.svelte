@@ -29,7 +29,7 @@
 	<div class="ui-mid">
 		{#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode && !$misc.death}
 			<PickChoice on:emittedAnswer={handleEmittedAnswer} />
-		{:else if $game.event[0] && $game.event[0].inCombat && !$misc.death}
+		{:else if $game.event[0] && $game.event[0].inCombat && $game.enemy[0] && !$misc.death}
 			<Combat on:emittedAnswer={handleEmittedAnswer} />
 		{:else if $game.event[0] && $game.event[0].shopMode && !$misc.death}
 			<Shop />

@@ -19,28 +19,36 @@
 	async function throwDice(combatEvent: any) {
 		if (!combatEvent.name) return ($ui.errorWarnMsg = 'You need to choose a weapon or spell.')
 
-		//give it a cooldown time
+		//give the skill a cooldown time (actually everything, but works only for spells)
 		if ($coolDowns[combatEvent.name]) {
 			$coolDowns[combatEvent.name] = 0
 		}
 
-		//lower the player hp (with a little buff if the dice is 1)
-		if ($game.enemy[0] && $game.enemy[0].enemyHp)
-			if ($selectedItem.damage != 0 && !$selectedItem.other) {
-				if ($misc.diceNumber == 1) {
-					$misc.diceNumber = 2
-					$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
-				} else {
-					//if dice is greater than 15, do not lower hp
-					if ($misc.diceNumber > 15) {
-						$character.stats[0].hp = $character.stats[0].hp
-					} else {
+		//if a weapon or destruction spell choosen:
+		if (combatEvent.damage) {
+			//lower the player hp (with a little buff if the dice is 1)
+			if ($game.enemy[0] && $game.enemy[0].enemyHp)
+				if ($selectedItem.damage != 0 && !$selectedItem.other) {
+					if ($misc.diceNumber == 1) {
+						$misc.diceNumber = 2
 						$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+					} else {
+						//if dice is greater than 15, do not lower hp
+						if ($misc.diceNumber > 15) {
+							$character.stats[0].hp = $character.stats[0].hp
+						} else {
+							$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+						}
 					}
+				} else {
+					$character.stats[0].hp -= 5
 				}
-			} else {
-				$character.stats[0].hp -= 5
+
+			//lower the enemy hp
+			if ($game.enemy[0] && $game.enemy[0].enemyHp) {
+				$game.enemy[0].enemyHp -= $selectedItem.combatScore
 			}
+		}
 
 		//a timeout to show the dice number to player for a sec.
 		diceThrown = true
@@ -89,6 +97,12 @@
 			answer: answer
 		})
 	}
+
+	// enemy hp bar calculation
+	$: hpPercentage =
+		$game.enemy[0] && $game.enemy[0].enemyHp
+			? ($game.enemy[0].enemyHp / $game.enemy[0].enemyMaxHp) * 100
+			: 100
 </script>
 
 <!-- combat ui -->
@@ -102,7 +116,7 @@
 						<h5>{capitalizeFirstLetter($game.enemy[0].enemyName)}</h5>
 
 						<div
-							style="background-image: linear-gradient(to right, #E1683Caa 100%, #1f1f1fc8);"
+							style="background-image: linear-gradient(to right, #E1683Caa {hpPercentage}%, #1f1f1fc8 {hpPercentage}%);"
 							class="enemy"
 						>
 							<p>

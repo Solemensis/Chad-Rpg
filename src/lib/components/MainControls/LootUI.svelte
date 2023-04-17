@@ -58,7 +58,7 @@
 			emitAnswer(
 				"I've looted all. What should i do now..? (clear the @lootBox array in your next response!)"
 			)
-			$game.event[0].lootMode = null
+			$game.event[0].lootMode = false
 		}
 
 		hideWindow()
@@ -86,7 +86,7 @@
 			emitAnswer(
 				"I've looted all. What should i do now..? (clear the @lootBox array in your next response!)"
 			)
-			$game.event[0].lootMode = null
+			$game.event[0].lootMode = false
 		}
 	}
 
