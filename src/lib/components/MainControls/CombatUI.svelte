@@ -172,7 +172,7 @@
 						/>
 					{:else}
 						<p transition:fade={{ duration: 300 }} class="diceNumber">
-							{$misc.diceNumber}<span>/20</span>
+							{$misc.diceNumber}<span>/23</span>
 						</p>
 					{/if}
 				</button>

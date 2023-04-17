@@ -29,7 +29,7 @@
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/combatui.jpg" alt="UI of the Game" width="600">
 
 - When enemies are ahead, choice ui will change, and player will be asked to select an action item or spell from the inventory/spells.
-- Then, player will throw a d20 dice (1 to 20); and combat story will be calculated based on the damage/healing of the selected item and the dice number, plus, some element of surprise sometimes.
+- Then, player will throw a dice. Dice will be between 1 and 20 if the choosen item is a weapon, but will be between 1 and 23 if the choosen item is a spell; and combat story will be calculated based on the damage/healing of the selected item and the dice number, plus, some element of surprise sometimes.
 
 <div style="display:flex; justify-content:space-around;">
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/combat2.jpg" alt="UI of the Game" width="400">

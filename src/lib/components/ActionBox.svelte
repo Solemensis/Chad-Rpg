@@ -71,7 +71,7 @@
 			if (shopMode) return
 			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
 
-			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
+			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
 
 			let takenDamage: any
 			if ($game.enemy[0] && $game.enemy[0].enemyHp) {
@@ -126,8 +126,8 @@
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
-			// console.log($misc.diceNumber)
-			// console.log($selectedItem.prompt)
+			console.log($misc.diceNumber)
+			console.log($selectedItem.prompt)
 
 			return
 		}
@@ -142,7 +142,7 @@
 					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
 			$coolDowns[name] = cooldown
 
-			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
+			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
 
 			let takenDamage: any
 			if ($game.enemy[0] && $game.enemy[0].enemyHp) {
@@ -198,8 +198,8 @@
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
-			// console.log($misc.diceNumber)
-			// console.log($selectedItem.prompt)
+			console.log($misc.diceNumber)
+			console.log($selectedItem.prompt)
 			return
 		}
 
@@ -212,8 +212,10 @@
 				return ($ui.errorWarnMsg =
 					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
 			if (!inCombat) {
-				emitAnswer(`Heal myself with ${name} spell by ${calculateCombatScore(healing)} amount.)`)
-				$character.stats[0].hp += calculateCombatScore(healing)
+				emitAnswer(
+					`Heal myself with ${name} spell by ${calculateCombatScore(healing, type)} amount.)`
+				)
+				$character.stats[0].hp += calculateCombatScore(healing, type)
 				if ($character.stats[0].hp > $character.stats[0].maxHp) {
 					$character.stats[0].hp = $character.stats[0].maxHp
 				}
@@ -221,7 +223,7 @@
 			}
 
 			$coolDowns[name] = cooldown
-			$selectedItem.combatScore = calculateCombatScore(healing)
+			$selectedItem.combatScore = calculateCombatScore(healing, type)
 
 			$selectedItem.prompt = `Heal myself with ${name} spell by ${$selectedItem.combatScore} amount.`
 			$selectedItem.name = name
@@ -329,7 +331,7 @@
 			if (mana && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
 			if (healing || (mana && inCombat)) return ($ui.errorWarnMsg = "You can't consume in combat.")
 			if (damage) {
-				$selectedItem.combatScore = Math.floor(calculateCombatScore(damage))
+				$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
 
 				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
 					if ($game.enemy[0].enemyHp > $selectedItem.combatScore) {
@@ -371,8 +373,15 @@
 		}
 	}
 
-	function calculateCombatScore(damage: any) {
-		let dice = Math.floor(Math.random() * 20) + 1
+	function calculateCombatScore(damage: any, type: any) {
+		let dice
+		if (type == 'weapon') {
+			//if type is weapon, max dice number is 20.
+			dice = Math.floor(Math.random() * 20) + 1
+		} else {
+			//if type is spell, max dice number is 23.
+			dice = Math.floor(Math.random() * 23) + 1
+		}
 
 		$misc.diceNumber = dice
 		return damage * dice
