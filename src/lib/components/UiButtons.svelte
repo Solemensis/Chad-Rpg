@@ -363,11 +363,17 @@
 
 	@media (orientation: portrait) {
 		.map-and-places p {
-			background-color: rgb(77, 19, 101, 0.8);
 			border-radius: 0.3rem;
 			color: #eee;
 		}
-
+		.places-to-go button {
+			background-color: rgba(57, 57, 57, 0.91);
+			padding: 0.7rem 0.2rem 0.2rem 0.2rem;
+			border-radius: 0.3rem;
+		}
+		.places-to-go button p {
+			font-size: 0.8rem;
+		}
 		.game-info-button {
 			display: none;
 			padding: 0 0.1rem;

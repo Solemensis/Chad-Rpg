@@ -160,7 +160,7 @@
 	@media (orientation: portrait) {
 		.notification-window {
 			padding: 1.5rem 1.5rem;
-			border-radius: 0.2rem;
+			border-radius: 0.5rem;
 		}
 	}
 </style>
