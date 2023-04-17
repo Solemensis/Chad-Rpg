@@ -30,7 +30,7 @@
 	function leaveButton(leaveString: any) {
 		emitAnswer(leaveString)
 
-		$game.event[0].shopMode = false
+		$game.event[0].shopMode = null
 		$game.event[0].lootMode = false
 		$game.lootBox = []
 	}
