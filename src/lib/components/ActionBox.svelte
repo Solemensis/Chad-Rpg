@@ -90,7 +90,7 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving a massive damage but giving a little damage back at least. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving damage but giving a little damage back at least. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
@@ -161,7 +161,7 @@
 					$game.enemy[0].enemyHp &&
 					$game.enemy[0].enemyHp > $selectedItem.combatScore
 				) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving a massive damage but giving a little damage back at least. Combat goes on.)`
+					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in @story, where player lands the worst possible attack, which leads to player receiving damage but giving a little damage back at least. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
 				}
