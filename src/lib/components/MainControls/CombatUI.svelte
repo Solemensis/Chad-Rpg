@@ -34,11 +34,11 @@
 						$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
 					} else {
 						//if dice is greater than 15, do not lower hp
-						if ($misc.diceNumber > 15) {
-							$character.stats[0].hp = $character.stats[0].hp
-						} else {
-							$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
-						}
+						// if ($misc.diceNumber > 15) {
+						// 	$character.stats[0].hp = $character.stats[0].hp
+						// } else {
+						$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+						// }
 					}
 				} else {
 					$character.stats[0].hp -= 5
