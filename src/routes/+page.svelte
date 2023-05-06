@@ -119,7 +119,11 @@
 					//and do not exceed the limit of context tokens with this way.
 
 					// console.log(chatMessages.length)
-					if (chatMessages.length >= 14) {
+
+					// cause of 4k token limitations of gpt-3.5, game getting bugged, 
+					//so i'll limit the message context array even more for now, down 
+					//to 10 for now, and think about solutions.
+					if (chatMessages.length >= 10) {
 						chatMessages.splice(1, 2)
 					}
 
