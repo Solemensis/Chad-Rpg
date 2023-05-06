@@ -6,7 +6,8 @@
 ## Thank you Svelte Society!
 
 - I am so proud, thank you so much for everyone! 
-- I'll now fix the bugs i've been catching since the hackathon is done!
+- I'll now fix the bugs i've been catching, since the hackathon is done!
+- Contributions, pull requests are all welcome!
 
 ## Starting Screen
 
