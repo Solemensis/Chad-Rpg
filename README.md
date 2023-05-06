@@ -3,6 +3,11 @@
 - Working demo: https://chad-rpg.vercel.app/
 - Project video: https://youtu.be/PMLz-m69ys8
 
+## Thank you Svelte Society!
+
+- I am so proud, thank you so much for everyone! 
+- I'll now fix the bugs i've been catching since the hackathon is done!
+
 ## Starting Screen
 
 <img src="https://wjfywtvnvjbposklgxzj.supabase.co/storage/v1/object/public/readme/entry.jpg" alt="UI of the Game" width="600">
