@@ -1,6 +1,7 @@
 # An AI-driven interactive role-playing game
 
 - Working demo: https://chad-rpg.vercel.app/
+- Project video with a broken english for now :D - https://youtu.be/PMLz-m69ys8
 
 ## Thank you Svelte Society!
 
