@@ -125,10 +125,20 @@
 		{/if}
 	</div>
 
-	<!--  game info button done  -->
-	<button class="game-info-button" on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>
-		<img src="images/info.svg" alt="info button" />
-	</button>
+	<div class="bottom-right-buttons">
+		<!--  bug window button  -->
+		<button class="bug-button" on:click={() => ($misc.bugWindow = !$misc.bugWindow)}>
+			<img src="images/bug.svg" alt="info button" />
+		</button>
+
+		<!--  game info button  -->
+		<button
+			class="game-info-button"
+			on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}
+		>
+			<img src="images/info.svg" alt="info button" />
+		</button>
+	</div>
 
 	<!-- game info window -->
 	{#if $misc.showInfoWindow}
@@ -201,23 +211,76 @@
 			</div>
 		</div>
 	{/if}
+	<!-- bug report window -->
+	{#if $misc.bugWindow}
+		<div class="bug-window">
+			<button class="close-bug-window" on:click={() => ($misc.bugWindow = !$misc.bugWindow)}>
+				<img src="/images/close-button.svg" alt="close bug window" />
+			</button>
+			<div class="bug-container">
+				<h3>
+					Mail me the bugs you've encountered please, let's make this project stable together.
+				</h3>
+				<p>Because there will be so many bugs</p>
+				<a target="_blank" href="mailto:ulassacli@outlook.com">*Press to mail me*</a>
+			</div>
+		</div>
+	{/if}
+	<!-- bug report window -->
 </div>
 
 <style>
-	.info-window {
-		height: 80%;
-		width: 80%;
+	.close-bug-window {
+		position: absolute;
+		right: 2rem;
+		top: 1.5rem;
+		cursor: pointer;
+	}
+	.close-bug-window img {
+		width: 2rem;
+	}
+	.bug-window {
+		height: 70%;
+		width: 70%;
 		/* width: 90%; */
 		background-color: #2e2e2ecc;
 		backdrop-filter: blur(8px);
-		border-radius: 1rem;
-		z-index: 1000;
-
+		border-radius: 0.8rem;
+		z-index: 1001;
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
+		overflow: auto;
+	}
+	.bug-container {
+		display: flex;
+		flex-direction: column;
+		width: 75%;
+		margin-top: 2rem;
+		margin-inline: auto;
+	}
+	.bug-container h3 {
+		font-weight: 500;
+		font-size: 2rem;
+	}
+	.bug-container p {
+		font-size: 1.2rem;
+		margin-top: 1rem;
+		margin-bottom: 2rem;
+	}
 
+	.info-window {
+		height: 80%;
+		width: 80%;
+		background-color: #2e2e2ecc;
+		backdrop-filter: blur(8px);
+		border-radius: 1rem;
+		z-index: 1000;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
 		overflow: auto;
 	}
 	.info-window button {
@@ -347,14 +410,27 @@
 	}
 
 	/* game info button */
-	.game-info-button {
-		cursor: pointer;
+	.bottom-right-buttons {
 		position: absolute;
 		right: 1.5rem;
 		bottom: 1.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.bug-button {
+		transition: 0.2s;
+	}
+	.bug-button img {
+		width: 2.5rem;
+		cursor: pointer;
+	}
+	.bug-button:hover {
+		filter: brightness(1.2);
 	}
 	.game-info-button img {
 		width: 3.5rem;
+		cursor: pointer;
 	}
 	.wallet {
 		margin-top: 0.5rem;
@@ -389,7 +465,7 @@
 		.places-to-go button p {
 			font-size: 0.8rem;
 		}
-		.game-info-button {
+		.bottom-right-buttons {
 			display: none;
 			padding: 0 0.1rem;
 		}

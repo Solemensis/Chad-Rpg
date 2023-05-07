@@ -70,7 +70,7 @@
 					$misc.loading = false
 					logged = false
 
-					// console.log('cevap: ' + answer)
+					console.log('cevap: ' + answer)
 					//if combat is over, reset the cooldowns of spells
 					if (!$game.event[0].inCombat) {
 						for (let key in $coolDowns) {
@@ -121,7 +121,7 @@
 
 					//to handle token limitation of gpt, delete the first 2 messages from array
 					//and do not exceed the limit of context tokens with this way.
-					// console.log("mesaj array'i uzunlugu: " + chatMessages.length)
+					console.log("mesaj array'i uzunlugu: " + chatMessages.length)
 					// cause of 4k token limitations of gpt-3.5, game getting bugged,
 					//so i'll limit the message context array even more for now, down
 					//to 14 for now, and think about solutions.
@@ -173,7 +173,7 @@
 		console.error('error from client: ' + JSON.stringify(err))
 
 		handleErr = true
-		// console.log(handleErr)
+		console.log(handleErr)
 	}
 
 	//logic to shuffle shop items at shop

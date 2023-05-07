@@ -162,11 +162,11 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		reqMessages.forEach((msg) => {
 			const tokens = getTokens(msg.content)
 			tokenCount += tokens
-			//  console.log('tokencount: ' + tokenCount)
+			console.log('tokencount: ' + tokenCount)
 		})
 
 		if (tokenCount >= 4000) {
-			// console.log('Query too large, +4000')
+			console.log('Query too large, +4000')
 			throw new Error('Query too large, +4000')
 		}
 
