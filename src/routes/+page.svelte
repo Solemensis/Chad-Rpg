@@ -125,9 +125,9 @@
 					// cause of 4k token limitations of gpt-3.5, game getting bugged,
 					//so i'll limit the message context array even more for now, down
 					//to 14 for now, and think about solutions.
-					// if (chatMessages.length >= 14) {
-					// 	chatMessages.splice(1, 2)
-					// }
+					if (chatMessages.length >= 14) {
+						chatMessages.splice(1, 2)
+					}
 
 					//heal player if currently at Tavern or Inn or Town
 					if (
