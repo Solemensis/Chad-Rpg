@@ -21,16 +21,20 @@
 
 	//song (can be arranged using webAudioApi to make it loop seemlessly)
 	let audioElement: any
+	let audioClicked: boolean = false
 	async function startSong() {
-		if (!audioElement) {
+		if (!audioElement && !audioClicked) {
+			audioClicked = true
 			const { data: song, error } = await supabase.storage
 				.from('audios/chad-rpg')
 				.download('tavernLoopOne.mp3')
 
 			audioElement = new Audio(URL.createObjectURL(song))
 			audioElement.loop = true
-		}
-		audioElement.paused ? audioElement.play() : audioElement.pause()
+			audioElement.play()
+		} else if (audioElement) {
+			audioElement.paused ? audioElement.play() : audioElement.pause()
+		} else return
 	}
 
 	function toggleFullScreen() {
@@ -188,8 +192,12 @@
 						</ul>
 					</div>
 				</div>
-				<span class="span1">ulassacli@outlook.com - github/Solemensis</span>
-				<span class="span2">Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span>
+				<span class="span1"
+					>©2023 Solemensis. All rights reserved. <span style="color:aqua">|</span> ulassacli@outlook.com
+					- github/Solemensis</span
+				>
+				<!-- <span class="span2">Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span> -->
+				<span class="span2">Current chatGPT model: gpt-3.5-turbo.</span>
 			</div>
 		</div>
 	{/if}

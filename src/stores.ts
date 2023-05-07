@@ -36,7 +36,7 @@ export const misc: any = writable({
 	place: '',
 	currentImg: '',
 	death: false,
-	interactivePoints: 2
+	interactivePoints: 3
 })
 
 export const bgImage: any = writable({

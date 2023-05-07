@@ -70,7 +70,7 @@
 					$misc.loading = false
 					logged = false
 
-					// console.log(answer)
+					// console.log('cevap: ' + answer)
 					//if combat is over, reset the cooldowns of spells
 					if (!$game.event[0].inCombat) {
 						for (let key in $coolDowns) {
@@ -104,7 +104,11 @@
 					if (!$game.event[0].inCombat && $game.enemy[0]) {
 						$game.event[0].inCombat = false
 						$game.enemy = []
-
+						enemyOnFrontend = false
+					}
+					if ($game.enemy[0] && $game.enemy[0].enemyHp <= 0) {
+						$game.event[0].inCombat = false
+						$game.enemy = []
 						enemyOnFrontend = false
 					}
 
@@ -117,15 +121,13 @@
 
 					//to handle token limitation of gpt, delete the first 2 messages from array
 					//and do not exceed the limit of context tokens with this way.
-
-					// console.log(chatMessages.length)
-
-					// cause of 4k token limitations of gpt-3.5, game getting bugged, 
-					//so i'll limit the message context array even more for now, down 
-					//to 12 for now, and think about solutions.
-					if (chatMessages.length >= 12) {
-						chatMessages.splice(1, 2)
-					}
+					// console.log("mesaj array'i uzunlugu: " + chatMessages.length)
+					// cause of 4k token limitations of gpt-3.5, game getting bugged,
+					//so i'll limit the message context array even more for now, down
+					//to 14 for now, and think about solutions.
+					// if (chatMessages.length >= 14) {
+					// 	chatMessages.splice(1, 2)
+					// }
 
 					//heal player if currently at Tavern or Inn or Town
 					if (
@@ -168,9 +170,10 @@
 
 	let handleErr: boolean = false
 	function handleError<T>(err: T) {
-		console.error('error from client: ' + err)
+		console.error('error from client: ' + JSON.stringify(err))
 
 		handleErr = true
+		// console.log(handleErr)
 	}
 
 	//logic to shuffle shop items at shop
@@ -342,7 +345,7 @@
 		$game.event = []
 		$selectedItem = {}
 		$character.stats = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
-		$character.gold = 100
+		$character.gold = 30
 		$character.spells = [...medievalStarterSpells]
 		$character.inventory = [...medievalStarterInventory]
 
