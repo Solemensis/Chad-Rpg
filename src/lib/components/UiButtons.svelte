@@ -221,7 +221,10 @@
 			</button>
 			<div class="bug-container">
 				<h2>You can encounter some minor bugs for now, for numerous reasons.</h2>
-				<p>Mail me the bugs you've encountered please, let's make this project stable together.</p>
+				<p>
+					Mail me the bugs you've encountered please, or your suggestions. I want to make it stable
+					time to time.
+				</p>
 				<div class="mail-box">
 					<a target="_blank" href="mailto:ulassacli@outlook.com">Press to mail me</a>
 					<p>or do it by default: ulassacli@outlook.com</p>
