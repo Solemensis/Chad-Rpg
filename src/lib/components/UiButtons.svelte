@@ -169,11 +169,13 @@
 								a Town.
 							</li>
 							<li>There are no cooldowns for items but there are for spells.</li>
+							<li>
+								In combat, weapon score will be calculated from between 1-20, while spells are 1-23.
+							</li>
 							<li>Game ends if your health points drops down to 0.</li>
 							<li>
 								There is no save game functionality for now, current version is just a tastement.
 							</li>
-							<li>You can encounter some minor bugs for now, for numerous reasons.</li>
 						</ul>
 					</div>
 					<div>
@@ -218,11 +220,12 @@
 				<img src="/images/close-button.svg" alt="close bug window" />
 			</button>
 			<div class="bug-container">
-				<h3>
-					Mail me the bugs you've encountered please, let's make this project stable together.
-				</h3>
-				<p>Because there will be so many bugs</p>
-				<a target="_blank" href="mailto:ulassacli@outlook.com">*Press to mail me*</a>
+				<h2>You can encounter some minor bugs for now, for numerous reasons.</h2>
+				<p>Mail me the bugs you've encountered please, let's make this project stable together.</p>
+				<div class="mail-box">
+					<a target="_blank" href="mailto:ulassacli@outlook.com">Press to mail me</a>
+					<p>or do it by default: ulassacli@outlook.com</p>
+				</div>
 			</div>
 		</div>
 	{/if}
@@ -256,13 +259,30 @@
 	.bug-container {
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
+		height: 90%;
 		width: 75%;
 		margin-top: 2rem;
 		margin-inline: auto;
+		text-align: center;
 	}
-	.bug-container h3 {
+	.bug-container h2 {
 		font-weight: 500;
 		font-size: 2rem;
+		color: #d6d631;
+	}
+	.mail-box {
+		display: flex;
+		flex-direction: column;
+		margin-top: 2rem;
+	}
+	.mail-box a {
+		color: burlywood;
+		text-decoration: none;
+		font-size: 1.5rem;
+	}
+	.mail-box p {
+		user-select: text;
 	}
 	.bug-container p {
 		font-size: 1.2rem;
