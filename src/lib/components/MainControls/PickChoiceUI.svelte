@@ -31,6 +31,10 @@
 
 	function emitInteractiveAnswer(answer: any) {
 		if (!answer) return
+		if (answer.includes('sex') || answer.includes('kill')) {
+			$ui.errorWarnMsg = "There's a flawed word in your answer."
+			return
+		}
 
 		if ($misc.interactivePoints == 0) {
 			$ui.errorWarnMsg =

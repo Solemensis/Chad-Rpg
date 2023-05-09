@@ -88,8 +88,9 @@
 					class="leave-button night-time"
 					style="opacity: {extractHours($misc.time) >= 20 ? '1' : '0'}; "
 					on:click={() =>
-						emitAnswer("It's night time, i'll go back to the town before got caught to monsters.")}
-					>It's night time, go back to inn for safety.</button
+						emitAnswer(
+							"It's night time, i'll go back to the nearest Inn before got caught to monsters."
+						)}>It's night time, go back to inn for safety.</button
 				>
 			{/if}
 			<div class="stat">

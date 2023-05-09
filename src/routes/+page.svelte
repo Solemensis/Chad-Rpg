@@ -15,6 +15,7 @@
 	import { misc } from '../stores'
 	import { coolDowns } from '../stores'
 	import { bgImage } from '../stores'
+	import { ui } from '../stores'
 
 	import { supabase } from '$lib/supabaseClient'
 
@@ -287,7 +288,9 @@
 
 	//this is the function to canalize player's answer to chatGPT
 	function giveYourAnswer(choice: any) {
-		if (!choice || choice.includes('sex') || choice.includes('kill')) {
+		if (!choice) return
+		if (choice.includes('sex') || choice.includes('kill')) {
+			$ui.errorWarnMsg = "There's a flawed word in your answer."
 			return
 		}
 		story = ''
@@ -375,16 +378,25 @@
 
 			if (matchingPlaces == 'Town Inn' || matchingPlaces == 'Town Tavern') {
 				matchingPlaces = 'Inn'
-			} else if (matchingPlaces.includes('Outskirts')) {
+				return matchingPlaces
+			} else if (matchingPlaces.includes('Outskirts') || matchingPlaces.includes('outskirts')) {
 				matchingPlaces = 'Forest'
-			} else if (matchingPlaces.includes('Garden')) {
+				return matchingPlaces
+			} else if (matchingPlaces.includes('Garden') || matchingPlaces.includes('garden')) {
 				matchingPlaces = 'Garden'
-			} else if (matchingPlaces.includes('River')) {
+				return matchingPlaces
+			} else if (matchingPlaces.includes('River') || matchingPlaces.includes('river')) {
 				matchingPlaces = 'River'
-			} else if (matchingPlaces.includes('Island')) {
+				return matchingPlaces
+			} else if (matchingPlaces.includes('Island') || matchingPlaces.includes('island')) {
 				matchingPlaces = 'Island'
-			} else if (matchingPlaces.includes('Village')) {
+				return matchingPlaces
+			} else if (matchingPlaces.includes('Village') || matchingPlaces.includes('village')) {
 				matchingPlaces = 'Village'
+				return matchingPlaces
+			} else if (matchingPlaces.includes('Mine') || matchingPlaces.includes('mine')) {
+				matchingPlaces = 'Cave'
+				return matchingPlaces
 			}
 			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
 		}
