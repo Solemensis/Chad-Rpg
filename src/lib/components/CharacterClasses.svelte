@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition'
+
 	import { createEventDispatcher } from 'svelte'
 	import { game } from '../../stores'
 	const dispatch = createEventDispatcher()
@@ -9,7 +11,7 @@
 </script>
 
 <h2>Choose Your Class!</h2>
-<div class="cards">
+<div transition:fade={{ duration: 800 }} class="cards">
 	<button
 		on:click={() => {
 			emitAnswer('warrior')
@@ -17,7 +19,11 @@
 		class="card"
 	>
 		<div class="wrapper">
-			<img src="images/characters/warrior1.webp" class="cover-image" />
+			<img
+				transition:fade={{ duration: 1300 }}
+				src="images/characters/warrior1.webp"
+				class="cover-image"
+			/>
 		</div>
 		<h3 class="title">Warrior</h3>
 
@@ -31,7 +37,11 @@
 		class="card"
 	>
 		<div class="wrapper">
-			<img src="images/characters/mage1.webp" class="cover-image" />
+			<img
+				transition:fade={{ duration: 1300 }}
+				src="images/characters/mage1.webp"
+				class="cover-image"
+			/>
 		</div>
 		<h3 class="title">Mage</h3>
 		<img src="images/characters/mage2.webp" class="character" />
