@@ -19,7 +19,7 @@
 	function emitAnswer(answer: any) {
 		// this is just to revive player, hp will be set after the prompt.
 		$character.stats[0].hp = 1
-		console.log(answer)
+		// console.log(answer)
 		//start the game
 		dispatch('emittedAnswer', {
 			answer: answer
