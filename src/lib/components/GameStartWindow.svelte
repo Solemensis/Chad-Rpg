@@ -5,12 +5,19 @@
 	import { misc } from '../../stores'
 	import { character } from '../../stores'
 
+	import medievalTavernStarter from '$lib/gamedata/gamestarters/medievalTavernStarter.json'
+
+	function getRandomValueFromArray(array: any) {
+		const randomIndex = Math.floor(Math.random() * array.length)
+		return array[randomIndex]
+	}
+
 	const dispatch = createEventDispatcher()
 
 	function emitAnswer(answer: any) {
 		//this is just to revive player, hp will be set after the prompt.
 		$character.stats[0].hp = 1
-
+		console.log(answer)
 		//start the game
 		dispatch('emittedAnswer', {
 			answer: answer
@@ -32,7 +39,8 @@
 				<button
 					on:click={() => {
 						emitAnswer(
-							`Start off as a new adventurer in a fantasy role-playing world. Player enters a cozy tavern in a town.`
+							// `Start off as a new adventurer in a fantasy role-playing world. Player enters a cozy tavern in a town.`
+							getRandomValueFromArray([...medievalTavernStarter])
 						)
 					}}>Play</button
 				>

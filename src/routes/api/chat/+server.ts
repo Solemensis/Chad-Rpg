@@ -52,6 +52,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player 3 unique choices in @choices, to let player choose from at the end of your message.
 
 
+		You can use these rpg game worlds as reference for quests, areas, towns, monsters, races and so on: ['World of Warcraft', 'Guild Wars 2', 'Elder Scrolls']
+
 Use these races for monsters randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
 Use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
 Use these weapon classes for @lootBox weapons: ["sword", "dagger", "bow", "mace", "sword", "spear", "axe", "flail", "mace"]
