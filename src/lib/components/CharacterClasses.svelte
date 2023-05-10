@@ -43,7 +43,7 @@
 	h2 {
 		position: absolute;
 		font-family: 'MedievalSharp', sans-serif;
-
+		text-align: center;
 		left: 50%;
 		top: 1.5rem;
 		transform: translateX(-50%);
@@ -61,7 +61,7 @@
 		display: flex;
 	}
 	:root {
-		--card-height: 300px;
+		--card-height: 18rem;
 		--card-width: calc(var(--card-height) / 1.5);
 	}
 	.card {
@@ -71,15 +71,16 @@
 		display: flex;
 		justify-content: center;
 		align-items: flex-end;
-		padding: 0 36px;
+		padding: 0 1.7rem;
 		perspective: 2500px;
-		margin: 0 50px;
+		margin: 0 2.4rem;
 	}
 
 	.cover-image {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		border-radius: 0.5rem;
 	}
 
 	.wrapper {
@@ -101,7 +102,7 @@
 		content: '';
 		opacity: 0;
 		width: 100%;
-		height: 80px;
+		height: 3.9rem;
 		transition: all 0.4s;
 		position: absolute;
 		left: 0;
@@ -133,13 +134,13 @@
 	}
 
 	.card:hover .wrapper::after {
-		height: 120px;
+		height: 5.8rem;
 	}
 	.title {
 		transition: transform 0.4s;
 		font-family: 'Amatic SC';
 		font-size: 2rem;
-		margin-bottom: 0.8rem;
+		margin-bottom: 0.4rem;
 		color: #bbb;
 	}
 	.card:hover .title {
@@ -157,5 +158,23 @@
 	.card:hover .character {
 		opacity: 1;
 		transform: translate3d(0%, -30%, 100px);
+	}
+
+	@media screen and (min-aspect-ratio: 4/3) {
+		:root {
+			--card-height: 21rem;
+		}
+	}
+	@media (orientation: portrait) {
+		.card {
+			margin: 0 0.8rem;
+		}
+		.cards {
+			bottom: 50%;
+			transform: translate(-50%, 50%);
+		}
+		:root {
+			--card-height: 14rem;
+		}
 	}
 </style>
