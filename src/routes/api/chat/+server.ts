@@ -158,13 +158,13 @@ understand the example format of the json objects of lootBox. Weapon must have n
 			"price":"30",
 			"point":"1"}
 		]`
-
+		
 		tokenCount += getTokens(prompt)
 
 		reqMessages.forEach((msg) => {
 			const tokens = getTokens(msg.content)
 			tokenCount += tokens
-			// console.log('tokencount: ' + tokenCount)
+			console.log('tokencount: ' + tokenCount)
 		})
 
 		if (tokenCount >= 4000) {

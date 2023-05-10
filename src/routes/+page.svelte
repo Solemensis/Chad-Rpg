@@ -8,6 +8,7 @@
 	import Choices from '$lib/components/Choices.svelte'
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
 	// import StaticPrompts from '$lib/components/StaticPrompts.svelte'
+	import { getTokens } from '$lib/tokenizer'
 
 	import { game } from '../stores'
 	import { character } from '../stores'
@@ -44,6 +45,7 @@
 	//a variable to carry the enemy into the client-side for app reliability
 	let enemyOnFrontend: boolean = false
 
+	let tokenCount = 0
 	const handleSubmit = async () => {
 		if ($misc.query === '') {
 			return
@@ -72,7 +74,16 @@
 					$misc.loading = false
 					logged = false
 
-					console.log('answer: ' + answer)
+					// console.log('answer: ' + answer)
+
+					tokenCount = 2400
+					chatMessages.forEach((msg) => {
+						const tokens = getTokens(msg.content)
+						tokenCount += tokens
+					})
+
+					// console.log(tokenCount)
+
 					//if combat is over, reset the cooldowns of spells
 					if (!$game.event[0].inCombat) {
 						for (let key in $coolDowns) {
@@ -122,12 +133,8 @@
 					}
 
 					//to handle token limitation of gpt, delete the first 2 messages from array
-					//and do not exceed the limit of context tokens with this way.
-					// console.log('length of the conversation array: ' + chatMessages.length)
-					// cause of 4k token limitations of gpt-3.5, game getting bugged,
-					//so i'll limit the message context array even more for now, down
-					//to 14 for now, and think about solutions.
-					if (chatMessages.length >= 14) {
+					//if tokenCount is beyond 3800.
+					if (tokenCount >= 3800) {
 						chatMessages.splice(1, 2)
 					}
 
@@ -172,10 +179,13 @@
 
 	let handleErr: boolean = false
 	function handleError<T>(err: T) {
-		console.error('error from client: ' + JSON.stringify(err))
+		console.error('error from client: ', err)
 
 		handleErr = true
-		// console.log(handleErr)
+
+		setTimeout(() => {
+			giveYourAnswer(answer)
+		}, 1000)
 	}
 
 	//logic to shuffle shop items at shop
@@ -291,6 +301,7 @@
 	function giveYourAnswer(choice: any) {
 		if (!choice) return
 		if (choice.includes('sex') || choice.includes('kill')) {
+			if (choice.includes('skill')) return
 			$ui.errorWarnMsg = "There's a flawed word in your answer."
 			return
 		}
@@ -309,11 +320,11 @@
 		$game.shop = []
 
 		$misc.query = choice
-		answer = ''
 
 		try {
 			handleSubmit()
 			$misc.query = ''
+			answer = ''
 		} catch (error) {
 			handleError(error)
 		}
