@@ -72,7 +72,7 @@
 					$misc.loading = false
 					logged = false
 
-					// console.log('answer: ' + answer)
+					console.log('answer: ' + answer)
 					//if combat is over, reset the cooldowns of spells
 					if (!$game.event[0].inCombat) {
 						for (let key in $coolDowns) {
