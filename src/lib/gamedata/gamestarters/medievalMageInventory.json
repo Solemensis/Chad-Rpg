@@ -1,0 +1,15 @@
+[
+	{
+		"name": "Wooden Dagger",
+		"damage": 2,
+		"price": 5,
+		"type": "weapon",
+		"weaponClass": "dagger"
+	},
+	{
+		"name": "Mana Potion",
+		"price": 30,
+		"type": "potion",
+		"mana": "40"
+	}
+]

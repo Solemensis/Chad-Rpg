@@ -31,9 +31,10 @@
 	import buyPotions from '$lib/gamedata/potions.json'
 	import staticPlaces from '$lib/gamedata/places.json'
 
-	import medievalStarterInventory from '$lib/gamedata/gamestarters/medievalInventory.json'
-	import medievalStarterSpells from '$lib/gamedata/gamestarters/medievalSpells.json'
-
+	import medievalMageInventory from '$lib/gamedata/gamestarters/medievalMageInventory.json'
+	import medievalMageSpells from '$lib/gamedata/gamestarters/medievalMageSpells.json'
+	import medievalWarriorInventory from '$lib/gamedata/gamestarters/medievalWarriorInventory.json'
+	import medievalWarriorSpells from '$lib/gamedata/gamestarters/medievalWarriorSpells.json'
 	// import buyArmors from '$lib/gamedata/armors.json'
 
 	let answer: string = ''
@@ -349,9 +350,14 @@
 		$selectedItem = {}
 		$character.stats = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
 		$character.gold = 30
-		$character.spells = [...medievalStarterSpells]
-		$character.inventory = [...medievalStarterInventory]
 
+		if ($game.heroClass == 'mage') {
+			$character.spells = [...medievalMageSpells]
+			$character.inventory = [...medievalMageInventory]
+		} else if ($game.heroClass == 'warrior') {
+			$character.spells = [...medievalWarriorSpells]
+			$character.inventory = [...medievalWarriorInventory]
+		}
 		giveYourAnswer(event.detail.answer)
 	}
 

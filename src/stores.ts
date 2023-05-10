@@ -7,7 +7,8 @@ export const game: any = writable({
 	choices: [],
 	enemy: [],
 	event: [{ inCombat: false, shopMode: null, lootMode: false }],
-	started: false
+	started: false,
+	heroClass: ''
 })
 
 export const character: any = writable({

@@ -142,7 +142,7 @@
 
 	<!-- game info window -->
 	{#if $misc.showInfoWindow}
-		<div transition:fade={{ duration: 50 }}>
+		<div>
 			<div class="info-window">
 				<button on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>
 					<img src="/images/close-button.svg" alt="close info window" />

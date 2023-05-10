@@ -2,6 +2,8 @@
 	import { createEventDispatcher } from 'svelte'
 	import { fade } from 'svelte/transition'
 
+	import CharacterClasses from '$lib/components/CharacterClasses.svelte'
+
 	import { misc } from '../../stores'
 	import { character } from '../../stores'
 
@@ -15,7 +17,7 @@
 	const dispatch = createEventDispatcher()
 
 	function emitAnswer(answer: any) {
-		//this is just to revive player, hp will be set after the prompt.
+		// this is just to revive player, hp will be set after the prompt.
 		$character.stats[0].hp = 1
 		console.log(answer)
 		//start the game
@@ -23,62 +25,80 @@
 			answer: answer
 		})
 	}
+	let gameStarterPrompt: string = ''
+	let gameModeSelected: boolean = false
+
+	function handleGameMode(answer: any) {
+		gameModeSelected = true
+		gameStarterPrompt = answer
+	}
 </script>
 
 <div transition:fade={{ duration: 1000 }} class="starting-screen">
-	<div class="heading-box">
-		<h1>Welcome to <span class="g-span">Chad-Rpg!</span></h1>
-		<button on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>What is That?</button>
-	</div>
-	<div class="game-starters">
-		<div class="game-starter">
-			<img src="images/landscape-svgs/rpg.webp" alt="game mode img" />
-			<div class="game-explanation">
-				<h3>FRPG Starter</h3>
-				<p>Start as a new adventurer in a fantasy role-playing world, entering a tavern.</p>
-				<button
-					on:click={() => {
-						emitAnswer(
-							// `Start off as a new adventurer in a fantasy role-playing world. Player enters a cozy tavern in a town.`
-							getRandomValueFromArray([...medievalTavernStarter])
-						)
-					}}>Play</button
+	{#if gameModeSelected}
+		<div transition:fade={{ duration: 1000 }}>
+			<CharacterClasses
+				on:emittedAnswer={() => {
+					emitAnswer(gameStarterPrompt)
+				}}
+			/>
+		</div>
+	{/if}
+
+	{#if !gameModeSelected}
+		<div transition:fade={{ duration: 700 }}>
+			<div class="heading-box">
+				<h1>Welcome to <span class="g-span">Chad-Rpg!</span></h1>
+				<button on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}
+					>What is That?</button
 				>
 			</div>
-		</div>
-		<div class="game-starter">
-			<img src="images/landscape-svgs/cyberpunk.webp" alt="game mode img" />
-			<div class="game-explanation">
-				<h3>Cyberpunk Starter</h3>
-				<p>Start as a capable human being at a neon city in a Cyberpunk world.</p>
-				<button>Play</button>
+			<div class="game-starters">
+				<div class="game-starter">
+					<img src="images/landscape-svgs/rpg.webp" alt="game mode img" />
+					<div class="game-explanation">
+						<h3>FRPG Starter</h3>
+						<p>Start as a new adventurer in a fantasy role-playing world, entering a tavern.</p>
+						<button
+							on:click={() => {
+								handleGameMode(getRandomValueFromArray([...medievalTavernStarter]))
+							}}>Play</button
+						>
+					</div>
+				</div>
+				<div class="game-starter">
+					<img src="images/landscape-svgs/cyberpunk.webp" alt="game mode img" />
+					<div class="game-explanation">
+						<h3>Cyberpunk Starter</h3>
+						<p>Start as a capable human being at a neon city in a Cyberpunk world.</p>
+						<button>Play</button>
+					</div>
+				</div>
+
+				<div class="game-starter">
+					<img src="images/landscape-svgs/random.svg" alt="game mode img" />
+
+					<div class="game-explanation">
+						<h3>Random Starter</h3>
+						<p>Start the game at a random place, in a random world, while on a random event.</p>
+						<button>Play</button>
+					</div>
+				</div>
+				<div class="game-starter">
+					<img src="images/landscape-svgs/custom.svg" alt="game mode img" />
+
+					<div class="game-explanation">
+						<h3>Custom Starter</h3>
+						<p>Start your own unique adventure in your own world!</p>
+						<button>Configure game settings</button>
+					</div>
+				</div>
 			</div>
 		</div>
-
-		<div class="game-starter">
-			<img src="images/landscape-svgs/random.svg" alt="game mode img" />
-
-			<div class="game-explanation">
-				<h3>Random Starter</h3>
-				<p>Start the game at a random place, in a random world, while on a random event.</p>
-				<button>Play</button>
-			</div>
-		</div>
-		<div class="game-starter">
-			<img src="images/landscape-svgs/custom.svg" alt="game mode img" />
-
-			<div class="game-explanation">
-				<h3>Custom Starter</h3>
-				<p>Start your own unique adventure in your own world!</p>
-				<button>Configure game settings</button>
-			</div>
-		</div>
-	</div>
+	{/if}
 </div>
 
 <style>
-	@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
-
 	.starting-screen {
 		background-color: #242424cc;
 		width: 60%;

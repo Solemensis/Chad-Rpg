@@ -5,5 +5,11 @@
 		"price": 10,
 		"type": "weapon",
 		"weaponClass": "sword"
+	},
+	{
+		"name": "Health Potion",
+		"price": 30,
+		"type": "potion",
+		"healing": "60"
 	}
 ]
