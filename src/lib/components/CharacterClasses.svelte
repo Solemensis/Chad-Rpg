@@ -45,7 +45,7 @@
 		font-family: 'MedievalSharp', sans-serif;
 		text-align: center;
 		left: 50%;
-		top: 1.5rem;
+		top: 2rem;
 		transform: translateX(-50%);
 
 		color: orange;
@@ -160,11 +160,6 @@
 		transform: translate3d(0%, -30%, 100px);
 	}
 
-	@media screen and (min-aspect-ratio: 4/3) {
-		:root {
-			--card-height: 21rem;
-		}
-	}
 	@media (orientation: portrait) {
 		.card {
 			margin: 0 0.8rem;
