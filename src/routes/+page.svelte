@@ -348,13 +348,14 @@
 		$game.enemy = []
 		$game.event = []
 		$selectedItem = {}
-		$character.stats = [{ hp: 110, maxHp: 110, mp: 90, maxMp: 90 }]
 		$character.gold = 30
 
 		if ($game.heroClass == 'mage') {
+			$character.stats = [{ hp: 80, maxHp: 80, mp: 110, maxMp: 110 }]
 			$character.spells = [...medievalMageSpells]
 			$character.inventory = [...medievalMageInventory]
 		} else if ($game.heroClass == 'warrior') {
+			$character.stats = [{ hp: 110, maxHp: 110, mp: 80, maxMp: 80 }]
 			$character.spells = [...medievalWarriorSpells]
 			$character.inventory = [...medievalWarriorInventory]
 		}
