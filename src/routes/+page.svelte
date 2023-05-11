@@ -91,6 +91,9 @@
 						}
 					}
 
+					// reset selectedItem with new sv response, if there was any
+					$selectedItem = {}
+
 					// if enemy dies, clear it from frontend
 					if (
 						$game.event[0] &&
