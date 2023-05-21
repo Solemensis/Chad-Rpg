@@ -1,14 +1,14 @@
 # An AI-driven interactive role-playing game
 
 - Working demo: https://chad-rpg.vercel.app/
-- Project video with a broken english for now 😃 - https://youtu.be/PMLz-m69ys8
 
 ## Thank you Svelte Society!
 
 - I am so proud, thank you so much Svelte Society!
 - I'll now fix the bugs i've been catching and keep developing the project, since the hackathon is done!
 - Pull requests, contributions or thoughts are all welcome!
-- A problem; game currently uses gpt-3.5 model, and it got 4k token limitation, which means context of the game is at limit for now, until a solution is found. With this limitation, chat forgets some of the earlier messages and context of the game after some point. Gpt-4 models got so much more context limit, enough to save the personal game data into a database and do the gpt context handling job programmatically; but they are pricy. You can support the project for the gpt-4 model usage from lower litecoin address, or suggest me any other solutions to the context limitations of chat-gpt apis.
+- A problem; game currently uses gpt-3.5 model, and it got 4k token limitation, which means context of the game is at limit for now, until a solution is found. With this limitation, chat forgets some of the earlier messages and context of the game after some point. 
+- The solution: Gpt-4 models got so much more context limit; enough to save the personal game data into a database and do the gpt context handling job programmatically; but they are pricy. You can support the project for the gpt-4 model usage from the litecoin address at the end of this readme, or suggest me any other solutions to the context limitations of chat-gpt apis.
 
 
 
