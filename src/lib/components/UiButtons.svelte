@@ -201,12 +201,19 @@
 								You can support this project for the upper improvements from this LTC (litecoin)
 								wallet address: <p class="wallet">LQpjuAKLBCpanv4PnHekpzwxJsdWyjeBJA</p>
 							</li>
+							<li class="support">
+								Or, from my patreon account which is: <a
+									target="_blank"
+									href="https://www.patreon.com/Solemensis">patreon.com/Solemensis</a
+								>
+							</li>
 						</ul>
 					</div>
 				</div>
 				<span class="span1"
-					>©2023 Solemensis. All rights reserved. <span style="color:aqua">|</span> ulassacli@outlook.com
-					- github/Solemensis</span
+					>©2023 Solemensis. All rights reserved. <span style="color:aqua">|</span>
+					ulassacli@outlook.com
+					<span style="color:aqua">|</span> github/Solemensis <span style="color:aqua">|</span> patreon/Solemensis</span
 				>
 				<!-- <span class="span2">Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span> -->
 				<span class="span2">Current chatGPT model: gpt-3.5-turbo.</span>
