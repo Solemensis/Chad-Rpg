@@ -43,7 +43,7 @@
 </script>
 
 {#if !$misc.loading}
-	{#if $game.choices.length >= 2 || $game.event[0].inCombat || $game.event[0].shopMode || $game.event[0].lootMode}
+	{#if $game.choices.length >= 2 || $game.event[0]?.inCombat || $game.event[0]?.shopMode || $game.event[0]?.lootMode}
 		<div transition:fade={{ duration: 700 }} class="stats">
 			<div class="stat">
 				<img class="svg-images" src="images/gold.svg" alt="" />

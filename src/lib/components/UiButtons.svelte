@@ -50,9 +50,9 @@
 </script>
 
 <div>
-	<div class="maintenance-box">
+	<!-- <div class="maintenance-box">
 		<Maintenance />
-	</div>
+	</div> -->
 	<!-- audio play button -->
 	{#if $game.started}
 		<button class="song-icon" transition:fade={{ duration: 500 }} on:click={() => startSong()}>
