@@ -4,6 +4,7 @@
 
 	import { misc } from '../../stores'
 	import { game } from '../../stores'
+	import Maintenance from './Maintenance.svelte'
 
 	import { supabase } from '$lib/supabaseClient'
 
@@ -49,6 +50,9 @@
 </script>
 
 <div>
+	<div class="maintenance-box">
+		<Maintenance />
+	</div>
 	<!-- audio play button -->
 	{#if $game.started}
 		<button class="song-icon" transition:fade={{ duration: 500 }} on:click={() => startSong()}>
@@ -504,5 +508,16 @@
 			right: 6.5rem;
 			top: 2.2rem;
 		}
+	}
+	.maintenance-box {
+		background-color: #888;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 1000;
+		border-radius: 0.3rem;
+		padding: 2rem 4rem;
+		text-align: center;
 	}
 </style>
