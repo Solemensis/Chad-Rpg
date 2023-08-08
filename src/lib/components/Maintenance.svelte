@@ -20,7 +20,7 @@
 			can be played for now.
 		</li>
 		<li>Some bugs are there. Game can get stuck. I'll handle them.</li>
-		<li>PR's - ideas are welcome!</li>
+		<li>PR's - ideas are all welcome! (Especially in game prompt.)</li>
 		<li>You can share me the bugs u've encountered.</li>
 	</ul>
 	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
@@ -28,7 +28,7 @@
 
 <style>
 	h2 {
-		margin-bottom: 0.5rem;
+		margin-bottom: 1.5rem;
 		color: rgb(142, 255, 140);
 		font-weight: 500;
 		font-size: 2.2rem;

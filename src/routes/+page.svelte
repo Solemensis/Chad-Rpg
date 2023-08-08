@@ -105,6 +105,7 @@ do not end the game by yourself, give gameData.choices always until player says 
 Do not give same gameData.choices! Change the gameData.choices in all of your answers, change them according to the current gameData.story!
 
 inCombat will only be true when enemies have spotted the player!
+If inCombat is true, fill the enemy object with enemyHp and enemyName. This is so important, if inCombat is true and enemy object is not there; game is getting bugged.
 shopMode will only change if player starts to talk a seller npc!
 
 There is an escape functionality in the game. If player wants to escape from a combat, do not avoid it! Let the player escape.

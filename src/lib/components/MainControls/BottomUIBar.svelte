@@ -12,11 +12,15 @@
 		let number = Math.floor(Math.random() * 6) + 1
 
 		if (number <= 3) {
-			emitAnswer("You got hit while trying to escape, couldn't escape and lost 20 health.")
+			emitAnswer(
+				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, player tries to escape, but got hit while trying to escape, couldn't escape and lost 20 health. Combat goes on."
+			)
 
 			$character.stats[0].hp -= 20
 		} else {
-			emitAnswer('You have escaped succesfully!')
+			emitAnswer(
+				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, player tries to escape, and escapes from the combat area successfully!"
+			)
 			$game.event.inCombat = false
 			$game.enemy = []
 		}
