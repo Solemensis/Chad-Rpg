@@ -5,14 +5,17 @@ import type { RequestHandler } from './$types'
 import { getTokens } from '$lib/tokenizer'
 import { json } from '@sveltejs/kit'
 import type { Config } from '@sveltejs/adapter-vercel'
-import Bard, { askAI } from 'bard-ai'
+import Bard from 'bard-ai'
 
 export const config: Config = {
 	runtime: 'edge'
 }
 
-await Bard.init(BARD_KEY)
-let myConversation = new Bard.Chat()
+let myBard = new Bard({
+	'__Secure-1PSID': BARD_KEY
+})
+let myConversation = myBard.createChat()
+
 export const POST: RequestHandler = async ({ request }: any) => {
 	const requestBody = await request.json()
 
