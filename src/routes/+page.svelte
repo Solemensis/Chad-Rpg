@@ -179,7 +179,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 		const regex = /```json([\s\S]*?)```/gm
 		const match = regex.exec(inputString)
 		// console.log(inputString)
-		if (!match || match.length < 2) {
+		if (!match || match?.length < 2) {
 			throw new Error('JSON not found between tags')
 		}
 
@@ -251,7 +251,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 	//logic to shuffle shop items at shop
 	function shuffleItems(items: any) {
 		// start at the end of the array and work backwards
-		for (let i = items.length - 1; i > 0; i--) {
+		for (let i = items?.length - 1; i > 0; i--) {
 			// pick a random index between 0 and i (inclusive)
 			const j = Math.floor(Math.random() * (i + 1))
 
@@ -314,7 +314,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 		$misc.query = choice
 
 		try {
-			if (chatMessages.length) {
+			if (chatMessages?.length) {
 				prompt = choice
 			}
 			handleSubmit()
@@ -416,7 +416,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 				matchingPlaces = 'Cave'
 				return matchingPlaces
 			}
-			return matchingPlaces.length > 0 ? matchingPlaces[0] : null
+			return matchingPlaces?.length > 0 ? matchingPlaces[0] : null
 		}
 		//list images to get the image amount
 		const { data: imgs } = await supabase.storage.from('imgs').list(checkPlace($misc.place), {
@@ -437,12 +437,12 @@ understand the example format of the items in lootBox. Weapon must have name, da
 			) {
 				const { data: img, error } = await supabase.storage
 					.from('imgs')
-					.download(`${checkPlace($misc.place)}-night/${getRandomNumber(imgs.length - 1)}.webp`)
+					.download(`${checkPlace($misc.place)}-night/${getRandomNumber(imgs?.length - 1)}.webp`)
 				finalImg = img
 			} else {
 				const { data: img, error } = await supabase.storage
 					.from('imgs')
-					.download(`${checkPlace($misc.place)}/${getRandomNumber(imgs.length - 1)}.webp`)
+					.download(`${checkPlace($misc.place)}/${getRandomNumber(imgs?.length - 1)}.webp`)
 				finalImg = img
 			}
 		}

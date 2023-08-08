@@ -79,7 +79,7 @@
 				<button
 					disabled={$misc.loading}
 					class="leave-button"
-					style="opacity: {$game.lootBox.length ? '1' : '0'};"
+					style="opacity: {$game.lootBox?.length ? '1' : '0'};"
 					on:click={() => leaveButton('Leave the loot.')}>Leave it.</button
 				>
 			{:else if extractHours($misc.time) >= 20 && !$misc.place?.includes('Town') && !$misc.place?.includes('Tavern') && !$misc.place?.includes('Inn') && !$misc.place?.includes('City') && !$misc.place?.includes('Shop') && !$misc.place?.includes('smith') && !$misc.place?.includes('Market') && !$misc.place?.includes('Merchant')}

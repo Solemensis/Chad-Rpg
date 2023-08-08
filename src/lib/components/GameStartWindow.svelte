@@ -10,7 +10,7 @@
 	import medievalTavernStarter from '$lib/gamedata/gamestarters/medievalTavernStarter.json'
 
 	function getRandomValueFromArray(array: any) {
-		const randomIndex = Math.floor(Math.random() * array.length)
+		const randomIndex = Math.floor(Math.random() * array?.length)
 		return array[randomIndex]
 	}
 

@@ -67,7 +67,7 @@
 			on:click={() => emitAnswer(choice)}>{choice}</button
 		>
 	{/each}
-	{#if $game.choices.length >= 1}
+	{#if $game.choices?.length >= 1}
 		<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choice choiceInput">
 			<input
 				placeholder="Write your own answer. ({$misc.interactivePoints} interactive chat points left)"
