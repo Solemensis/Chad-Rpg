@@ -3,7 +3,8 @@
 </script>
 
 <div>
-	<h2>Game is Open</h2>
+	<!-- <h2>Game is Open</h2> -->
+	<h2>Game is closed for just an hour</h2>
 	<ul>
 		<li>
 			Game carried from chatgpt to google bard's unofficial free api, not the best chatbot solution
@@ -15,7 +16,7 @@
 			>
 			can be played for now.
 		</li>
-		<li>Some bugs are there. I'll handle them.</li>
+		<li>Some bugs are there. Game can get stuck. I'll handle them.</li>
 		<li>PR's - ideas are welcome!</li>
 		<li>You can share me the bugs u've encountered.</li>
 	</ul>
