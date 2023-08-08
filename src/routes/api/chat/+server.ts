@@ -1,4 +1,6 @@
 import type { CreateChatCompletionRequest, ChatCompletionRequestMessage } from 'openai'
+import { BARD_KEY } from '$env/static/private'
+
 import type { RequestHandler } from './$types'
 import { getTokens } from '$lib/tokenizer'
 import { json } from '@sveltejs/kit'
@@ -8,6 +10,8 @@ import Bard, { askAI } from 'bard-ai'
 export const config: Config = {
 	runtime: 'edge'
 }
+
+await Bard.init(BARD_KEY)
 
 let myConversation = new Bard.Chat()
 
