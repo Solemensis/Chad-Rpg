@@ -281,12 +281,13 @@ understand the example format of the items in lootBox. Weapon must have name, da
 			case 'Potion Shop':
 			case 'Market':
 			case 'Merchant':
-			case 'Bartender':
-			case 'Inn Keeper':
+				// case 'Bartender':
+				// case 'Inn Keeper':
 				items = buyPotions
 				break
 			default:
 				items = buyPotions
+				$game.shopMode = null
 				break
 		}
 		$game.shop = shuffleItems(items)
