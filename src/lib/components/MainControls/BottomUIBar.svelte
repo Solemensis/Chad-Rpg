@@ -93,7 +93,7 @@
 					style="opacity: {extractHours($misc.time) >= 20 ? '1' : '0'}; "
 					on:click={() =>
 						emitAnswer(
-							"It's night time, i'll go back to the nearest Inn before got caught to monsters."
+							"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now it's night time, i'll go back to the nearest Inn before got caught to monsters."
 						)}>It's night time, go back to inn for safety.</button
 				>
 			{/if}
