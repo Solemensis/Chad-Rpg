@@ -27,17 +27,17 @@
 		//if a weapon or destruction spell choosen:
 		if (combatEvent.damage) {
 			//lower the player hp (with a little buff if the dice is 1)
-			if ($game.enemy[0] && $game.enemy[0].enemyHp)
+			if ($game.enemy && $game.enemy.enemyHp)
 				if ($selectedItem.damage != 0 && !$selectedItem.other) {
 					if ($misc.diceNumber == 1) {
 						$misc.diceNumber = 2
-						$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+						$character.stats[0].hp -= Math.floor($game.enemy.enemyHp / $misc.diceNumber)
 					} else {
 						//if dice is greater than 15, do not lower hp
 						// if ($misc.diceNumber > 15) {
 						// 	$character.stats[0].hp = $character.stats[0].hp
 						// } else {
-						$character.stats[0].hp -= Math.floor($game.enemy[0].enemyHp / $misc.diceNumber)
+						$character.stats[0].hp -= Math.floor($game.enemy.enemyHp / $misc.diceNumber)
 						// }
 					}
 				} else {
@@ -45,8 +45,8 @@
 				}
 
 			//lower the enemy hp
-			if ($game.enemy[0] && $game.enemy[0].enemyHp) {
-				$game.enemy[0].enemyHp -= $selectedItem.combatScore
+			if ($game.enemy && $game.enemy.enemyHp) {
+				$game.enemy.enemyHp -= $selectedItem.combatScore
 			}
 		}
 
@@ -61,7 +61,7 @@
 		if ($character.stats[0].hp > 0) {
 			emitAnswer(combatEvent.prompt)
 		} else {
-			emitAnswer('give a sad @story, because player dies in the last combat event.')
+			emitAnswer('give a sad gameData.story, because player dies in the last combat event.')
 			$misc.death = true
 		}
 
@@ -100,9 +100,7 @@
 
 	// enemy hp bar calculation
 	$: hpPercentage =
-		$game.enemy[0] && $game.enemy[0].enemyHp
-			? ($game.enemy[0].enemyHp / $game.enemy[0].enemyMaxHp) * 100
-			: 100
+		$game.enemy && $game.enemy.enemyHp ? ($game.enemy.enemyHp / $game.enemy.enemyMaxHp) * 100 : 100
 </script>
 
 <!-- combat ui -->
@@ -111,16 +109,16 @@
 		<div class="combat-box">
 			<div class="heading-and-enemy">
 				<h3>You are now in a <span class="red-span">Combat</span> against:</h3>
-				{#if $game.enemy[0]}
+				{#if $game.enemy}
 					<div>
-						<h5>{capitalizeFirstLetter($game.enemy[0].enemyName)}</h5>
+						<h5>{capitalizeFirstLetter($game.enemy.enemyName)}</h5>
 
 						<div
 							style="background-image: linear-gradient(to right, #E1683Caa {hpPercentage}%, #1f1f1fc8 {hpPercentage}%);"
 							class="enemy"
 						>
 							<p>
-								{$game.enemy[0].enemyHp} <span class="hp-mp-text">HP</span>
+								{$game.enemy.enemyHp} <span class="hp-mp-text">HP</span>
 							</p>
 						</div>
 					</div>

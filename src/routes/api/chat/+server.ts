@@ -16,9 +16,11 @@ let myConversation = new Bard.Chat()
 export const POST: RequestHandler = async ({ request }: any) => {
 	const requestBody = await request.json()
 
+	// console.log('chat:: ', myConversation)
+
 	const bardResponse: any = await myConversation.ask(requestBody.prompt)
 
-	console.log(bardResponse)
+	// console.log(bardResponse)
 
 	// return new Response(bardResponse, {
 	// 	headers: {

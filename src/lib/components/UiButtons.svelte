@@ -15,7 +15,7 @@
 			answer: answer
 		})
 
-		$game.event[0].shopMode = null
+		$game.event.shopMode = null
 	}
 
 	let mapOn: any
@@ -50,9 +50,11 @@
 </script>
 
 <div>
-	<div class="maintenance-box">
-		<Maintenance />
-	</div>
+	{#if $misc.maintenanceWindow}
+		<div class="maintenance-box">
+			<Maintenance />
+		</div>
+	{/if}
 	<!-- audio play button -->
 	{#if $game.started}
 		<button class="song-icon" transition:fade={{ duration: 500 }} on:click={() => startSong()}>
@@ -76,14 +78,14 @@
 		{#if mapOn}
 			<div class="places-to-go">
 				<button
-					disabled={$misc.loading || $game.event[0].inCombat}
+					disabled={$misc.loading || $game.event.inCombat}
 					on:click={() => emitAnswer("I'll go to nearest Tavern to rest.")}
 					transition:fade={{ delay: 0, duration: 100 }}
 					><img src="images/landscape-svgs/tavern.svg" alt="go tavern button" />
 					<p transition:fade={{ delay: 0, duration: 100 }}>Tavern</p></button
 				>
 				<button
-					disabled={$misc.loading || $game.event[0].inCombat}
+					disabled={$misc.loading || $game.event.inCombat}
 					on:click={() => emitAnswer("I'll go to nearest Town.")}
 					transition:fade={{ delay: 100, duration: 100 }}
 					><img src="images/landscape-svgs/town.svg" alt="go town button" />
@@ -91,35 +93,35 @@
 				>
 
 				<button
-					disabled={$misc.loading || $game.event[0].inCombat}
+					disabled={$misc.loading || $game.event.inCombat}
 					on:click={() => emitAnswer("I'll go to nearest Woods.")}
 					transition:fade={{ delay: 200, duration: 100 }}
 					><img src="images/landscape-svgs/forest.svg" alt="go woods button" />
 					<p transition:fade={{ delay: 200, duration: 100 }}>Woods</p></button
 				>
 				<button
-					disabled={$misc.loading || $game.event[0].inCombat}
+					disabled={$misc.loading || $game.event.inCombat}
 					on:click={() => emitAnswer("I'll go to nearest Harbor.")}
 					transition:fade={{ delay: 300, duration: 100 }}
 					><img src="images/landscape-svgs/dock.svg" alt="go harbor button" />
 					<p transition:fade={{ delay: 300, duration: 100 }}>Harbor</p></button
 				>
 				<button
-					disabled={$misc.loading || $game.event[0].inCombat}
+					disabled={$misc.loading || $game.event.inCombat}
 					on:click={() => emitAnswer("I'll go to weaponsmith.")}
 					transition:fade={{ delay: 400, duration: 100 }}
 					><img src="images/landscape-svgs/shop1.svg" alt="go weaponsmith button" />
 					<p transition:fade={{ delay: 400, duration: 100 }}>Weaponsmith</p></button
 				>
 				<button
-					disabled={$misc.loading || $game.event[0].inCombat}
+					disabled={$misc.loading || $game.event.inCombat}
 					on:click={() => emitAnswer("I'll go to spell shop.")}
 					transition:fade={{ delay: 500, duration: 100 }}
 					><img src="images/landscape-svgs/shop2.svg" alt="go spell shop button" />
 					<p transition:fade={{ delay: 500, duration: 100 }}>Spell Shop</p></button
 				>
 				<button
-					disabled={$misc.loading || $game.event[0].inCombat}
+					disabled={$misc.loading || $game.event.inCombat}
 					on:click={() => emitAnswer("I'll go to potion shop.")}
 					transition:fade={{ delay: 600, duration: 100 }}
 					><img src="images/landscape-svgs/shop3.svg" alt="go potion shop button" />
@@ -488,13 +490,14 @@
 
 	@media (orientation: portrait) {
 		.map-and-places p {
-			border-radius: 0.3rem;
 			color: #eee;
 		}
 		.places-to-go button {
 			background-color: rgba(57, 57, 57, 0.91);
 			padding: 0.7rem 0.2rem 0.2rem 0.2rem;
-			border-radius: 0.3rem;
+			border-radius: 1rem;
+			border-top-left-radius: 5rem;
+			border-top-right-radius: 5rem;
 		}
 		.places-to-go button p {
 			font-size: 0.8rem;
@@ -510,14 +513,15 @@
 		}
 	}
 	.maintenance-box {
-		background-color: #888;
+		background-color: #888888a1;
+		backdrop-filter: blur(8px);
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
 		z-index: 1000;
 		border-radius: 0.3rem;
-		padding: 2rem 4rem;
+		padding: 1.5rem 4rem;
 		text-align: center;
 	}
 </style>

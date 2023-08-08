@@ -20,7 +20,9 @@
 		if (!answer) return
 
 		dispatch('emittedAnswer', {
-			answer: answer
+			answer:
+				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, " +
+				answer
 		})
 
 		//choice transition delay reset for every new conversation
@@ -54,7 +56,7 @@
 	}
 </script>
 
-<!-- {#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode} -->
+<!-- {#if $game.event && !$game.event.shopMode && !$game.event.inCombat && !$game.event.lootMode} -->
 <!-- choices ui starts here -->
 <div class="choices">
 	{#each $game.choices as choice}

@@ -12,7 +12,7 @@
 	}
 
 	function handleBuy(prompt: any, item: any) {
-		if ($game.event[0].shopMode) {
+		if ($game.event.shopMode) {
 			$selectedItem = {}
 
 			$selectedItem = item
@@ -48,45 +48,47 @@
 
 <div transition:fade={{ duration: 1000 }} class="shop">
 	<div class="shop-box">
-		{#if $game.event[0].shopMode == 'weaponsmith'}
+		{#if $game.event.shopMode == 'weaponsmith'}
 			<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
 		{/if}
-		{#if $game.event[0].shopMode == 'armorsmith'}
+		{#if $game.event.shopMode == 'armorsmith'}
 			<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
 		{/if}
-		{#if $game.event[0].shopMode == 'spell shop'}
+		{#if $game.event.shopMode == 'spell shop'}
 			<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
 		{/if}
-		{#if $game.event[0].shopMode == 'potion shop'}
+		{#if $game.event.shopMode == 'potion shop'}
 			<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
 		{/if}
-		{#if $game.event[0].shopMode != 'weaponsmith' && $game.event[0].shopMode != 'armorsmith' && $game.event[0].shopMode != 'spell shop' && $game.event[0].shopMode != 'potion shop'}
+		{#if $game.event.shopMode != 'weaponsmith' && $game.event.shopMode != 'armorsmith' && $game.event.shopMode != 'spell shop' && $game.event.shopMode != 'potion shop'}
 			<h3>You're at a local <span class="g-span">Merchant</span></h3>
 		{/if}
 
-		<div class="buyables-box">
-			{#each $game.shop as buyable}
-				<button
-					class="item-button"
-					on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
-					on:mousemove={(event) => handleMouseMove(event, buyable)}
-					on:mouseleave={hideWindow}
-				>
-					{#if buyable.type == 'weapon'}
-						<img
-							class="buyable-img"
-							src="images/{buyable.weaponClass}.svg"
-							alt="a buyable weapon"
-						/>
-					{:else if buyable.type == 'potion'}
-						<img class="buyable-img" src="images/{buyable.type}.svg" alt="a buyable potion" />
-					{/if}
-					{#if buyable.element}
-						<img class="buyable-img" src="images/{buyable.element}.svg" alt="a buyable spell" />
-					{/if}
-				</button>
-			{/each}
-		</div>
+		{#if $game.shop?.length}
+			<div class="buyables-box">
+				{#each $game.shop as buyable}
+					<button
+						class="item-button"
+						on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}
+						on:mousemove={(event) => handleMouseMove(event, buyable)}
+						on:mouseleave={hideWindow}
+					>
+						{#if buyable.type == 'weapon'}
+							<img
+								class="buyable-img"
+								src="images/{buyable.weaponClass}.svg"
+								alt="a buyable weapon"
+							/>
+						{:else if buyable.type == 'potion'}
+							<img class="buyable-img" src="images/{buyable.type}.svg" alt="a buyable potion" />
+						{/if}
+						{#if buyable.element}
+							<img class="buyable-img" src="images/{buyable.element}.svg" alt="a buyable spell" />
+						{/if}
+					</button>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>
 

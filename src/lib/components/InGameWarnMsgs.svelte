@@ -34,7 +34,7 @@
 
 	function sellItem(item: any) {
 		$selectedItem = {}
-		if (!$game.event[0].shopMode) return
+		if (!$game.event.shopMode) return
 
 		if (!item.price) {
 			let newArray: any = $character.inventory.filter((obj: any) => obj.name !== item.name)

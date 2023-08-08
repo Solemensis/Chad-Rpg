@@ -2,11 +2,11 @@ import { writable } from 'svelte/store'
 
 export const game: any = writable({
 	lootBox: [],
-	placeAndTime: [],
+	placeAndTime: {},
 	shop: [],
 	choices: [],
-	enemy: [],
-	event: [{ inCombat: false, shopMode: null, lootMode: false }],
+	enemy: {},
+	event: { inCombat: false, shopMode: null, lootMode: false },
 	started: false,
 	heroClass: ''
 })
@@ -38,7 +38,8 @@ export const misc: any = writable({
 	currentImg: '',
 	death: false,
 	interactivePoints: 3,
-	bugWindow: false
+	bugWindow: false,
+	maintenanceWindow: true
 })
 
 export const bgImage: any = writable({

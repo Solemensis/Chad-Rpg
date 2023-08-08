@@ -85,7 +85,7 @@
 					// console.log(tokenCount)
 
 					//if combat is over, reset the cooldowns of spells
-					if (!$game.event[0].inCombat) {
+					if (!$game.event.inCombat) {
 						for (let key in $coolDowns) {
 							$coolDowns[key] = 50
 						}
@@ -95,13 +95,8 @@
 					$selectedItem = {}
 
 					// if enemy dies, clear it from frontend
-					if (
-						$game.event[0] &&
-						$game.event[0].inCombat &&
-						$game.enemy[0] &&
-						$game.enemy[0].enemyHp
-					) {
-						if ($game.enemy[0].enemyHp <= 0) {
+					if ($game.event && $game.event.inCombat && $game.enemy && $game.enemy.enemyHp) {
+						if ($game.enemy.enemyHp <= 0) {
 							enemyOnFrontend = false
 						}
 					} else {
@@ -109,29 +104,29 @@
 					}
 
 					//to handle a possible combat bug
-					if ($game.event[0].inCombat && $game.enemy[0]) {
+					if ($game.event.inCombat && $game.enemy) {
 						enemyOnFrontend = true
 					}
-					if ($game.event[0].inCombat && !$game.enemy[0]) {
-						$game.event[0].inCombat = false
+					if ($game.event.inCombat && !$game.enemy) {
+						$game.event.inCombat = false
 						$game.enemy = []
 						enemyOnFrontend = false
 					}
-					if (!$game.event[0].inCombat && $game.enemy[0]) {
-						$game.event[0].inCombat = false
+					if (!$game.event.inCombat && $game.enemy) {
+						$game.event.inCombat = false
 						$game.enemy = []
 						enemyOnFrontend = false
 					}
-					if ($game.enemy[0] && $game.enemy[0].enemyHp <= 0) {
-						$game.event[0].inCombat = false
+					if ($game.enemy && $game.enemy.enemyHp <= 0) {
+						$game.event.inCombat = false
 						$game.enemy = []
 						enemyOnFrontend = false
 					}
 
 					//to handle a possible noLoot bug
-					if ($game.event[0].lootMode && !$game.lootBox.length) {
+					if ($game.event.lootMode && !$game.lootBox.length) {
 						// $game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
-						$game.event[0].lootMode = false
+						$game.event.lootMode = false
 						$game.lootBox = []
 					}
 
@@ -238,7 +233,7 @@
 		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
 		const eventRegex: any = /@event:\s*(\[[^\]]*\])/
 		const enemyRegex: any = /@enemy:\s*(\[[^\]]*\])/
-		const lootBoxRegex: any = /@lootBox:\s*(\[[^\]]*\])/
+		const lootBoxRegex: any = /gameData.lootBox:\s*(\[[^\]]*\])/
 
 		const placeAndTimeMatch: any = text.match(placeAndTimeRegex)
 		const choiceMatch: any = text.match(choiceRegex)
@@ -250,8 +245,8 @@
 			$game.placeAndTime = JSON.parse(placeAndTimeMatch[1])
 
 			if (!logged) {
-				$misc.place = $game.placeAndTime[0].place
-				$misc.time = $game.placeAndTime[0].time
+				$misc.place = $game.placeAndTime.place
+				$misc.time = $game.placeAndTime.time
 				fetchImg()
 
 				logged = true
@@ -263,8 +258,8 @@
 				$game.enemy = JSON.parse(enemyMatch[1])
 
 				//
-				if ($game.enemy[0] && $game.enemy[0].enemyHp) {
-					$game.enemy[0].enemyMaxHp = $game.enemy[0].enemyHp
+				if ($game.enemy && $game.enemy.enemyHp) {
+					$game.enemy.enemyMaxHp = $game.enemy.enemyHp
 				}
 				//
 			}
@@ -276,8 +271,8 @@
 
 		if (eventMatch) {
 			$game.event = JSON.parse(eventMatch[1])
-			if ($game.event[0].shopMode && $game.shop.length != 4) {
-				mixBuyables($game.event[0].shopMode)
+			if ($game.event.shopMode && $game.shop.length != 4) {
+				mixBuyables($game.event.shopMode)
 			}
 		}
 		if (choiceMatch) {
@@ -288,11 +283,11 @@
 
 	//pull the story from chat response, to show it on UI
 	function extractStory(str: any) {
-		const storyIndex = str.indexOf('@story')
+		const storyIndex = str.indexOf('gameData.story')
 		if (storyIndex === -1) {
 			return ''
 		}
-		const startIndex = storyIndex + '@story'.length + 1
+		const startIndex = storyIndex + 'gameData.story'.length + 1
 		let endIndex = str.indexOf('@', startIndex)
 		if (endIndex === -1) {
 			endIndex = str.length
@@ -389,7 +384,7 @@
 	//fetch img according to player's current place from database
 	async function fetchImg() {
 		// check if place is the same
-		if ($game.placeAndTime[0].place == $misc.currentImg) return
+		if ($game.placeAndTime.place == $misc.currentImg) return
 
 		const places: any = [...staticPlaces]
 
@@ -527,7 +522,7 @@
 		</div>
 
 		<!-- Static tavern prompts -->
-		<!-- {#if (!$misc.loading && $game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Tavern')) || ($game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Inn'))}
+		<!-- {#if (!$misc.loading && $game.placeAndTime && $game.placeAndTime.place.includes('Tavern')) || ($game.placeAndTime && $game.placeAndTime.place.includes('Inn'))}
 			<div transition:fade={{ duration: 3000 }}>
 				<StaticPrompts on:emittedAnswer={handleEmittedAnswer} />
 			</div>

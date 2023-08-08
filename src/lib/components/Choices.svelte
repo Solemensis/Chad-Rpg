@@ -27,13 +27,13 @@
 
 {#if $game.started}
 	<div class="ui-mid">
-		{#if $game.event[0] && !$game.event[0].shopMode && !$game.event[0].inCombat && !$game.event[0].lootMode && !$misc.death}
+		{#if $game.event && !$game.event.shopMode && !$game.event.inCombat && !$game.event.lootMode && !$misc.death}
 			<PickChoice on:emittedAnswer={handleEmittedAnswer} />
-		{:else if $game.event[0] && $game.event[0].inCombat && $game.enemy[0] && !$misc.death}
+		{:else if $game.event && $game.event.inCombat && $game.enemy && !$misc.death}
 			<Combat on:emittedAnswer={handleEmittedAnswer} />
-		{:else if $game.event[0] && $game.event[0].shopMode && !$misc.death}
+		{:else if $game.event && $game.event.shopMode && !$misc.death}
 			<Shop />
-		{:else if $game.event[0] && $game.event[0].lootMode && !$misc.death}
+		{:else if $game.event && $game.event.lootMode && !$misc.death}
 			<Loot on:emittedAnswer={handleEmittedAnswer} />
 		{:else if $misc.death}
 			<Death />
