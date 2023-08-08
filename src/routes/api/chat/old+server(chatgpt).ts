@@ -118,11 +118,6 @@ understand the example format of the json objects of lootBox. Weapon must have n
 			"point":"1"}
 		]`
 
-await Bard.init('Ygh0vqYnyVoN_WgC70cvnA8Ru0_qXE7Ow6KIm4BgB5c2Upnjqg65YFYrJhxiQeojHXMRCw.')
-
-let myConversation = new Bard.Chat()
-// console.log(await myConversation.ask(prompt))
-
 export const config: Config = {
 	runtime: 'edge'
 }

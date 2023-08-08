@@ -7,20 +7,14 @@ import { json } from '@sveltejs/kit'
 import type { Config } from '@sveltejs/adapter-vercel'
 import Bard, { askAI } from 'bard-ai'
 
-try {
-	await Bard.init(BARD_KEY)
-	console.log('Bard initialized successfully')
-} catch (error) {
-	console.error('Error initializing Bard:', error)
-}
-
 export const config: Config = {
 	runtime: 'edge'
 }
 
-let myConversation = new Bard.Chat()
-
 export const POST: RequestHandler = async ({ request }: any) => {
+	await Bard.init(BARD_KEY)
+	let myConversation = new Bard.Chat()
+
 	const requestBody = await request.json()
 
 	// console.log('chat:: ', myConversation)
