@@ -4,10 +4,10 @@
 
 <div>
 	<h2>Game is Open</h2>
-	<h4>
+	<!-- <h4>
 		But bard API is not responding stable in this current day and hour, try some more time later
 		please.
-	</h4>
+	</h4> -->
 	<ul>
 		<li>
 			Game carried from chatgpt to google bard's unofficial free api, not the best chatbot solution
