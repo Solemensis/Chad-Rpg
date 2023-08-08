@@ -221,8 +221,8 @@ understand the example format of the items in lootBox. Weapon must have name, da
 
 			$game.started = true
 
-			$misc.place = $game.placeAndTime.place
-			$misc.time = $game.placeAndTime.time
+			$misc.place = $game.placeAndTime?.place
+			$misc.time = $game.placeAndTime?.time
 			if ($game.enemy && $game.enemy.enemyHp) {
 				$game.enemy.enemyMaxHp = $game.enemy.enemyHp
 			}

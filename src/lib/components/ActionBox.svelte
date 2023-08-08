@@ -27,7 +27,7 @@
 	}
 
 	function handleSell(prompt: any, item: any) {
-		if ($game.event.shopMode) {
+		if ($game.event?.shopMode) {
 			$selectedItem = {}
 
 			$selectedItem = item
@@ -75,7 +75,7 @@
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
 
 			let takenDamage: any
-			if ($game.enemy && $game.enemy.enemyHp) {
+			if ($game?.enemy && $game.enemy?.enemyHp) {
 				if ($misc.diceNumber == 1) {
 					takenDamage = Math.floor($game.enemy.enemyHp / 2)
 				} else {
