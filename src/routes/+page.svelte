@@ -387,7 +387,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 
 		// check current place of player
 		function checkPlace(str: any) {
-			let matchingPlaces: any = places.filter((place: any) => str.includes(place))
+			let matchingPlaces: any = places.filter((place: any) => str?.includes(place))
 
 			if (matchingPlaces == 'Town Inn' || matchingPlaces == 'Town Tavern') {
 				matchingPlaces = 'Inn'
