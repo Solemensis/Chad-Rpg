@@ -43,7 +43,7 @@
 </script>
 
 {#if !$misc.loading}
-	{#if $game.choices.length >= 2 || $game.event?.inCombat || $game.event?.shopMode || $game.event?.lootMode}
+	{#if $game.choices?.length >= 2 || $game.event?.inCombat || $game.event?.shopMode || $game.event?.lootMode}
 		<div transition:fade={{ duration: 700 }} class="stats">
 			<div class="stat">
 				<img class="svg-images" src="images/gold.svg" alt="" />
@@ -82,7 +82,7 @@
 					style="opacity: {$game.lootBox.length ? '1' : '0'};"
 					on:click={() => leaveButton('Leave the loot.')}>Leave it.</button
 				>
-			{:else if extractHours($misc.time) >= 20 && !$misc.place.includes('Town') && !$misc.place.includes('Tavern') && !$misc.place.includes('Inn') && !$misc.place.includes('City') && !$misc.place.includes('Shop') && !$misc.place.includes('smith') && !$misc.place.includes('Market') && !$misc.place.includes('Merchant')}
+			{:else if extractHours($misc.time) >= 20 && !$misc.place?.includes('Town') && !$misc.place?.includes('Tavern') && !$misc.place?.includes('Inn') && !$misc.place?.includes('City') && !$misc.place?.includes('Shop') && !$misc.place?.includes('smith') && !$misc.place?.includes('Market') && !$misc.place?.includes('Merchant')}
 				<button
 					disabled={$misc.loading}
 					class="leave-button night-time"
