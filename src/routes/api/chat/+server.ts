@@ -9,16 +9,16 @@ export const config: Config = {
 	runtime: 'edge'
 }
 
-await Bard.init('Ygh0vqYnyVoN_WgC70cvnA8Ru0_qXE7Ow6KIm4BgB5c2Upnjqg65YFYrJhxiQeojHXMRCw.')
-
 let myConversation = new Bard.Chat()
 
 export const POST: RequestHandler = async ({ request }: any) => {
 	const requestBody = await request.json()
 
+	// console.log('chat:: ', myConversation)
+
 	const bardResponse: any = await myConversation.ask(requestBody.prompt)
 
-	console.log(bardResponse)
+	// console.log(bardResponse)
 
 	// return new Response(bardResponse, {
 	// 	headers: {

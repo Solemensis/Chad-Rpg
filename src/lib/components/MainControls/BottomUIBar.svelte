@@ -17,7 +17,7 @@
 			$character.stats[0].hp -= 20
 		} else {
 			emitAnswer('You have escaped succesfully!')
-			$game.event[0].inCombat = false
+			$game.event.inCombat = false
 			$game.enemy = []
 		}
 	}
@@ -30,8 +30,8 @@
 	function leaveButton(leaveString: any) {
 		emitAnswer(leaveString)
 
-		$game.event[0].shopMode = null
-		$game.event[0].lootMode = false
+		$game.event.shopMode = null
+		$game.event.lootMode = false
 		$game.lootBox = []
 	}
 
@@ -43,14 +43,14 @@
 </script>
 
 {#if !$misc.loading}
-	{#if $game.choices.length >= 2 || $game.event[0]?.inCombat || $game.event[0]?.shopMode || $game.event[0]?.lootMode}
+	{#if $game.choices.length >= 2 || $game.event?.inCombat || $game.event?.shopMode || $game.event?.lootMode}
 		<div transition:fade={{ duration: 700 }} class="stats">
 			<div class="stat">
 				<img class="svg-images" src="images/gold.svg" alt="" />
 				<p>{$character.gold}</p>
 			</div>
 
-			{#if $game.event[0].inCombat}
+			{#if $game.event.inCombat}
 				<button
 					style="opacity: {$game.choices.length ? '1' : '0'};"
 					disabled={$misc.loading}
@@ -63,19 +63,19 @@
 						Try to <span class="red-span">Retreat.</span>
 					</p>
 				</button>
-			{:else if $game.event[0].shopMode}
+			{:else if $game.event.shopMode}
 				<button
 					disabled={$misc.loading}
 					class="leave-button"
-					style="opacity: {$game.event[0].shopMode ? '1' : '0'};"
+					style="opacity: {$game.event.shopMode ? '1' : '0'};"
 					on:click={() => {
 						leaveButton(
-							'I will leave to shop. (shopMode must be null in the next response, and player must be leaving the shop.)'
+							'I will leave the shop. (shopMode must be null in the next response, and player must be leaving the shop.)'
 						)
-						$game.event[0].shopMode = null
+						$game.event.shopMode = null
 					}}>Leave the Shop</button
 				>
-			{:else if $game.event[0].lootMode}
+			{:else if $game.event.lootMode}
 				<button
 					disabled={$misc.loading}
 					class="leave-button"
@@ -96,7 +96,7 @@
 			<div class="stat">
 				<img class="svg-images" src="images/time.svg" alt="" />
 
-				<p>{$game.placeAndTime[0].time ? $game.placeAndTime[0].time : '00:00'}</p>
+				<p>{$game.placeAndTime.time ? $game.placeAndTime.time : '00:00'}</p>
 			</div>
 		</div>
 	{/if}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ChatMessage from '$lib/components/ChatMessage.svelte'
+	import LetterByLetter from '$lib/components/LetterByLetter.svelte'
 	import UiButtons from '$lib/components/UiButtons.svelte'
 	import GameStartWindow from '$lib/components/GameStartWindow.svelte'
 	import DescriptionWindow from '$lib/components/ItemDescWindow.svelte'
@@ -8,7 +9,6 @@
 	import Choices from '$lib/components/Choices.svelte'
 	import BackgroundImgs from '$lib/components/BackgroundImgs.svelte'
 	// import StaticPrompts from '$lib/components/StaticPrompts.svelte'
-	import { getTokens } from '$lib/tokenizer'
 
 	import { game } from '../stores'
 	import { character } from '../stores'
@@ -31,7 +31,7 @@
 	import buySpells from '$lib/gamedata/spells.json'
 	import buyPotions from '$lib/gamedata/potions.json'
 	import staticPlaces from '$lib/gamedata/places.json'
-	import medievalStart from '$lib/gamedata/starterprompts/medievalStart.txt'
+	// import medievalStart from '$lib/gamedata/starterprompts/medievalStart.txt'
 
 	import medievalMageInventory from '$lib/gamedata/gamestarters/medievalMageInventory.json'
 	import medievalMageSpells from '$lib/gamedata/gamestarters/medievalMageSpells.json'
@@ -39,131 +39,172 @@
 	import medievalWarriorSpells from '$lib/gamedata/gamestarters/medievalWarriorSpells.json'
 	// import buyArmors from '$lib/gamedata/armors.json'
 
-	let logged: boolean = false
-
 	let answer: string = ''
-	let story: string = ''
-	let chatMessages: ChatCompletionRequestMessage[] = []
+	let chatMessages: any = []
 
 	//a variable to carry the enemy into the client-side for app reliability
 	let enemyOnFrontend: boolean = false
 
-	let tokenCount = 0
+	let prompt = `This is a role-playing game where you'll be the 1st person character and storyteller. You'll describe the world from a 3rd person perspective but when it's time for a conversation, interact with the player from a 1st person npc perspective. All these 1st person and 3rd person content will be in gameData.story! Shape the storyline based on players choices.
 
-	let prompt = `This is a role-playing game where you'll be the 1st person character and storyteller. You'll describe the world from a 3rd person perspective but when it's time for a conversation, interact with the player from a 1st person npc perspective. All these 1st person and 3rd person content will be in @story! Shape the storyline based on players choices.
+	You are not creating a game in python, you will just give the JSON object named "gameData", like the example below.
+	All of your responses MUST include a valid json object.
 
-    	When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player 3 unique choices in @choices, to let player choose from at the end of your message.
+    	When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player at least 3 unique choices in gameData.choices, to let player choose from at the end of your response.
+You are giving short stories. Don't do that, try to give longer and contextful stories.
 
+Don't forget to ALWAYS include at least 3 unique choices for the user to choose!
+    	You can use these rpg game worlds as reference for quests, areas, towns, monsters, races and so on: ['World of Warcraft', 'Guild Wars series', 'Elder Scrolls series']
 
-    	You can use these rpg game worlds as reference for quests, areas, towns, monsters, races and so on: ['World of Warcraft', 'Guild Wars 2', 'Elder Scrolls']
-
-Use these races for monsters randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
+Use these races for enemies randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
 Use these races for allies randomly: ['humans', 'elves', 'dwarves', 'halflings', 'vampires', 'orcs']
-Use these weapon classes for @lootBox weapons: ["sword", "dagger", "bow", "mace", "sword", "spear", "axe", "flail", "mace"]
-Use these spell elements for @lootBox spells: ["light", "fire", "dark", "ice", "lightning", "toxic"]
+Use these weapon classes for gameData.lootBox weapons: ["sword", "dagger", "bow", "mace", "sword", "spear", "axe", "flail", "mace"]
+Use these spell elements for gameData.lootBox spells: ["light", "fire", "dark", "ice", "lightning", "toxic"]
 Every spell in the game has manaCost.
 
 There are 2 unique spells in this game; Teleportation and Summon spells.
 
-You can influence from the mmorpg game named World Of Warcraft for the quests and monsters.
+    	To give joy and spirit to the characters, write your messages from 1st perspective conversation if player currently talking to someone. if the player wants to leave or quit the current conversation, give them choices to go or do something different. If there is a farewell in conversation, let it end.
 
-    	To give joy and spirit to the characters, write your messages from 1st perspective conversation if player currently talking to someone, and make it in a dramatic way as if you were them and let them have their unique characteristics. If the player wants to leave or quit the current conversation, give them choices to go or do something different. If there is a farewell in conversation, let it end.
-
-    	Do not put "notes" to your response, it should only contain @placeAndTime, @story, @event, @choices, @enemy and @lootBox! So, do not say something like "i understand the instructions, etc".
-    	You can use World of Warcraft as a reference for the game; so quests, items, spells, creatures, characters and storyline.
-    	Player can't just ask for "heal myself" or "fill my health points" type of conversation. If player tries that, alert the player by @story.
-
-
-
-    	Do not start the fight before turning "inCombat" to true! Don't just start and end the combat with one @story, let player use some skills or weapons to fight. Say something like "you are now in battle!", and then change "inCombat" to true.
-    	if "inCombat" is true, fill the @enemy array. But fill it only with 1 enemy object even if there are more than 1 enemy, just increase the hp parameter instead and give it an "s" letter in the end, so if the enemy is "goblin" but a group of goblins, make the enemy name "goblins".
-
+    	Do not start the fight before turning "inCombat" to true! Don't just start and end the combat with one response, player will tell when the fight is over! Don't end the fight until player ends it by saying. If a fight occurs, say something like "you are now in battle!", and then change "inCombat" to true. inCombat will turn to false only after player says it.
+    	if "inCombat" is true, fill the enemy object. Enemy will always be an object, not an array of objects. Fill it only with 1 enemy object even if there are more than 1 enemy at the scene. Enemy object must have only enemyName and enemyHp properties.
+		
     	If player starts talking with a market character about buying things, switch "shopMode" to a specific shop name from null.
-       "shopMode" can only be null, 'Weaponsmith', 'Spell Shop', 'Armorsmith', 'Potion Shop', 'Merchant', 'Market' and 'Shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation happening in @story.
+       "shopMode" can only be null, 'Weaponsmith', 'Spell Shop', 'Armorsmith', 'Potion Shop', 'Merchant', 'Market' and 'Shop'. Never let "shopMode" stay null and change it to the things which i mentioned earlier if there is a trading/buying/selling conversation happening in gameData.story.
 
 shopMode will stay null at "Tavern" and out of the town! You sometimes change shopMode to "PotionShop" or "Merchant" when player goes into tavern, or when player is out of the town. Do not do that. Tavern is not a shop. Anywhere out of the town is not a shop aswell.
 Everything in tavern will be free, so drinks, foods and a room to sleep will be free, innkeepers can't take money from player for those.
 
-Damage points of items in @lootBox can be maximum 9.
-Gold in @lootBox can be maximum 200.
+Do not ever give mathematical calculations in gameData.enemy.enemyHp! Don't ever do that, just give the result.
 
-if "shopMode" is not null, give no @choices!
-if "inCombat" is true, give no @choices!
 
-@event comes before @choices, always!
 
-put everything story and conversation related into @story, no where else!
+Damage points of items in gameData.lootBox can be maximum 9.
+Gold in gameData.lootBox can be maximum 200.
 
-"Check your inventory", "Check my equipment" and "Drink a potion" choices are forbidden. Do not give them as @choices.
+You are forgetting to put gameData.enemy. Put empty "{}" in gameData.enemy if there is no enemy to fight.
+
+
+gameData.event comes before gameData.choices, always!
+
+put everything story and conversation related into gameData.story, no where else!
+
 
 There are 3 potions in the game. "Health Potion", "Mana Potion" and "Interactive Chat Potion"
 "Interactive Chat Potion" always give 1 point.
 
-Ps: you are not creating a game in python! you will just give @placeAndTime, @story, @event, @choices, @enemy and @lootBox responses, and nothing else.
+
 There are no accessory or armor in the game as lootable. There are just weapons, spells, potions and currencies.
 
-you are forgetting to put "@story" at the beginning of the story you tell. Put "@story" to the beginning of the story always.
-you are forgetting to put "@enemy". Put empty "[]" in "@enemy" if there is no enemy to fight.
 
-you are forgetting to put the quest reward into the lootBox, when talking to the npc about the quest reward. Always put the reward into the lootBox, even if it is just gold.
-you are forgetting to change "place" according to where player went. Change "place" always if player changes place.
 
-Sometimes you are giving @choices in numeric order. Don't do that! Give choices as array of elements always.
+if player decides to check a loot, and if there are any weapon, gold, potion or spell; put them into the gameData.lootBox. Then, empty the gameData.lootBox in the next response. Only put weapons, spells, gold and potions.
 
-if player decides to check a loot, and if there are any weapon, gold, potion or spell; put them into the @lootBox "[]". Then, empty the @lootBox "[]" in the next response. Only put weapons, spells, gold and potions.
+do not end the game by yourself, give gameData.choices always until player says "game over". This is so important. Game getting bugged if you leave it blank. Always put at least 3 choices.
 
-do not end the game by yourself and give @choices always.
-
-@Do not give same @choices! Change the @choices in all of your answers, change them according to the current @story!
+Do not give same gameData.choices! Change the gameData.choices in all of your answers, change them according to the current gameData.story!
 
 inCombat will only be true when enemies have spotted the player!
 shopMode will only change if player starts to talk a seller npc!
 
 There is an escape functionality in the game. If player wants to escape from a combat, do not avoid it! Let the player escape.
 
-fill @lootBox only if player DECIDES to check a loot!
+fill gameData.lootBox only if player DECIDES to check a loot!
 
 Enemy can leave some lootable weapons, spells, potions or gold behind if player can defeat them.
 
-do not fill @lootBox after inCombat turns to false!
+Could you please make sure not to introduce line breaks or invalid control characters in the generated content? These characters can sometimes cause issues in data formats like JSON. If you encounter a situation where a line break or control character is necessary, please use appropriate escape sequences. Thank you!
+Do not seperate story to more than 1 paragraphs! make it only 1 paragraph, so no line breaks. This is so important, JSON.parse getting bugged because of bad characters, if there are line breaks.
 
-Always put @event in your answers, don't forget it!
 
-If an npc gives an item or gold to the player, turn the lootMode to true and put the item-gold into the @lootBox.
+If an npc gives an item or gold to the player, turn the lootMode to true and put the item-gold into the gameData.lootBox.
 
-understand the example format of the json objects of lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
+understand the example format of the items in lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
-    	Here's an example answer for you. Do not put any other thing into your answer besides these headings with "@" symbol, and do it exactly in this order always: @placeAndTime, @story, @event, @choices, @enemy and lootBox. You'll give your answers always in this format. Do it with the shown parantheses! @placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] @story:'your answer about the story plot comes here'] @event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null normally, but will be 'Weaponsmith', 'Spell Shop', 'Armorsmith', 'Potion Shop', 'Merchant', 'Market' or 'Shop' if there's currently a conversation happening with a seller npc.", "lootMode":"this will be true only if user chooses a choice about exploring a loot from @choices, else will stay false"}] @choices: ["choice1", "choice2", "choice3"] @enemy: [{enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}] @lootBox: [{
-    		"name": "Bronze Battle Axe",
-    		"damage": "this number can maximum be 9.",
-    		"price": 85,
-    		"type": "weapon",
-    		"weaponClass": "axe"
-    	}, 	{
-    		"name": "Solar Bomb",
-    		"damage": "this number can maximum be 10.",
-    		"price": 130,
-    		"manaCost": 20,
-    		"type": "destruction spell",
-    		"element": "fire",
-    		"cooldown": 3
-    	}, {"name":"gold",
-    		"type":"currency",
-    		"amount":"this number can maximum be 100."},
-    		{"name":"Health Potion",
-    		"type":"potion",
-    		"price":"30",
-    		"healing":"50"},
-    		{"name":"Interactive Chat Potion",
-    		"type":"potion",
-    		"price":"30",
-    		"point":"1"}
-    	]
 
-        Rules are done. Now, player starts the game by entering tavern.`
+    	Here's a test JSON at the bottom for you to better understand the format of your responses. Format is so important, key names must be the same in every response. Ps: These values are just an example for you to understand the JSON structure better, do not put these items etc into the lootBox at the start of the game.
+    	
+		{
+			placeAndTime: {place: "Tavern", time: "20:00"},
+			story: "your answer about the story plot comes here",
+			event: {inCombat:"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", shopMode:"this will be null normally, but will be 'Weaponsmith', 'Spell Shop', 'Armorsmith', 'Potion Shop', 'Merchant', 'Market' or 'Shop' if there's currently a conversation happening with a seller npc.", lootMode:"this will be true only if user chooses a choice about exploring a loot from gameData.choices, else will stay false"},
+			choices: ["choice1", "choice2", "choice3"],
+			enemy: {enemyName:"name of the enemy", enemyHp:"a number between 40 and 200"},
+			lootBox: [{
+				name: "Bronze Battle Axe",
+    			damage: "this number can maximum be 9.",
+    			price: 85,
+    			type: "weapon",
+    			weaponClass: "axe"
+    			}, 	{
+    			name: "Solar Bomb",
+    			damage: "this number can maximum be 10.",
+    			price: 130,
+    			manaCost: 20,
+    			type: "destruction spell",
+    			element: "fire",
+    			cooldown: 3
+    			}, {name:"gold",
+    			type:"currency",
+    			amount:"this number can maximum be 100."},
+    			{name:"Health Potion",
+    			type:"potion",
+    			price:"30",
+    			healing:"50"},
+    			{name:"Interactive Chat Potion",
+    			type:"potion",
+    			price:"30",
+    			point:"1"}
+    		]
+		}
+	
+        Rules are done. Now, player starts the game. Start as a new adventurer in a fantasy role-playing world, entering a tavern.`
+
+	function fixJsonStringIfErrors(input) {
+		try {
+			const parsedJson = JSON.parse(input)
+			return JSON.stringify(parsedJson, null, 2)
+		} catch (error) {
+			if (error instanceof SyntaxError) {
+				// Find and fix problematic characters
+				const fixedInput = input.replace(/"/g, '\\"')
+				return fixJsonStringIfErrors(fixedInput)
+			} else {
+				return
+			}
+		}
+	}
+
+	function extractAndParseJSON(inputString: any) {
+		const regex = /```json([\s\S]*?)```/gm
+		const match = regex.exec(inputString)
+		// console.log(inputString)
+		if (!match || match.length < 2) {
+			throw new Error('JSON not found between tags')
+		}
+
+		const jsonString = fixJsonStringIfErrors(match[1].trim())
+		// console.log('jsonBamya: ', jsonString)
+		try {
+			return JSON.parse(jsonString)
+		} catch (error) {
+			// console.log('error: ', error)
+			throw new Error('Error parsing JSON')
+		}
+	}
 
 	const handleSubmit = async () => {
-		console.log('bu prompt gitti: ', prompt)
+		if ($misc.query === '') {
+			return
+		}
+
+		$game.choices = []
+
+		$misc.loading = true
+		chatMessages = [...chatMessages, { role: 'user', content: $misc.query }]
+
+		// console.log('myprompt: ', prompt)
+
 		const response = await fetch('/api/chat', {
 			method: 'POST',
 			headers: {
@@ -174,148 +215,26 @@ understand the example format of the json objects of lootBox. Weapon must have n
 
 		if (response.ok) {
 			const responseData = await response.json() // Extract the JSON response data
-			console.log(responseData) // Log the response data
 
-			parseText(responseData)
-			story = extractStory(responseData)
-			chatMessages = [...chatMessages, { role: 'assistant', content: responseData }]
-			$misc.loading = false
-			logged = false
-		}
-	}
+			$game = extractAndParseJSON(responseData)
+			// console.log('THIS IS $game: ', $game)
 
-	const handleSubmit2 = async () => {
-		if ($misc.query === '') {
-			return
-		}
+			$game.started = true
 
-		$game.choices = []
-
-		$misc.loading = true
-		chatMessages = [...chatMessages, { role: 'user', content: $misc.query }]
-
-		const eventSource = new SSE('/api/chat', {
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			payload: JSON.stringify({ messages: chatMessages })
-		})
-
-		eventSource.addEventListener('error', handleError)
-
-		eventSource.addEventListener('message', (e) => {
-			try {
-				parseText(answer)
-				story = extractStory(answer)
-				if (e.data === '[DONE]') {
-					chatMessages = [...chatMessages, { role: 'assistant', content: answer }]
-					$misc.loading = false
-					logged = false
-
-					// console.log('answer: ' + answer)
-
-					tokenCount = 2400
-					chatMessages.forEach((msg) => {
-						const tokens = getTokens(msg.content)
-						tokenCount += tokens
-					})
-
-					// console.log(tokenCount)
-
-					//if combat is over, reset the cooldowns of spells
-					if (!$game.event[0].inCombat) {
-						for (let key in $coolDowns) {
-							$coolDowns[key] = 50
-						}
-					}
-
-					// reset selectedItem with new sv response, if there was any
-					$selectedItem = {}
-
-					// if enemy dies, clear it from frontend
-					if (
-						$game.event[0] &&
-						$game.event[0].inCombat &&
-						$game.enemy[0] &&
-						$game.enemy[0].enemyHp
-					) {
-						if ($game.enemy[0].enemyHp <= 0) {
-							enemyOnFrontend = false
-						}
-					} else {
-						enemyOnFrontend = false
-					}
-
-					//to handle a possible combat bug
-					if ($game.event[0].inCombat && $game.enemy[0]) {
-						enemyOnFrontend = true
-					}
-					if ($game.event[0].inCombat && !$game.enemy[0]) {
-						$game.event[0].inCombat = false
-						$game.enemy = []
-						enemyOnFrontend = false
-					}
-					if (!$game.event[0].inCombat && $game.enemy[0]) {
-						$game.event[0].inCombat = false
-						$game.enemy = []
-						enemyOnFrontend = false
-					}
-					if ($game.enemy[0] && $game.enemy[0].enemyHp <= 0) {
-						$game.event[0].inCombat = false
-						$game.enemy = []
-						enemyOnFrontend = false
-					}
-
-					//to handle a possible noLoot bug
-					if ($game.event[0].lootMode && !$game.lootBox.length) {
-						// $game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
-						$game.event[0].lootMode = false
-						$game.lootBox = []
-					}
-
-					//to handle token limitation of gpt, delete the first 2 messages from array
-					//if tokenCount is beyond 3800.
-					if (tokenCount >= 3800) {
-						chatMessages.splice(1, 2)
-					}
-
-					//heal player if currently at Tavern or Inn or Town
-					if (
-						$misc.place.includes('Inn') ||
-						$misc.place.includes('Tavern') ||
-						$misc.place == 'Town' ||
-						$misc.place.includes('City')
-					) {
-						if ($character.stats[0].hp < $character.stats[0].maxHp) {
-							$character.stats[0].hp += 25
-
-							if ($character.stats[0].hp > $character.stats[0].maxHp || !$character.stats[0].hp) {
-								$character.stats[0].hp = $character.stats[0].maxHp
-							}
-						}
-						if ($character.stats[0].mp < $character.stats[0].maxMp) {
-							$character.stats[0].mp += 20
-
-							if ($character.stats[0].mp > $character.stats[0].maxMp || !$character.stats[0].mp) {
-								$character.stats[0].mp = $character.stats[0].maxMp
-							}
-						}
-					}
-
-					return
-				}
-
-				const completionResponse = JSON.parse(e.data)
-				const [{ delta }] = completionResponse.choices
-
-				if (delta.content) {
-					answer = (answer ?? '') + delta.content
-				}
-			} catch (err) {
-				handleError(err)
+			$misc.place = $game.placeAndTime.place
+			$misc.time = $game.placeAndTime.time
+			if ($game.enemy && $game.enemy.enemyHp) {
+				$game.enemy.enemyMaxHp = $game.enemy.enemyHp
 			}
-		})
-		eventSource.stream()
+			fetchImg()
+
+			if ($game.event.shopMode && $game.shop?.length != 4) {
+				mixBuyables($game.event.shopMode)
+			}
+
+			chatMessages = [...chatMessages, { role: 'assistant', content: $game }]
+			$misc.loading = false
+		}
 	}
 
 	let handleErr: boolean = false
@@ -370,74 +289,6 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		$game.shop = shuffleItems(items)
 	}
 
-	//a function to take the chatgpt response and give it a structure to use it on frontend
-	function parseText(text: string) {
-		const placeAndTimeRegex: any = /@placeAndTime:\s*(\[[^\]]*\])/
-		const choiceRegex: any = /@choices:\s*(\[[^\]]*\])/
-		const eventRegex: any = /@event:\s*(\[[^\]]*\])/
-		const enemyRegex: any = /@enemy:\s*(\[[^\]]*\])/
-		const lootBoxRegex: any = /@lootBox:\s*(\[[^\]]*\])/
-
-		const placeAndTimeMatch: any = text.match(placeAndTimeRegex)
-		const choiceMatch: any = text.match(choiceRegex)
-		const eventMatch: any = text.match(eventRegex)
-		const enemyMatch: any = text.match(enemyRegex)
-		const lootBoxMatch: any = text.match(lootBoxRegex)
-
-		if (placeAndTimeMatch) {
-			$game.placeAndTime = JSON.parse(placeAndTimeMatch[1])
-
-			if (!logged) {
-				$misc.place = $game.placeAndTime[0].place
-				$misc.time = $game.placeAndTime[0].time
-				fetchImg()
-
-				logged = true
-			}
-		}
-
-		if (enemyMatch) {
-			if (enemyOnFrontend == false) {
-				$game.enemy = JSON.parse(enemyMatch[1])
-
-				//
-				if ($game.enemy[0] && $game.enemy[0].enemyHp) {
-					$game.enemy[0].enemyMaxHp = $game.enemy[0].enemyHp
-				}
-				//
-			}
-		}
-
-		if (lootBoxMatch) {
-			$game.lootBox = JSON.parse(lootBoxMatch[1])
-		}
-
-		if (eventMatch) {
-			$game.event = JSON.parse(eventMatch[1])
-			if ($game.event[0].shopMode && $game.shop.length != 4) {
-				mixBuyables($game.event[0].shopMode)
-			}
-		}
-		if (choiceMatch) {
-			$game.choices = JSON.parse(choiceMatch[1])
-		}
-		return
-	}
-
-	//pull the story from chat response, to show it on UI
-	function extractStory(str: any) {
-		const storyIndex = str.indexOf('@story')
-		if (storyIndex === -1) {
-			return ''
-		}
-		const startIndex = storyIndex + '@story'.length + 1
-		let endIndex = str.indexOf('@', startIndex)
-		if (endIndex === -1) {
-			endIndex = str.length
-		}
-		return str.slice(startIndex, endIndex).trim()
-	}
-
 	//this is the function to canalize player's answer to chatGPT
 	function giveYourAnswer(choice: any) {
 		if (!choice) return
@@ -446,7 +297,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 			$ui.errorWarnMsg = "There's a flawed word in your answer."
 			return
 		}
-		story = ''
+		$game.story = ''
 
 		//increase all the $coolDowns by 1 with every choice
 		for (const key in $coolDowns) {
@@ -463,7 +314,9 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		$misc.query = choice
 
 		try {
-			prompt = choice
+			if (chatMessages.length) {
+				prompt = choice
+			}
 			handleSubmit()
 			$misc.query = ''
 			answer = ''
@@ -528,13 +381,13 @@ understand the example format of the json objects of lootBox. Weapon must have n
 	//fetch img according to player's current place from database
 	async function fetchImg() {
 		// check if place is the same
-		if ($game.placeAndTime[0].place == $misc.currentImg) return
+		if ($game.placeAndTime.place == $misc.currentImg) return
 
 		const places: any = [...staticPlaces]
 
 		// check current place of player
 		function checkPlace(str: any) {
-			let matchingPlaces: any = places.filter((place) => str.includes(place))
+			let matchingPlaces: any = places.filter((place: any) => str.includes(place))
 
 			if (matchingPlaces == 'Town Inn' || matchingPlaces == 'Town Tavern') {
 				matchingPlaces = 'Inn'
@@ -637,7 +490,12 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		<div class="main-game">
 			<!-- chatGPT answer box starts here -->
 			<div transition:fade={{ duration: 1000 }} class="game-master">
-				<ChatMessage type="assistant" message={story ? story : dotty} />
+				{#if $game.story}
+					<LetterByLetter message={$game.story} />
+				{/if}
+				{#if !$game.story}
+					<ChatMessage message={dotty} />
+				{/if}
 			</div>
 			<!-- chatGPT answer box ends here -->
 
@@ -664,7 +522,7 @@ understand the example format of the json objects of lootBox. Weapon must have n
 		</div>
 
 		<!-- Static tavern prompts -->
-		<!-- {#if (!$misc.loading && $game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Tavern')) || ($game.placeAndTime[0] && $game.placeAndTime[0].place.includes('Inn'))}
+		<!-- {#if (!$misc.loading && $game.placeAndTime && $game.placeAndTime.place.includes('Tavern')) || ($game.placeAndTime && $game.placeAndTime.place.includes('Inn'))}
 			<div transition:fade={{ duration: 3000 }}>
 				<StaticPrompts on:emittedAnswer={handleEmittedAnswer} />
 			</div>
