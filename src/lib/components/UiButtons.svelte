@@ -511,6 +511,9 @@
 			right: 6.5rem;
 			top: 2.2rem;
 		}
+		.maintenance-box {
+			width: 90vw;
+		}
 	}
 	.maintenance-box {
 		background-color: #888888a1;
