@@ -368,7 +368,7 @@
 </script>
 
 <div
-	style="opacity:{$game.choices.length ? '1' : '0'}; transition:opacity 1.5s;"
+	style="opacity:{$game.choices?.length ? '1' : '0'}; transition:opacity 1.5s;"
 	class="container-box"
 >
 	{#if title == 'Inventory'}

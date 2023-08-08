@@ -52,7 +52,7 @@
 
 			{#if $game.event.inCombat}
 				<button
-					style="opacity: {$game.choices.length ? '1' : '0'};"
+					style="opacity: {$game.choices?.length ? '1' : '0'};"
 					disabled={$misc.loading}
 					on:click={() => calculateRetreat()}
 					class="leave-button run-button"
