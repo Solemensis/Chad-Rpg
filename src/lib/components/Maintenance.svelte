@@ -3,8 +3,11 @@
 </script>
 
 <div>
-	<!-- <h2>Game is Open</h2> -->
-	<h2>Game is closed for just an hour</h2>
+	<h2>Game is Open</h2>
+	<h4>
+		But bard API is not responding stable in this current day and hour, try some more time later
+		please.
+	</h4>
 	<ul>
 		<li>
 			Game carried from chatgpt to google bard's unofficial free api, not the best chatbot solution
@@ -25,10 +28,15 @@
 
 <style>
 	h2 {
-		margin-bottom: 2rem;
+		margin-bottom: 0.5rem;
 		color: rgb(142, 255, 140);
 		font-weight: 500;
 		font-size: 2.2rem;
+	}
+	h4 {
+		margin-bottom: 2rem;
+		font-weight: 500;
+		font-size: 1.3rem;
 	}
 	ul {
 		list-style: circle;
