@@ -215,7 +215,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 
 		if (response.ok) {
 			const responseData = await response.json() // Extract the JSON response data
-
+			console.log('responseData: ', responseData)
 			$game = extractAndParseJSON(responseData)
 			// console.log('THIS IS $game: ', $game)
 
@@ -281,10 +281,13 @@ understand the example format of the items in lootBox. Weapon must have name, da
 			case 'Potion Shop':
 			case 'Market':
 			case 'Merchant':
+			case 'Bartender':
+			case 'Inn Keeper':
 				items = buyPotions
 				break
 			default:
-				return
+				items = buyPotions
+				break
 		}
 		$game.shop = shuffleItems(items)
 	}

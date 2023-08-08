@@ -11,10 +11,9 @@ export const config: Config = {
 	runtime: 'edge'
 }
 
+await Bard.init(BARD_KEY)
+let myConversation = new Bard.Chat()
 export const POST: RequestHandler = async ({ request }: any) => {
-	await Bard.init(BARD_KEY)
-	let myConversation = new Bard.Chat()
-
 	const requestBody = await request.json()
 
 	// console.log('chat:: ', myConversation)
