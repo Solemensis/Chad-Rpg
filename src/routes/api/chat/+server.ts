@@ -7,11 +7,16 @@ import { json } from '@sveltejs/kit'
 import type { Config } from '@sveltejs/adapter-vercel'
 import Bard, { askAI } from 'bard-ai'
 
+try {
+	await Bard.init(BARD_KEY)
+	console.log('Bard initialized successfully')
+} catch (error) {
+	console.error('Error initializing Bard:', error)
+}
+
 export const config: Config = {
 	runtime: 'edge'
 }
-
-await Bard.init(BARD_KEY)
 
 let myConversation = new Bard.Chat()
 
