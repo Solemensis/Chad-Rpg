@@ -228,7 +228,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 			}
 			fetchImg()
 
-			if ($game.event.shopMode && $game.shop?.length != 4) {
+			if ($game.event?.shopMode && $game.shop?.length != 4) {
 				mixBuyables($game.event.shopMode)
 			}
 
@@ -381,7 +381,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 	//fetch img according to player's current place from database
 	async function fetchImg() {
 		// check if place is the same
-		if ($game.placeAndTime.place == $misc.currentImg) return
+		if ($game.placeAndTime?.place == $misc.currentImg) return
 
 		const places: any = [...staticPlaces]
 
