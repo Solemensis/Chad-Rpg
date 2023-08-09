@@ -5,9 +5,9 @@
 <div>
 	<h2>Game's Open Again</h2>
 	<h4>
-		But bard API is not responding stable sometimes, and some bugs are there. So game can get stuck.
-		I'll try to minimize them but absolute solution is a stable chat api. So don't take your games
-		so seriously.
+		But free bard API is not responding stable sometimes as it is an experiment, and some bugs are
+		there. So game can get stuck. I'll try to minimize them by game prompt but absolute solution is
+		a stable chat api. So don't take your games so seriously.
 	</h4>
 
 	<ul>
@@ -42,7 +42,7 @@
 	}
 	h4 {
 		margin-bottom: 2rem;
-		font-weight: 500;
+		font-weight: 400;
 		font-size: 1.3rem;
 		color: #eee;
 	}
