@@ -3,7 +3,7 @@
 </script>
 
 <div>
-	<h2>Game's Open Again</h2>
+	<h2>Game's Open Back Again</h2>
 	<h4>
 		But free bard API is not responding stable sometimes as it is an experiment, and some bugs are
 		there. So game can get stuck. I'll try to minimize them by game prompt but absolute solution is
@@ -12,8 +12,8 @@
 
 	<ul>
 		<li>
-			Game carried from chatgpt to google bard's unofficial free api, not the best chatbot solution
-			but only free solution i've found for now.
+			Game carried from chatgpt to bard's unofficial free api, not the best chatbot solution but
+			only free solution i've found for now.
 		</li>
 		<li>
 			Sadly, creating a save system is not possible without a stable chat api, So only <span
