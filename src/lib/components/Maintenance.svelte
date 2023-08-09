@@ -5,9 +5,9 @@
 <div>
 	<h2>Game's Open Back Again</h2>
 	<h4>
-		But free bard API is not responding stable sometimes as it is an experiment, and some bugs are
-		there. So game can get stuck. I'll try to minimize them by game prompt but absolute solution is
-		a stable chat api. So don't take your games so seriously.
+		But free bard API is not responding stable sometimes as it is an experiment ai. I'll try to
+		minimize bugs by game prompt and error handling but ultimate solution is a stable chat api. So
+		don't take your games so seriously for now, as it may get stuck at the most enjoyable moment.
 	</h4>
 
 	<ul>
