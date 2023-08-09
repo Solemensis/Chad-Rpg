@@ -187,7 +187,9 @@
 					<div>
 						<h3 class="updates">Potantial Updates</h3>
 						<ul>
-							<li>Game balance will be improved, level system will be added, classes will be added.</li>
+							<li>
+								Game balance will be improved, level system will be added, classes will be added.
+							</li>
 							<li>Armors-pendants-amulets-elixirs to be added.</li>
 							<li>
 								Other worlds to be added rather than just medieval world. For example; cyberpunk,
@@ -201,7 +203,8 @@
 							</li>
 							<li class="support">
 								If this project gets support, i want to add save game functionality and continue
-								developing it using openAI gpt-4 models, as all these improvements are so pricy for me.
+								developing it using openAI gpt-4 models, as all these improvements are so pricy for
+								me.
 							</li>
 							<li class="support">
 								You can support this project for the upper improvements from this LTC (litecoin)
@@ -239,8 +242,8 @@
 					time to time.
 				</p>
 				<div class="mail-box">
-					<a target="_blank" href="mailto:ulassacli@outlook.com">Press to mail me</a>
-					<p>or do it by default: ulassacli@outlook.com</p>
+					<a target="_blank" href="mailto:solewaits@outlook.com">Press to mail me</a>
+					<p>or do it by default: solewaits@outlook.com</p>
 				</div>
 			</div>
 		</div>
