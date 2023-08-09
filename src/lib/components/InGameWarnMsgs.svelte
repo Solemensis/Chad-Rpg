@@ -117,6 +117,7 @@
 		top: 50%;
 		transform: translate(-50%, -50%);
 		text-align: center;
+		border: rgb(73, 75, 76) 2px solid;
 
 		display: flex;
 		flex-direction: column;

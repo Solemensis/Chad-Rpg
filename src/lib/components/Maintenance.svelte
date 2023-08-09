@@ -3,11 +3,13 @@
 </script>
 
 <div>
-	<h2>Game is Open</h2>
-	<!-- <h4>
-		But bard API is not responding stable in this current day and hour, try some more time later
-		please.
-	</h4> -->
+	<h2>Game's Open Again</h2>
+	<h4>
+		But bard API is not responding stable sometimes, and some bugs are there. So game can get stuck.
+		I'll try to minimize them but absolute solution is a stable chat api. So don't take your games
+		so seriously.
+	</h4>
+
 	<ul>
 		<li>
 			Game carried from chatgpt to google bard's unofficial free api, not the best chatbot solution
@@ -19,32 +21,39 @@
 			>
 			can be played for now.
 		</li>
-		<li>Some bugs are there. Game can get stuck. I'll handle them.</li>
 		<li>PR's - ideas are all welcome! (Especially in game prompt.)</li>
 		<li>You can share me the bugs u've encountered.</li>
 	</ul>
 	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
+	<span class="date">9th of august 2023</span>
 </div>
 
 <style>
+	.date {
+		position: absolute;
+		right: 1rem;
+		bottom: 1rem;
+	}
 	h2 {
-		margin-bottom: 1.5rem;
+		margin-bottom: 1rem;
 		color: rgb(142, 255, 140);
 		font-weight: 500;
-		font-size: 2.2rem;
+		font-size: 2rem;
 	}
 	h4 {
 		margin-bottom: 2rem;
 		font-weight: 500;
 		font-size: 1.3rem;
+		color: #eee;
 	}
 	ul {
 		list-style: circle;
 	}
 	ul li {
-		margin-bottom: 1.5rem;
+		margin-bottom: 1rem;
 		font-size: 1.2rem;
 		text-align: start;
+		color: #ddd;
 	}
 	button {
 		margin-top: 0.5rem;
