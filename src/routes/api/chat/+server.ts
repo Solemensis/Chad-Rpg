@@ -1,5 +1,6 @@
 import type { CreateChatCompletionRequest, ChatCompletionRequestMessage } from 'openai'
 import { BARD_KEY } from '$env/static/private'
+import { BARD_ex_KEY } from '$env/static/private'
 
 import type { RequestHandler } from './$types'
 import { getTokens } from '$lib/tokenizer'
@@ -11,8 +12,13 @@ export const config: Config = {
 	runtime: 'edge'
 }
 
+// let myBard = new Bard()
+// let myBard = new Bard({
+// 	'__Secure-1PSID': BARD_KEY
+// })
 let myBard = new Bard({
-	'__Secure-1PSID': BARD_KEY
+	'__Secure-1PSID': BARD_KEY,
+	'__Secure-1PSIDTS': BARD_ex_KEY
 })
 let myConversation = myBard.createChat()
 
