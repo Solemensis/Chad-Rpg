@@ -12,14 +12,12 @@ export const config: Config = {
 	runtime: 'edge'
 }
 
-// let myBard = new Bard()
+let myBard = new Bard(BARD_KEY)
 // let myBard = new Bard({
-// 	'__Secure-1PSID': BARD_KEY
+// 	'__Secure-1PSID': BARD_KEY,
+// 	'__Secure-1PSIDTS': BARD_ex_KEY
 // })
-let myBard = new Bard({
-	'__Secure-1PSID': BARD_KEY,
-	'__Secure-1PSIDTS': BARD_ex_KEY
-})
+
 let myConversation = myBard.createChat()
 
 export const POST: RequestHandler = async ({ request }: any) => {
