@@ -3,8 +3,12 @@
 </script>
 
 <div>
-	<h2>Game's Open Back Again</h2>
+	<!-- <h2>Game's Open Back Again</h2> -->
+	<h2 style="color:orangered;">Game's Closed Back Again</h2>
 	<h4>
+		As the free unofficial bard api is unstable. Will be opened again later for sure, and closed!?
+	</h4>
+	<!-- <h4>
 		But free bard API is not responding stable sometimes as it is an experiment ai. I'll try to
 		minimize bugs by game prompt and error handling but ultimate solution is a stable chat api. So
 		don't take your games so seriously for now, as it may get stuck at the most enjoyable moment.
@@ -25,7 +29,8 @@
 		<li>You can share me the bugs u've encountered.</li>
 	</ul>
 	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
-	<span class="date">9th of august 2023</span>
+	<span class="date">9th of august 2023</span> -->
+	<span class="date">13th of august 2023</span>
 </div>
 
 <style>
