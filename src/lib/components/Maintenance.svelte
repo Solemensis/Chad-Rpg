@@ -4,7 +4,7 @@
 
 <div>
 	<!-- <h2>Game's Open Back Again</h2> -->
-	<h2 style="color:orangered;">Game's Closed Back Again</h2>
+	<h2 style="color:orangered;">Game's Closed Back Again.</h2>
 	<ul>
 		<li>
 			Since the free PALM API is not as stable as the paid OpenAI models, I'm facing difficulties in
