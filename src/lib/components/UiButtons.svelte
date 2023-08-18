@@ -519,8 +519,9 @@
 		}
 	}
 	.maintenance-box {
-		background-color: #888888a1;
-		backdrop-filter: blur(8px);
+		background-color: #252525a1;
+		border: 6px solid rgb(88, 88, 88);
+		backdrop-filter: blur(24px);
 		position: absolute;
 		left: 50%;
 		top: 50%;

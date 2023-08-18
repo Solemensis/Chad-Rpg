@@ -55,12 +55,7 @@
 		font-weight: 500;
 		font-size: 2rem;
 	}
-	h4 {
-		margin-bottom: 2rem;
-		font-weight: 400;
-		font-size: 1.3rem;
-		color: #eee;
-	}
+
 	ul {
 		list-style: circle;
 	}
