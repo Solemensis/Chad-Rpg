@@ -5,9 +5,19 @@
 <div>
 	<!-- <h2>Game's Open Back Again</h2> -->
 	<h2 style="color:orangered;">Game's Closed Back Again</h2>
-	<h4>
-		As the free unofficial bard api is unstable. Will be opened again later for sure, and closed!?
-	</h4>
+	<ul>
+		<li>
+			Since the free PALM API is not as stable as the paid OpenAI models, I'm facing difficulties in
+			obtaining precise JSON responses from PALM. It occasionally provides responses with a
+			structure, but not consistently.
+		</li>
+		<li>I will investigate this further, considering prompt powerups and API parameters.</li>
+		<li>
+			PS: I have just gained access to the PALM API from waitlist, so I'm not very familiar with the
+			personality of this LLM yet. If anyone has experience with it, I would appreciate prompt
+			suggestions/pr's.
+		</li>
+	</ul>
 	<!-- <h4>
 		But free bard API is not responding stable sometimes as it is an experiment ai. I'll try to
 		minimize bugs by game prompt and error handling but ultimate solution is a stable chat api. So
@@ -30,7 +40,7 @@
 	</ul>
 	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
 	<span class="date">9th of august 2023</span> -->
-	<span class="date">13th of august 2023</span>
+	<span class="date">18th of august 2023</span>
 </div>
 
 <style>

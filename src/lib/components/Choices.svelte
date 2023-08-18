@@ -25,7 +25,7 @@
 	}
 </script>
 
-{#if $game.started}
+{#if $misc.started}
 	<div class="ui-mid">
 		{#if $game.event && !$game.event.shopMode && !$game.event.inCombat && !$game.event.lootMode && !$misc.death}
 			<PickChoice on:emittedAnswer={handleEmittedAnswer} />

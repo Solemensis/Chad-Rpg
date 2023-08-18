@@ -6,9 +6,7 @@ export const game: any = writable({
 	shop: [],
 	choices: [],
 	enemy: {},
-	event: { inCombat: false, shopMode: null, lootMode: false },
-	started: false,
-	heroClass: ''
+	event: { inCombat: false, shopMode: null, lootMode: false }
 })
 
 export const character: any = writable({
@@ -39,7 +37,9 @@ export const misc: any = writable({
 	death: false,
 	interactivePoints: 3,
 	bugWindow: false,
-	maintenanceWindow: true
+	maintenanceWindow: true,
+	started: false,
+	heroClass: ''
 })
 
 export const bgImage: any = writable({

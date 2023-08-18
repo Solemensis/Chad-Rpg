@@ -47,13 +47,32 @@
 
 	let prompt = `This is a role-playing game where you'll be the 1st person character and storyteller. You'll describe the world from a 3rd person perspective but when it's time for a conversation, interact with the player from a 1st person npc perspective. All these 1st person and 3rd person content will be in gameData.story! Shape the storyline based on players choices.
 
-	You are not creating a game in python, you will just give the JSON object named "gameData", like the example below.
-	All of your responses MUST include a valid json object.
+	All of your responses MUST include a valid json object, with this exact properties(keys):
 
-    	When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player at least 3 unique choices in gameData.choices, to let player choose from at the end of your response.
-You are giving short stories. Don't do that, try to give longer and contextful stories.
+	"gameData": {
+                "placeAndTime": {
+                    "place": "Enchanted Library",
+                    "time": "14:00"
+                },
+                "story": "As you step into the vast, towering library, you're immediately surrounded by shelves upon shelves of ancient tomes and magical artifacts. Soft, ethereal light bathes the room, and the air seems charged with knowledge and mystique. A wise-looking librarian sits at a desk, engrossed in a book of their own.",
+                "event": {
+                    "inCombat": false,
+                    "shopMode": null,
+                    "lootMode": false
+                },
+                "choices": [
+                    "Approach the librarian for assistance.",
+                    "Browse the shelves for a specific book.",
+                    "Sit down and read a random tome."
+                ],
+                "enemy": {},
+                "lootBox": []
+            }
+        }
 
-Don't forget to ALWAYS include at least 3 unique choices for the user to choose!
+    
+
+Don't forget to include at least 3 unique choices for the user to choose.
     	You can use these rpg game worlds as reference for quests, areas, towns, monsters, races and so on: ['World of Warcraft', 'Guild Wars series', 'Elder Scrolls series']
 
 Use these races for enemies randomly: ['bandit', 'golem', 'kobold', 'satyr', 'skritt', 'ghoul', 'goblin', 'wolf', 'ogre', 'harpy', 'gargoyle', 'gnoll', 'jinn', 'arachne', 'demon', 'giant', 'undead']
@@ -75,7 +94,6 @@ There are 2 unique spells in this game; Teleportation and Summon spells.
 shopMode will stay null at "Tavern" and out of the town! You sometimes change shopMode to "PotionShop" or "Merchant" when player goes into tavern, or when player is out of the town. Do not do that. Tavern is not a shop. Anywhere out of the town is not a shop aswell.
 Everything in tavern will be free, so drinks, foods and a room to sleep will be free, innkeepers can't take money from player for those.
 
-Do not ever give mathematical calculations in gameData.enemy.enemyHp! Don't ever do that, just give the result.
 
 
 
@@ -102,64 +120,31 @@ if player decides to check a loot, and if there are any weapon, gold, potion or 
 
 do not end the game by yourself, give gameData.choices always until player says "game over". This is so important. Game getting bugged if you leave it blank. Always put at least 3 choices.
 
-Do not give same gameData.choices! Change the gameData.choices in all of your answers, change them according to the current gameData.story!
 
-inCombat will only be true when enemies have spotted the player!
+inCombat will only be true when enemies have spotted the player.
 If inCombat is true, fill the enemy object with enemyHp and enemyName. This is so important, if inCombat is true and enemy object is not there; game is getting bugged.
-shopMode will only change if player starts to talk a seller npc!
+shopMode will only change if player starts to talk a seller npc.
 
 There is an escape functionality in the game. If player wants to escape from a combat, do not avoid it! Let the player escape.
 
-fill gameData.lootBox only if player DECIDES to check a loot!
+fill gameData.lootBox only if player only decides to check a loot.
 
 Enemy can leave some lootable weapons, spells, potions or gold behind if player can defeat them.
 
-Could you please make sure not to introduce line breaks or invalid control characters in the generated content? These characters can sometimes cause issues in data formats like JSON. If you encounter a situation where a line break or control character is necessary, please use appropriate escape sequences. Thank you!
-Do not seperate story to more than 1 paragraphs! make it only 1 paragraph, so no line breaks. This is so important, JSON.parse getting bugged because of bad characters, if there are line breaks.
 
 
 If an npc gives an item or gold to the player, turn the lootMode to true and put the item-gold into the gameData.lootBox.
 
-understand the example format of the items in lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
+`
+	// Do not give same gameData.choices! Change the gameData.choices in all of your answers, change them according to the current gameData.story!
+	// Do not ever give mathematical calculations in gameData.enemy.enemyHp! Don't ever do that, just give the result.
+	// You are not creating a game in python, you will just give the JSON object named "gameData", like the example below.
 
-
-    	Here's a test JSON at the bottom for you to better understand the format of your responses. Format is so important, key names must be the same in every response. Ps: These values are just an example for you to understand the JSON structure better, do not put these items etc into the lootBox at the start of the game.
-    	
-		{
-			placeAndTime: {place: "Tavern", time: "20:00"},
-			story: "your answer about the story plot comes here",
-			event: {inCombat:"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", shopMode:"this will be null normally, but will be 'Weaponsmith', 'Spell Shop', 'Armorsmith', 'Potion Shop', 'Merchant', 'Market' or 'Shop' if there's currently a conversation happening with a seller npc.", lootMode:"this will be true only if user chooses a choice about exploring a loot from gameData.choices, else will stay false"},
-			choices: ["choice1", "choice2", "choice3"],
-			enemy: {enemyName:"name of the enemy", enemyHp:"a number between 40 and 200"},
-			lootBox: [{
-				name: "Bronze Battle Axe",
-    			damage: "this number can maximum be 9.",
-    			price: 85,
-    			type: "weapon",
-    			weaponClass: "axe"
-    			}, 	{
-    			name: "Solar Bomb",
-    			damage: "this number can maximum be 10.",
-    			price: 130,
-    			manaCost: 20,
-    			type: "destruction spell",
-    			element: "fire",
-    			cooldown: 3
-    			}, {name:"gold",
-    			type:"currency",
-    			amount:"this number can maximum be 100."},
-    			{name:"Health Potion",
-    			type:"potion",
-    			price:"30",
-    			healing:"50"},
-    			{name:"Interactive Chat Potion",
-    			type:"potion",
-    			price:"30",
-    			point:"1"}
-    		]
-		}
-	
-        Rules are done. Now, player starts the game. Start as a new adventurer in a fantasy role-playing world, entering a tavern.`
+	// 	When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player at least 3 unique choices in gameData.choices, to let player choose from at the end of your response.
+	// You are giving short stories. Don't do that, try to give longer and contextful stories.
+	// Could you please make sure not to introduce line breaks or invalid control characters in the generated content? These characters can sometimes cause issues in data formats like JSON. If you encounter a situation where a line break or control character is necessary, please use appropriate escape sequences. Thank you!
+	// Do not seperate story to more than 1 paragraphs! make it only 1 paragraph, so no line breaks. This is so important, JSON.parse getting bugged because of bad characters, if there are line breaks.
+	// understand the example format of the items in lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
 	function fixJsonStringIfErrors(input) {
 		try {
@@ -176,22 +161,33 @@ understand the example format of the items in lootBox. Weapon must have name, da
 		}
 	}
 
-	function extractAndParseJSON(inputString: any) {
-		const regex = /```json([\s\S]*?)```/gm
-		const match = regex.exec(inputString)
-		// console.log(inputString)
-		if (!match || match?.length < 2) {
-			throw new Error('JSON not found between tags')
+	// function extractAndParseJSON(inputString: any) {
+	// 	const regex = /```json([\s\S]*?)```/gm
+	// 	const match = regex.exec(inputString)
+	// 	// console.log(inputString)
+	// 	if (!match || match?.length < 2) {
+	// 		throw new Error('JSON not found between tags')
+	// 	}
+
+	// 	const jsonString = fixJsonStringIfErrors(match[1].trim())
+	// 	// console.log('jsonBamya: ', jsonString)
+	// 	try {
+	// 		return JSON.parse(jsonString)
+	// 	} catch (error) {
+	// 		// console.log('error: ', error)
+	// 		throw new Error('Error parsing JSON')
+	// 	}
+	// }
+
+	function extractAndParseJSON(inputString) {
+		const gameDataStart = inputString.indexOf('{"gameData"')
+		const gameDataEnd = inputString.indexOf(']}}', gameDataStart) + 1
+		if (gameDataStart === -1 || gameDataEnd === -1) {
+			return null // "gameData" section not found
 		}
 
-		const jsonString = fixJsonStringIfErrors(match[1].trim())
-		// console.log('jsonBamya: ', jsonString)
-		try {
-			return JSON.parse(jsonString)
-		} catch (error) {
-			// console.log('error: ', error)
-			throw new Error('Error parsing JSON')
-		}
+		const extractedGameData = inputString.slice(gameDataStart, gameDataEnd)
+		return extractedGameData
 	}
 
 	const handleSubmit = async () => {
@@ -204,7 +200,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 		$misc.loading = true
 		chatMessages = [...chatMessages, { role: 'user', content: $misc.query }]
 
-		// console.log('myprompt: ', prompt)
+		console.log('myprompt: ', prompt)
 
 		const response = await fetch('/api/chat', {
 			method: 'POST',
@@ -216,11 +212,11 @@ understand the example format of the items in lootBox. Weapon must have name, da
 
 		if (response.ok) {
 			const responseData = await response.json() // Extract the JSON response data
-			console.log('responseData: ', responseData)
+			console.log(responseData)
 			$game = extractAndParseJSON(responseData)
-			// console.log('THIS IS $game: ', $game)
+			console.log('THIS IS $game: ', $game)
 
-			$game.started = true
+			$misc.started = true
 
 			$misc.place = $game.placeAndTime?.place
 			$misc.time = $game.placeAndTime?.time
@@ -329,8 +325,8 @@ understand the example format of the items in lootBox. Weapon must have name, da
 			handleError(error)
 		}
 
-		if ($game.started == false) {
-			$game.started = true
+		if ($misc.started == false) {
+			$misc.started = true
 		}
 	}
 
@@ -480,7 +476,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 <div>
 	<BackgroundImgs />
 
-	{#if !$game.started}
+	{#if !$misc.started}
 		<GameStartWindow on:emittedAnswer={startMedievalGame} />
 	{/if}
 
@@ -491,7 +487,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 	<!-- item description window  -->
 
 	<!-- game ui starts here -->
-	{#if $game.started}
+	{#if $misc.started}
 		<div class="main-game">
 			<!-- chatGPT answer box starts here -->
 			<div transition:fade={{ duration: 1000 }} class="game-master">
@@ -511,7 +507,7 @@ understand the example format of the items in lootBox. Weapon must have name, da
 					actions={$character.inventory}
 					on:emittedAnswer={handleEmittedAnswer}
 				/>
-				{#if $game.started}
+				{#if $misc.started}
 					<div class="choices">
 						<Choices on:emittedAnswer={handleEmittedAnswer} />
 					</div>

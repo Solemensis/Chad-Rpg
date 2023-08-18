@@ -56,7 +56,7 @@
 		</div>
 	{/if}
 	<!-- audio play button -->
-	{#if $game.started}
+	{#if $misc.started}
 		<button class="song-icon" transition:fade={{ duration: 500 }} on:click={() => startSong()}>
 			<img src="images/music.svg" alt="music button" />
 		</button>
@@ -70,7 +70,7 @@
 	{/if}
 	<!--  map and places  -->
 	<div class="map-and-places">
-		{#if $game.started && !$misc.death}
+		{#if $misc.started && !$misc.death}
 			<button transition:fade={{ duration: 500 }} on:click={() => (mapOn = !mapOn)}>
 				<img src="images/map.svg" alt="map button" />
 			</button>
@@ -225,7 +225,7 @@
 					<span style="color:aqua">|</span> github/Solemensis <span style="color:aqua">|</span> patreon/Solemensis</span
 				>
 				<!-- <span class="span2">Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span> -->
-				<span class="span2">Current chatbot: uo free Bard API</span>
+				<span class="span2">Current chatbot: free PALM API</span>
 			</div>
 		</div>
 	{/if}
