@@ -12,7 +12,7 @@
 	}
 
 	function handleBuy(prompt: any, item: any) {
-		if ($game.event.shopMode) {
+		if ($game.gameData.event.shopMode) {
 			$selectedItem = {}
 
 			$selectedItem = item
@@ -48,25 +48,25 @@
 
 <div transition:fade={{ duration: 1000 }} class="shop">
 	<div class="shop-box">
-		{#if $game.event.shopMode == 'weaponsmith'}
+		{#if $game.gameData.event.shopMode == 'weaponsmith'}
 			<h3>You're at a local <span class="g-span">Weaponsmith</span></h3>
 		{/if}
-		{#if $game.event.shopMode == 'armorsmith'}
+		{#if $game.gameData.event.shopMode == 'armorsmith'}
 			<h3>You're at a local <span class="g-span">Armorsmith</span></h3>
 		{/if}
-		{#if $game.event.shopMode == 'spell shop'}
+		{#if $game.gameData.event.shopMode == 'spell shop'}
 			<h3>You're at a local <span class="g-span">Spell Shop</span></h3>
 		{/if}
-		{#if $game.event.shopMode == 'potion shop'}
+		{#if $game.gameData.event.shopMode == 'potion shop'}
 			<h3>You're at a local <span class="g-span">Potion Shop</span></h3>
 		{/if}
-		{#if $game.event.shopMode != 'weaponsmith' && $game.event.shopMode != 'armorsmith' && $game.event.shopMode != 'spell shop' && $game.event.shopMode != 'potion shop'}
+		{#if $game.gameData.event.shopMode != 'weaponsmith' && $game.gameData.event.shopMode != 'armorsmith' && $game.gameData.event.shopMode != 'spell shop' && $game.gameData.event.shopMode != 'potion shop'}
 			<h3>You're at a local <span class="g-span">Merchant</span></h3>
 		{/if}
 
-		{#if $game.shop?.length}
+		{#if $game.gameData.shop?.length}
 			<div class="buyables-box">
-				{#each $game.shop as buyable}
+				{#each $game.gameData.shop as buyable}
 					<button
 						class="item-button"
 						on:click={() => handleBuy(`Do you wanna buy ${buyable.name}?`, buyable)}

@@ -15,8 +15,8 @@
 			$character.inventory.push(item)
 			$character.inventory = $character.inventory
 
-			let newArray: any = $game.shop.filter((shopItem: any) => shopItem != item)
-			$game.shop = newArray
+			let newArray: any = $game.gameData.shop.filter((shopItem: any) => shopItem != item)
+			$game.gameData.shop = newArray
 			// return $ui.errorWarnMsg='Buyout succesful!'
 		} else if (
 			item.type == 'destruction spell' ||
@@ -26,15 +26,15 @@
 			$character.spells.push(item)
 			$character.spells = $character.spells
 
-			let newArray: any = $game.shop.filter((shopItem: any) => shopItem != item)
-			$game.shop = newArray
+			let newArray: any = $game.gameData.shop.filter((shopItem: any) => shopItem != item)
+			$game.gameData.shop = newArray
 			// return $ui.errorWarnMsg='Buyout succesful!'
 		}
 	}
 
 	function sellItem(item: any) {
 		$selectedItem = {}
-		if (!$game.event.shopMode) return
+		if (!$game.gameData.event.shopMode) return
 
 		if (!item.price) {
 			let newArray: any = $character.inventory.filter((obj: any) => obj.name !== item.name)

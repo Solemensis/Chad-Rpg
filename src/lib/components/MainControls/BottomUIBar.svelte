@@ -21,8 +21,8 @@
 			emitAnswer(
 				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, player tries to escape, and escapes from the combat area successfully!"
 			)
-			$game.event.inCombat = false
-			$game.enemy = []
+			$game.gameData.event.inCombat = false
+			$game.gameData.enemy = []
 		}
 	}
 
@@ -34,9 +34,9 @@
 	function leaveButton(leaveString: any) {
 		emitAnswer(leaveString)
 
-		$game.event.shopMode = null
-		$game.event.lootMode = false
-		$game.lootBox = []
+		$game.gameData.event.shopMode = null
+		$game.gameData.event.lootMode = false
+		$game.gameData.lootBox = []
 	}
 
 	function emitAnswer(answer: any) {
@@ -47,16 +47,16 @@
 </script>
 
 {#if !$misc.loading}
-	{#if $game.choices?.length >= 2 || $game.event?.inCombat || $game.event?.shopMode || $game.event?.lootMode}
+	{#if $game.gameData.choices?.length >= 2 || $game.gameData.event?.inCombat || $game.gameData.event?.shopMode || $game.gameData.event?.lootMode}
 		<div transition:fade={{ duration: 700 }} class="stats">
 			<div class="stat">
 				<img class="svg-images" src="images/gold.svg" alt="" />
 				<p>{$character.gold}</p>
 			</div>
 
-			{#if $game.event.inCombat}
+			{#if $game.gameData.event.inCombat}
 				<button
-					style="opacity: {$game.choices?.length ? '1' : '0'};"
+					style="opacity: {$game.gameData.choices?.length ? '1' : '0'};"
 					disabled={$misc.loading}
 					on:click={() => calculateRetreat()}
 					class="leave-button run-button"
@@ -67,26 +67,26 @@
 						Try to <span class="red-span">Retreat.</span>
 					</p>
 				</button>
-			{:else if $game.event.shopMode}
+			{:else if $game.gameData.event.shopMode}
 				<button
 					disabled={$misc.loading}
 					class="leave-button"
-					style="opacity: {$game.event.shopMode ? '1' : '0'};"
+					style="opacity: {$game.gameData.event.shopMode ? '1' : '0'};"
 					on:click={() => {
 						leaveButton(
 							'I will leave the shop. (shopMode must be null in the next response, and player must be leaving the shop.)'
 						)
-						$game.event.shopMode = null
+						$game.gameData.event.shopMode = null
 					}}>Leave the Shop</button
 				>
-			{:else if $game.event.lootMode}
+			{:else if $game.gameData.event.lootMode}
 				<button
 					disabled={$misc.loading}
 					class="leave-button"
-					style="opacity: {$game.lootBox?.length ? '1' : '0'};"
+					style="opacity: {$game.gameData.lootBox?.length ? '1' : '0'};"
 					on:click={() => leaveButton('Leave the loot.')}>Leave it.</button
 				>
-			{:else if extractHours($misc.time) >= 20 && !$misc.place?.includes('Town') && !$misc.place?.includes('Tavern') && !$misc.place?.includes('Inn') && !$misc.place?.includes('City') && !$misc.place?.includes('Shop') && !$misc.place?.includes('smith') && !$misc.place?.includes('Market') && !$misc.place?.includes('Merchant')}
+				<!-- {:else if extractHours($misc.time) >= 20 && !$misc.place?.includes('Town') && !$misc.place?.includes('Tavern') && !$misc.place?.includes('Inn') && !$misc.place?.includes('City') && !$misc.place?.includes('Shop') && !$misc.place?.includes('smith') && !$misc.place?.includes('Market') && !$misc.place?.includes('Merchant')}
 				<button
 					disabled={$misc.loading}
 					class="leave-button night-time"
@@ -95,12 +95,12 @@
 						emitAnswer(
 							"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now it's night time, i'll go back to the nearest Inn before got caught to monsters."
 						)}>It's night time, go back to inn for safety.</button
-				>
+				> -->
 			{/if}
 			<div class="stat">
 				<img class="svg-images" src="images/time.svg" alt="" />
 
-				<p>{$game.placeAndTime.time ? $game.placeAndTime.time : '00:00'}</p>
+				<p>{$game.gameData.placeAndTime.time ? $game.gameData.placeAndTime.time : '00:00'}</p>
 			</div>
 		</div>
 	{/if}

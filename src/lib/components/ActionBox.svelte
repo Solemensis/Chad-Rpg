@@ -27,7 +27,7 @@
 	}
 
 	function handleSell(prompt: any, item: any) {
-		if ($game.event?.shopMode) {
+		if ($game.gameData.event?.shopMode) {
 			$selectedItem = {}
 
 			$selectedItem = item
@@ -65,7 +65,7 @@
 		$selectedItem = {}
 		const { type, name, damage, manaCost, healing, mana, cooldown, point } = item
 		const { mp, maxMp, hp, maxHp } = $character.stats[0]
-		const { inCombat, shopMode } = $game.event
+		const { inCombat, shopMode } = $game.gameData.event
 
 		if (type === 'weapon') {
 			if (shopMode) return
@@ -75,25 +75,33 @@
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
 
 			let takenDamage: any
-			if ($game?.enemy && $game.enemy?.enemyHp) {
+			if ($game?.enemy && $game.gameData.enemy?.enemyHp) {
 				if ($misc.diceNumber == 1) {
-					takenDamage = Math.floor($game.enemy.enemyHp / 2)
+					takenDamage = Math.floor($game.gameData.enemy.enemyHp / 2)
 				} else {
-					takenDamage = Math.floor($game.enemy.enemyHp / $misc.diceNumber)
+					takenDamage = Math.floor($game.gameData.enemy.enemyHp / $misc.diceNumber)
 				}
 			} else {
 				takenDamage = 5
 			}
 
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-				if ($game.enemy && $game.enemy.enemyHp && $game.enemy.enemyHp > $selectedItem.combatScore) {
+				if (
+					$game.gameData.enemy &&
+					$game.gameData.enemy.enemyHp &&
+					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
+				) {
 					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in gameData.story, where player lands the worst possible attack, which leads to player receiving damage but giving a little damage back at least. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-				if ($game.enemy && $game.enemy.enemyHp && $game.enemy.enemyHp > $selectedItem.combatScore) {
+				if (
+					$game.gameData.enemy &&
+					$game.gameData.enemy.enemyHp &&
+					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
+				) {
 					$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre gameData.story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
@@ -101,7 +109,11 @@
 			}
 
 			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-				if ($game.enemy && $game.enemy.enemyHp && $game.enemy.enemyHp > $selectedItem.combatScore) {
+				if (
+					$game.gameData.enemy &&
+					$game.gameData.enemy.enemyHp &&
+					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
+				) {
 					$selectedItem.prompt = `Attack with ${name}! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
@@ -134,25 +146,33 @@
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
 
 			let takenDamage: any
-			if ($game.enemy && $game.enemy.enemyHp) {
+			if ($game.gameData.enemy && $game.gameData.enemy.enemyHp) {
 				if ($misc.diceNumber == 1) {
-					takenDamage = Math.floor($game.enemy.enemyHp / 2)
+					takenDamage = Math.floor($game.gameData.enemy.enemyHp / 2)
 				} else {
-					takenDamage = Math.floor($game.enemy.enemyHp / $misc.diceNumber)
+					takenDamage = Math.floor($game.gameData.enemy.enemyHp / $misc.diceNumber)
 				}
 			} else {
 				takenDamage = 5
 			}
 
 			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-				if ($game.enemy && $game.enemy.enemyHp && $game.enemy.enemyHp > $selectedItem.combatScore) {
+				if (
+					$game.gameData.enemy &&
+					$game.gameData.enemy.enemyHp &&
+					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
+				) {
 					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in gameData.story, where player lands the worst possible attack, which leads to player receiving damage but giving a little damage back at least. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
 				}
 			}
 			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-				if ($game.enemy && $game.enemy.enemyHp && $game.enemy.enemyHp > $selectedItem.combatScore) {
+				if (
+					$game.gameData.enemy &&
+					$game.gameData.enemy.enemyHp &&
+					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
+				) {
 					$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre gameData.story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
@@ -160,7 +180,11 @@
 			}
 
 			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-				if ($game.enemy && $game.enemy.enemyHp && $game.enemy.enemyHp > $selectedItem.combatScore) {
+				if (
+					$game.gameData.enemy &&
+					$game.gameData.enemy.enemyHp &&
+					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
+				) {
 					$selectedItem.prompt = `Attack with ${name} spell! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 				} else {
 					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
@@ -311,14 +335,14 @@
 				$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
 
 				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-					if ($game.enemy.enemyHp > $selectedItem.combatScore) {
+					if ($game.gameData.enemy.enemyHp > $selectedItem.combatScore) {
 						$selectedItem.prompt = `Attack with ${name}! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 					} else {
 						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
 					}
 				}
 				if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-					if ($game.enemy.enemyHp > $selectedItem.combatScore) {
+					if ($game.gameData.enemy.enemyHp > $selectedItem.combatScore) {
 						$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre gameData.story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
 					} else {
 						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
@@ -326,7 +350,7 @@
 				}
 
 				if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-					if ($game.enemy.enemyHp > $selectedItem.combatScore) {
+					if ($game.gameData.enemy.enemyHp > $selectedItem.combatScore) {
 						$selectedItem.prompt = `Attack with ${name}! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
 					} else {
 						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
@@ -367,10 +391,8 @@
 	}
 </script>
 
-<div
-	style="opacity:{$game.choices?.length ? '1' : '0'}; transition:opacity 1.5s;"
-	class="container-box"
->
+<!-- style="opacity:{$game.gameData.choices?.length ? '1' : '0'}; transition:opacity 1.5s;" -->
+<div class="container-box">
 	{#if title == 'Inventory'}
 		<div
 			class="hp-bar"

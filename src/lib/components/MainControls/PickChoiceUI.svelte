@@ -46,7 +46,9 @@
 		$misc.interactivePoints -= 1
 
 		dispatch('emittedAnswer', {
-			answer: answer
+			answer:
+				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, " +
+				answer
 		})
 
 		//choice transition delay reset for every new conversation
@@ -56,10 +58,10 @@
 	}
 </script>
 
-<!-- {#if $game.event && !$game.event.shopMode && !$game.event.inCombat && !$game.event.lootMode} -->
+<!-- {#if $game.gameData.event && !$game.gameData.event.shopMode && !$game.gameData.event.inCombat && !$game.gameData.event.lootMode} -->
 <!-- choices ui starts here -->
 <div class="choices">
-	{#each $game.choices as choice}
+	{#each $game.gameData.choices as choice}
 		<button
 			disabled={$misc.loading}
 			transition:fade={{ ...getDelayTime(), duration: 700 }}
@@ -67,7 +69,7 @@
 			on:click={() => emitAnswer(choice)}>{choice}</button
 		>
 	{/each}
-	{#if $game.choices?.length >= 1}
+	{#if $game.gameData.choices?.length >= 1}
 		<div transition:fade={{ ...getDelayTime(), duration: 400 }} class="choice choiceInput">
 			<input
 				placeholder="Write your own answer. ({$misc.interactivePoints} interactive chat points left)"

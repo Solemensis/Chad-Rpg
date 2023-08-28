@@ -51,7 +51,7 @@
 			return
 		}
 
-		$game.choices = []
+		$game.gameData.choices = []
 
 		$misc.loading = true
 		chatMessages = [...chatMessages, { role: 'user', content: $misc.query }]
@@ -85,7 +85,7 @@
 					// console.log(tokenCount)
 
 					//if combat is over, reset the cooldowns of spells
-					if (!$game.event.inCombat) {
+					if (!$game.gameData.event.inCombat) {
 						for (let key in $coolDowns) {
 							$coolDowns[key] = 50
 						}
@@ -95,8 +95,8 @@
 					$selectedItem = {}
 
 					// if enemy dies, clear it from frontend
-					if ($game.event && $game.event.inCombat && $game.enemy && $game.enemy.enemyHp) {
-						if ($game.enemy.enemyHp <= 0) {
+					if ($game.gameData.event && $game.gameData.event.inCombat && $game.gameData.enemy && $game.gameData.enemy.enemyHp) {
+						if ($game.gameData.enemy.enemyHp <= 0) {
 							enemyOnFrontend = false
 						}
 					} else {
@@ -104,30 +104,30 @@
 					}
 
 					//to handle a possible combat bug
-					if ($game.event.inCombat && $game.enemy) {
+					if ($game.gameData.event.inCombat && $game.gameData.enemy) {
 						enemyOnFrontend = true
 					}
-					if ($game.event.inCombat && !$game.enemy) {
-						$game.event.inCombat = false
-						$game.enemy = []
+					if ($game.gameData.event.inCombat && !$game.gameData.enemy) {
+						$game.gameData.event.inCombat = false
+						$game.gameData.enemy = []
 						enemyOnFrontend = false
 					}
-					if (!$game.event.inCombat && $game.enemy) {
-						$game.event.inCombat = false
-						$game.enemy = []
+					if (!$game.gameData.event.inCombat && $game.gameData.enemy) {
+						$game.gameData.event.inCombat = false
+						$game.gameData.enemy = []
 						enemyOnFrontend = false
 					}
-					if ($game.enemy && $game.enemy.enemyHp <= 0) {
-						$game.event.inCombat = false
-						$game.enemy = []
+					if ($game.gameData.enemy && $game.gameData.enemy.enemyHp <= 0) {
+						$game.gameData.event.inCombat = false
+						$game.gameData.enemy = []
 						enemyOnFrontend = false
 					}
 
 					//to handle a possible noLoot bug
-					if ($game.event.lootMode && !$game.lootBox.length) {
-						// $game.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
-						$game.event.lootMode = false
-						$game.lootBox = []
+					if ($game.gameData.event.lootMode && !$game.gameData.lootBox.length) {
+						// $game.gameData.lootBox.push({ name: 'gold', type: 'currency', amount: 15 })
+						$game.gameData.event.lootMode = false
+						$game.gameData.lootBox = []
 					}
 
 					//to handle token limitation of gpt, delete the first 2 messages from array
@@ -224,7 +224,7 @@
 			default:
 				return
 		}
-		$game.shop = shuffleItems(items)
+		$game.gameData.shop = shuffleItems(items)
 	}
 
 	//a function to take the chatgpt response and give it a structure to use it on frontend
@@ -242,11 +242,11 @@
 		const lootBoxMatch: any = text.match(lootBoxRegex)
 
 		if (placeAndTimeMatch) {
-			$game.placeAndTime = JSON.parse(placeAndTimeMatch[1])
+			$game.gameData.placeAndTime = JSON.parse(placeAndTimeMatch[1])
 
 			if (!logged) {
-				$misc.place = $game.placeAndTime.place
-				$misc.time = $game.placeAndTime.time
+				$misc.place = $game.gameData.placeAndTime.place
+				$misc.time = $game.gameData.placeAndTime.time
 				fetchImg()
 
 				logged = true
@@ -255,28 +255,28 @@
 
 		if (enemyMatch) {
 			if (enemyOnFrontend == false) {
-				$game.enemy = JSON.parse(enemyMatch[1])
+				$game.gameData.enemy = JSON.parse(enemyMatch[1])
 
 				//
-				if ($game.enemy && $game.enemy.enemyHp) {
-					$game.enemy.enemyMaxHp = $game.enemy.enemyHp
+				if ($game.gameData.enemy && $game.gameData.enemy.enemyHp) {
+					$game.gameData.enemy.enemyMaxHp = $game.gameData.enemy.enemyHp
 				}
 				//
 			}
 		}
 
 		if (lootBoxMatch) {
-			$game.lootBox = JSON.parse(lootBoxMatch[1])
+			$game.gameData.lootBox = JSON.parse(lootBoxMatch[1])
 		}
 
 		if (eventMatch) {
-			$game.event = JSON.parse(eventMatch[1])
-			if ($game.event.shopMode && $game.shop.length != 4) {
-				mixBuyables($game.event.shopMode)
+			$game.gameData.event = JSON.parse(eventMatch[1])
+			if ($game.gameData.event.shopMode && $game.gameData.shop.length != 4) {
+				mixBuyables($game.gameData.event.shopMode)
 			}
 		}
 		if (choiceMatch) {
-			$game.choices = JSON.parse(choiceMatch[1])
+			$game.gameData.choices = JSON.parse(choiceMatch[1])
 		}
 		return
 	}
@@ -314,8 +314,8 @@
 
 		$selectedItem.showDescription = 'none'
 
-		$game.choices = []
-		$game.shop = []
+		$game.gameData.choices = []
+		$game.gameData.shop = []
 
 		$misc.query = choice
 
@@ -327,8 +327,8 @@
 			handleError(error)
 		}
 
-		if ($game.started == false) {
-			$game.started = true
+		if ($game.gameData.started == false) {
+			$game.gameData.started = true
 		}
 	}
 
@@ -349,21 +349,21 @@
 	//function to start the game in "medieval starter" conditions
 	function startMedievalGame(event: any) {
 		chatMessages = []
-		$game.lootBox = []
-		$game.placeAndTime = []
+		$game.gameData.lootBox = []
+		$game.gameData.placeAndTime = []
 
-		$game.shop = []
-		$game.choices = []
-		$game.enemy = []
-		$game.event = []
+		$game.gameData.shop = []
+		$game.gameData.choices = []
+		$game.gameData.enemy = []
+		$game.gameData.event = []
 		$selectedItem = {}
 		$character.gold = 30
 
-		if ($game.heroClass == 'mage') {
+		if ($game.gameData.heroClass == 'mage') {
 			$character.stats = [{ hp: 80, maxHp: 80, mp: 110, maxMp: 110 }]
 			$character.spells = [...medievalMageSpells]
 			$character.inventory = [...medievalMageInventory]
-		} else if ($game.heroClass == 'warrior') {
+		} else if ($game.gameData.heroClass == 'warrior') {
 			$character.stats = [{ hp: 110, maxHp: 110, mp: 80, maxMp: 80 }]
 			$character.spells = [...medievalWarriorSpells]
 			$character.inventory = [...medievalWarriorInventory]
@@ -384,7 +384,7 @@
 	//fetch img according to player's current place from database
 	async function fetchImg() {
 		// check if place is the same
-		if ($game.placeAndTime.place == $misc.currentImg) return
+		if ($game.gameData.placeAndTime.place == $misc.currentImg) return
 
 		const places: any = [...staticPlaces]
 
@@ -480,57 +480,58 @@
 <div>
 	<BackgroundImgs />
 
-	{#if !$game.started}
-		<GameStartWindow on:emittedAnswer={startMedievalGame} />
-	{/if}
+    {#if !$game.gameData.started}
+    	<GameStartWindow on:emittedAnswer={startMedievalGame} />
+    {/if}
 
-	<MessageWindows />
+    <MessageWindows />
 
-	<!-- item description window (out of ui) -->
-	<DescriptionWindow />
-	<!-- item description window  -->
+    <!-- item description window (out of ui) -->
+    <DescriptionWindow />
+    <!-- item description window  -->
 
-	<!-- game ui starts here -->
-	{#if $game.started}
-		<div class="main-game">
-			<!-- chatGPT answer box starts here -->
-			<div transition:fade={{ duration: 1000 }} class="game-master">
-				<ChatMessage type="assistant" message={story ? story : dotty} />
-			</div>
-			<!-- chatGPT answer box ends here -->
+    <!-- game ui starts here -->
+    {#if $game.gameData.started}
+    	<div class="main-game">
+    		<!-- chatGPT answer box starts here -->
+    		<div transition:fade={{ duration: 1000 }} class="game-master">
+    			<ChatMessage type="assistant" message={story ? story : dotty} />
+    		</div>
+    		<!-- chatGPT answer box ends here -->
 
-			<!-- game controls ui starts here-->
-			<div transition:fade={{ duration: 2000 }} class="game-controls">
-				<ActionBox
-					title={'Inventory'}
-					actions={$character.inventory}
-					on:emittedAnswer={handleEmittedAnswer}
-				/>
-				{#if $game.started}
-					<div class="choices">
-						<Choices on:emittedAnswer={handleEmittedAnswer} />
-					</div>
-				{/if}
+    		<!-- game controls ui starts here-->
+    		<div transition:fade={{ duration: 2000 }} class="game-controls">
+    			<ActionBox
+    				title={'Inventory'}
+    				actions={$character.inventory}
+    				on:emittedAnswer={handleEmittedAnswer}
+    			/>
+    			{#if $game.gameData.started}
+    				<div class="choices">
+    					<Choices on:emittedAnswer={handleEmittedAnswer} />
+    				</div>
+    			{/if}
 
-				<ActionBox
-					title={'Spells'}
-					actions={$character.spells}
-					on:emittedAnswer={handleEmittedAnswer}
-				/>
-			</div>
-			<!-- game controls ui ends here-->
-		</div>
+    			<ActionBox
+    				title={'Spells'}
+    				actions={$character.spells}
+    				on:emittedAnswer={handleEmittedAnswer}
+    			/>
+    		</div>
+    		<!-- game controls ui ends here-->
+    	</div>
 
-		<!-- Static tavern prompts -->
-		<!-- {#if (!$misc.loading && $game.placeAndTime && $game.placeAndTime.place.includes('Tavern')) || ($game.placeAndTime && $game.placeAndTime.place.includes('Inn'))}
-			<div transition:fade={{ duration: 3000 }}>
-				<StaticPrompts on:emittedAnswer={handleEmittedAnswer} />
-			</div>
-		{/if} -->
-	{/if}
-	<!-- game ui ends here -->
+    	<!-- Static tavern prompts -->
+    	<!-- {#if (!$misc.loading && $game.gameData.placeAndTime && $game.gameData.placeAndTime.place.includes('Tavern')) || ($game.gameData.placeAndTime && $game.gameData.placeAndTime.place.includes('Inn'))}
+    		<div transition:fade={{ duration: 3000 }}>
+    			<StaticPrompts on:emittedAnswer={handleEmittedAnswer} />
+    		</div>
+    	{/if} -->
+    {/if}
+    <!-- game ui ends here -->
 
-	<UiButtons on:emittedAnswer={handleEmittedAnswer} />
+    <UiButtons on:emittedAnswer={handleEmittedAnswer} />
+
 </div>
 
 <style>

@@ -3,9 +3,9 @@
 </script>
 
 <div>
-	<!-- <h2>Game's Open Back Again</h2> -->
-	<h2 style="color:orangered;">Game's Closed Back Again.</h2>
-	<ul>
+	<h2>Game's Open Back Again</h2>
+	<!-- <h2 style="color:orangered;">Game's Closed Back Again.</h2> -->
+	<!-- <ul>
 		<li>
 			Since the free PALM API is not as stable as the paid OpenAI models, I'm facing difficulties in
 			obtaining precise JSON responses from PALM. It occasionally provides responses with a
@@ -17,8 +17,8 @@
 			personality of this LLM yet. If anyone has experience with it, I would appreciate prompt
 			suggestions/pr's.
 		</li>
-	</ul>
-	<!-- <h4>
+	</ul> -->
+	<h4 style="font-weight:400; margin-bottom:2rem; color:#ddd;">
 		But free bard API is not responding stable sometimes as it is an experiment ai. I'll try to
 		minimize bugs by game prompt and error handling but ultimate solution is a stable chat api. So
 		don't take your games so seriously for now, as it may get stuck at the most enjoyable moment.
@@ -39,8 +39,8 @@
 		<li>You can share me the bugs u've encountered.</li>
 	</ul>
 	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
-	<span class="date">9th of august 2023</span> -->
-	<span class="date">18th of august 2023</span>
+	<!-- <span class="date">9th of august 2023</span> -->
+	<span class="date">28th of august 2023</span>
 </div>
 
 <style>
@@ -63,7 +63,7 @@
 		margin-bottom: 1rem;
 		font-size: 1.2rem;
 		text-align: start;
-		color: #ddd;
+		color: #aaa;
 	}
 	button {
 		margin-top: 0.5rem;

@@ -1,12 +1,14 @@
 import { writable } from 'svelte/store'
 
 export const game: any = writable({
-	lootBox: [],
-	placeAndTime: {},
-	shop: [],
-	choices: [],
-	enemy: {},
-	event: { inCombat: false, shopMode: null, lootMode: false }
+	gameData: {
+		lootBox: [],
+		placeAndTime: {},
+		shop: [],
+		choices: [],
+		enemy: {},
+		event: { inCombat: false, shopMode: null, lootMode: false }
+	}
 })
 
 export const character: any = writable({

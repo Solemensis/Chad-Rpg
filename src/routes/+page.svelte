@@ -128,23 +128,66 @@ shopMode will only change if player starts to talk a seller npc.
 There is an escape functionality in the game. If player wants to escape from a combat, do not avoid it! Let the player escape.
 
 fill gameData.lootBox only if player only decides to check a loot.
+If there are items in lootBox, turn lootMode to true always!
 
 Enemy can leave some lootable weapons, spells, potions or gold behind if player can defeat them.
 
+understand the example format of the items in lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
+When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player at least 3 unique choices in gameData.choices, to let player choose from at the end of your response.
+You are giving short stories. Don't do that, try to give longer and contextful stories.
 
 If an npc gives an item or gold to the player, turn the lootMode to true and put the item-gold into the gameData.lootBox.
+ 
+Sometimes you miss json in your responses. This is so important. Game is getting bugged if you do not give a gameData json in your response. No matter what happens in story, always give a gameData JSON object in your responses!
+Now, start the game. Player enters a tavern in a town, night time.
 
+You must to what player wants in-game. If player wants to go somewhere, like forest/woods etc, just lead the story to there.
+
+Here's an example answer for you. Do not put any other thing into your answer besides these. You'll give your answers always in this format. Do it with the shown parantheses. 
+
+{
+	gameData:{
+		placeAndTime: [{"place":'the value of this will change according to player's current area. It will be just 1 word general naming, no specific naming or proper noun. For example it can't be "Azeroth" or "Stormwind" or "the town"; but it can be "Tavern", "Woods", "Town", "Library", "Laboratory", "Hospital", "Sanatorium", "School", "Dungeon", "Cave", "Castle", "Mountain", "Shore", "Cathedral", "Shop", "Home", "Harbor", "Dock", "Ship", "Desert", "Island", "Temple", or "Unknown"', "time":'time in hour:minute format (no AM or PM, it will be 24 hour format'}] 
+		story:['your answer about the story plot comes here'] 
+		event: [{"inCombat":"this will be 'false' when there's no chance for combat, but will be 'true' if there's any combat potential, or nearby enemies.", "shopMode":"this will be null normally, but will be 'Weaponsmith', 'Spell Shop', 'Armorsmith', 'Potion Shop', 'Merchant', 'Market' or 'Shop' if there's currently a conversation happening with a seller npc.", "lootMode":"this will be true only if user chooses a choice about exploring a loot from choices, else will stay false"}] 
+		choices: ["choice1", "choice2", "choice3"] 
+		enemy: {enemyName:"name of the enemy", enemyHp:"a number between 30 and 150"}
+		lootBox: [{
+    		"name": "Bronze Battle Axe",
+    		"damage": "this number can maximum be 9.",
+    		"price": 85,
+    		"type": "weapon",
+    		"weaponClass": "axe"
+    	}, 	{
+    		"name": "Solar Bomb",
+    		"damage": "this number can maximum be 10.",
+    		"price": 130,
+    		"manaCost": 20,
+    		"type": "destruction spell",
+    		"element": "fire",
+    		"cooldown": 3
+    	}, {"name":"gold",
+    		"type":"currency",
+    		"amount":"this number can maximum be 100."},
+    		{"name":"Health Potion",
+    		"type":"potion",
+    		"price":"30",
+    		"healing":"50"},
+    		{"name":"Interactive Chat Potion",
+    		"type":"potion",
+    		"price":"30",
+    		"point":"1"}
+    	]
+	}
+}
 `
 	// Do not give same gameData.choices! Change the gameData.choices in all of your answers, change them according to the current gameData.story!
 	// Do not ever give mathematical calculations in gameData.enemy.enemyHp! Don't ever do that, just give the result.
 	// You are not creating a game in python, you will just give the JSON object named "gameData", like the example below.
 
-	// 	When you write your messages, focus writing them from 1st person character's eye most of the time, rather than 3rd person narrator and always give player at least 3 unique choices in gameData.choices, to let player choose from at the end of your response.
-	// You are giving short stories. Don't do that, try to give longer and contextful stories.
 	// Could you please make sure not to introduce line breaks or invalid control characters in the generated content? These characters can sometimes cause issues in data formats like JSON. If you encounter a situation where a line break or control character is necessary, please use appropriate escape sequences. Thank you!
 	// Do not seperate story to more than 1 paragraphs! make it only 1 paragraph, so no line breaks. This is so important, JSON.parse getting bugged because of bad characters, if there are line breaks.
-	// understand the example format of the items in lootBox. Weapon must have name, damage, price, type and weaponClass. Spell must have name, damage or healing, price, manacost, type as destruction spell or healing spell, element and cooldown.
 
 	function fixJsonStringIfErrors(input) {
 		try {
@@ -161,41 +204,43 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 		}
 	}
 
-	// function extractAndParseJSON(inputString: any) {
-	// 	const regex = /```json([\s\S]*?)```/gm
-	// 	const match = regex.exec(inputString)
-	// 	// console.log(inputString)
-	// 	if (!match || match?.length < 2) {
-	// 		throw new Error('JSON not found between tags')
-	// 	}
-
-	// 	const jsonString = fixJsonStringIfErrors(match[1].trim())
-	// 	// console.log('jsonBamya: ', jsonString)
-	// 	try {
-	// 		return JSON.parse(jsonString)
-	// 	} catch (error) {
-	// 		// console.log('error: ', error)
-	// 		throw new Error('Error parsing JSON')
-	// 	}
-	// }
-
-	function extractAndParseJSON(inputString) {
-		const gameDataStart = inputString.indexOf('{"gameData"')
-		const gameDataEnd = inputString.indexOf(']}}', gameDataStart) + 1
-		if (gameDataStart === -1 || gameDataEnd === -1) {
-			return null // "gameData" section not found
+	// bard api
+	function extractAndParseJSON(inputString: any) {
+		const regex = /```json([\s\S]*?)```/gm
+		const match = regex.exec(inputString)
+		// console.log(inputString)
+		if (!match || match?.length < 2) {
+			throw new Error('JSON not found between tags')
 		}
 
-		const extractedGameData = inputString.slice(gameDataStart, gameDataEnd)
-		return extractedGameData
+		const jsonString = fixJsonStringIfErrors(match[1].trim())
+		// console.log('jsonBamya: ', jsonString)
+		try {
+			return JSON.parse(jsonString)
+		} catch (error) {
+			// console.log('error: ', error)
+			throw new Error('Error parsing JSON')
+		}
 	}
+
+	// palm api
+	// function extractAndParseJSON(inputString) {
+	// 	const gameDataStart = inputString.indexOf('{"gameData"')
+	// 	const gameDataEnd = inputString.indexOf(']}}', gameDataStart) + 1
+	// 	if (gameDataStart === -1 || gameDataEnd === -1) {
+	// 		return null // "gameData" section not found
+	// 	}
+
+	// 	const extractedGameData = inputString.slice(gameDataStart, gameDataEnd)
+	// 	return extractedGameData
+	// }
 
 	const handleSubmit = async () => {
 		if ($misc.query === '') {
 			return
 		}
 
-		$game.choices = []
+		$game.gameData.choices = []
 
 		$misc.loading = true
 		chatMessages = [...chatMessages, { role: 'user', content: $misc.query }]
@@ -213,20 +258,32 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 		if (response.ok) {
 			const responseData = await response.json() // Extract the JSON response data
 			console.log(responseData)
+
+			let hpOfEnemy = 0
+
+			if ($game.gameData.enemy.enemyHp) {
+				hpOfEnemy = $game.gameData.enemy.enemyHp
+			}
 			$game = extractAndParseJSON(responseData)
+			if (hpOfEnemy && $game.gameData.enemy.enemyHp) {
+				$game.gameData.enemy.enemyHp = hpOfEnemy
+			}
 			console.log('THIS IS $game: ', $game)
 
 			$misc.started = true
 
-			$misc.place = $game.placeAndTime?.place
-			$misc.time = $game.placeAndTime?.time
-			if ($game.enemy && $game.enemy.enemyHp) {
-				$game.enemy.enemyMaxHp = $game.enemy.enemyHp
+			$misc.place = $game.gameData.placeAndTime?.place
+			$misc.time = $game.gameData.placeAndTime?.time
+
+			if (!$game.gameData.enemy.enemyMaxHp) {
+				if ($game.gameData.enemy?.enemyHp) {
+					$game.gameData.enemy.enemyMaxHp = $game.gameData.enemy.enemyHp
+				}
 			}
 			fetchImg()
 
-			if ($game.event?.shopMode && $game.shop?.length != 4) {
-				mixBuyables($game.event.shopMode)
+			if ($game.gameData.event?.shopMode && $game.gameData.shop?.length != 4) {
+				mixBuyables($game.gameData.event.shopMode)
 			}
 
 			chatMessages = [...chatMessages, { role: 'assistant', content: $game }]
@@ -284,10 +341,10 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 				break
 			default:
 				items = buyPotions
-				$game.shopMode = null
+				$game.gameData.shopMode = null
 				break
 		}
-		$game.shop = shuffleItems(items)
+		$game.gameData.shop = shuffleItems(items)
 	}
 
 	//this is the function to canalize player's answer to chatGPT
@@ -298,7 +355,7 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 			$ui.errorWarnMsg = "There's a flawed word in your answer."
 			return
 		}
-		$game.story = ''
+		$game.gameData.story = ''
 
 		//increase all the $coolDowns by 1 with every choice
 		for (const key in $coolDowns) {
@@ -309,8 +366,8 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 
 		$selectedItem.showDescription = 'none'
 
-		$game.choices = []
-		$game.shop = []
+		$game.gameData.choices = []
+		$game.gameData.shop = []
 
 		$misc.query = choice
 
@@ -347,21 +404,21 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 	//function to start the game in "medieval starter" conditions
 	function startMedievalGame(event: any) {
 		chatMessages = []
-		$game.lootBox = []
-		$game.placeAndTime = []
+		$game.gameData.lootBox = []
+		$game.gameData.placeAndTime = []
 
-		$game.shop = []
-		$game.choices = []
-		$game.enemy = []
-		$game.event = []
+		$game.gameData.shop = []
+		$game.gameData.choices = []
+		$game.gameData.enemy = []
+		$game.gameData.event = []
 		$selectedItem = {}
 		$character.gold = 30
 
-		if ($game.heroClass == 'mage') {
+		if ($game.gameData.heroClass == 'mage') {
 			$character.stats = [{ hp: 80, maxHp: 80, mp: 110, maxMp: 110 }]
 			$character.spells = [...medievalMageSpells]
 			$character.inventory = [...medievalMageInventory]
-		} else if ($game.heroClass == 'warrior') {
+		} else if ($game.gameData.heroClass == 'warrior') {
 			$character.stats = [{ hp: 110, maxHp: 110, mp: 80, maxMp: 80 }]
 			$character.spells = [...medievalWarriorSpells]
 			$character.inventory = [...medievalWarriorInventory]
@@ -382,7 +439,7 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 	//fetch img according to player's current place from database
 	async function fetchImg() {
 		// check if place is the same
-		if ($game.placeAndTime?.place == $misc.currentImg) return
+		if ($game.gameData.placeAndTime?.place == $misc.currentImg) return
 
 		const places: any = [...staticPlaces]
 
@@ -491,10 +548,10 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 		<div class="main-game">
 			<!-- chatGPT answer box starts here -->
 			<div transition:fade={{ duration: 1000 }} class="game-master">
-				{#if $game.story}
-					<LetterByLetter message={$game.story} />
+				{#if $game.gameData.story}
+					<LetterByLetter message={$game.gameData.story} />
 				{/if}
-				{#if !$game.story}
+				{#if !$game.gameData.story}
 					<ChatMessage message={dotty} />
 				{/if}
 			</div>
@@ -523,7 +580,7 @@ If an npc gives an item or gold to the player, turn the lootMode to true and put
 		</div>
 
 		<!-- Static tavern prompts -->
-		<!-- {#if (!$misc.loading && $game.placeAndTime && $game.placeAndTime.place.includes('Tavern')) || ($game.placeAndTime && $game.placeAndTime.place.includes('Inn'))}
+		<!-- {#if (!$misc.loading && $game.gameData.placeAndTime && $game.gameData.placeAndTime.place.includes('Tavern')) || ($game.gameData.placeAndTime && $game.gameData.placeAndTime.place.includes('Inn'))}
 			<div transition:fade={{ duration: 3000 }}>
 				<StaticPrompts on:emittedAnswer={handleEmittedAnswer} />
 			</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isFunctionOrConstructorTypeNode } from 'typescript'
 	import { game } from '../../../stores'
 	import { selectedItem } from '../../../stores'
 	import { ui } from '../../../stores'
@@ -27,17 +28,17 @@
 		//if a weapon or destruction spell choosen:
 		if (combatEvent.damage) {
 			//lower the player hp (with a little buff if the dice is 1)
-			if ($game.enemy && $game.enemy.enemyHp)
+			if ($game.gameData.enemy && $game.gameData.enemy.enemyHp)
 				if ($selectedItem.damage != 0 && !$selectedItem.other) {
 					if ($misc.diceNumber == 1) {
 						$misc.diceNumber = 2
-						$character.stats[0].hp -= Math.floor($game.enemy.enemyHp / $misc.diceNumber)
+						$character.stats[0].hp -= Math.floor($game.gameData.enemy.enemyHp / $misc.diceNumber)
 					} else {
 						//if dice is greater than 15, do not lower hp
 						// if ($misc.diceNumber > 15) {
 						// 	$character.stats[0].hp = $character.stats[0].hp
 						// } else {
-						$character.stats[0].hp -= Math.floor($game.enemy.enemyHp / $misc.diceNumber)
+						$character.stats[0].hp -= Math.floor($game.gameData.enemy.enemyHp / $misc.diceNumber)
 						// }
 					}
 				} else {
@@ -45,8 +46,8 @@
 				}
 
 			//lower the enemy hp
-			if ($game.enemy && $game.enemy.enemyHp) {
-				$game.enemy.enemyHp -= $selectedItem.combatScore
+			if ($game.gameData.enemy && $game.gameData.enemy.enemyHp) {
+				$game.gameData.enemy.enemyHp -= $selectedItem.combatScore
 			}
 		}
 
@@ -100,7 +101,9 @@
 
 	// enemy hp bar calculation
 	$: hpPercentage =
-		$game.enemy && $game.enemy.enemyHp ? ($game.enemy.enemyHp / $game.enemy.enemyMaxHp) * 100 : 100
+		$game.gameData.enemy && $game.gameData.enemy.enemyHp
+			? ($game.gameData.enemy.enemyHp / $game.gameData.enemy.enemyMaxHp) * 100
+			: 100
 </script>
 
 <!-- combat ui -->
@@ -109,16 +112,21 @@
 		<div class="combat-box">
 			<div class="heading-and-enemy">
 				<h3>You are now in a <span class="red-span">Combat</span> against:</h3>
-				{#if $game.enemy}
+				{#if $game.gameData.enemy}
 					<div>
-						<h5>{capitalizeFirstLetter($game.enemy.enemyName)}</h5>
-
+						<!-- <h5>{capitalizeFirstLetter($game.gameData.enemy.enemyName)}</h5> -->
+						{#if $game.gameData.enemy.enemyName}
+							<h5>{$game.gameData.enemy.enemyName}</h5>
+						{/if}
+						{#if $game.gameData.enemy.name}
+							<h5>{$game.gameData.enemy.name}</h5>
+						{/if}
 						<div
 							style="background-image: linear-gradient(to right, #E1683Caa {hpPercentage}%, #1f1f1fc8 {hpPercentage}%);"
 							class="enemy"
 						>
 							<p>
-								{$game.enemy.enemyHp} <span class="hp-mp-text">HP</span>
+								{$game.gameData.enemy.enemyHp} <span class="hp-mp-text">HP</span>
 							</p>
 						</div>
 					</div>

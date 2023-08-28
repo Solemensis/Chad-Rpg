@@ -5,7 +5,7 @@
 	import { game } from '../../stores'
 	const dispatch = createEventDispatcher()
 	function emitAnswer(heroClass: string) {
-		$game.heroClass = heroClass
+		$game.gameData.heroClass = heroClass
 		dispatch('emittedAnswer')
 	}
 </script>

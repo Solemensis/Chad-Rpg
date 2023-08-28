@@ -54,18 +54,20 @@
 			$character.inventory = $character.inventory
 		}
 
-		let newArray: any = $game.lootBox.filter((lootItem: any) => lootItem.name !== item.name)
-		$game.lootBox = newArray
+		let newArray: any = $game.gameData.lootBox.filter(
+			(lootItem: any) => lootItem.name !== item.name
+		)
+		$game.gameData.lootBox = newArray
 
-		if (!$game.lootBox?.length) {
+		if (!$game.gameData.lootBox?.length) {
 			emitAnswer("I'll loot it all (clear the gameData.lootBox array in your next response!)")
-			$game.event.lootMode = false
+			$game.gameData.event.lootMode = false
 		}
 
 		hideWindow()
 	}
 	function lootAll() {
-		$game.lootBox.forEach((item: any) => {
+		$game.gameData.lootBox.forEach((item: any) => {
 			if (item.type == 'weapon' || item.type == 'potion') {
 				$character.inventory.push(item)
 				$character.inventory = $character.inventory
@@ -84,13 +86,13 @@
 			}
 		})
 
-		$game.lootBox = []
+		$game.gameData.lootBox = []
 
-		if (!$game.lootBox?.length) {
+		if (!$game.gameData.lootBox?.length) {
 			emitAnswer(
 				"I've looted all. What should i do now..? (clear the gameData.lootBox array in your next response!)"
 			)
-			$game.event.lootMode = false
+			$game.gameData.event.lootMode = false
 		}
 	}
 
@@ -107,10 +109,10 @@
 		<h3>You're <span class="g-span">looting.</span></h3>
 
 		<div class="buyables-box">
-			{#if !$game.lootBox?.length}
+			{#if !$game.gameData.lootBox?.length}
 				<p>loading...</p>
 			{:else}
-				{#each $game.lootBox as item}
+				{#each $game.gameData.lootBox as item}
 					<button
 						disabled={$misc.loading}
 						class="item-button"
