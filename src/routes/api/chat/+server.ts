@@ -7,18 +7,19 @@ import type { Config } from '@sveltejs/adapter-vercel'
 
 import Bard from 'bard-ai'
 import { PALM_KEY } from '$env/static/private'
-import { DiscussServiceClient } from '@google-ai/generativelanguage'
-import { GoogleAuth } from 'google-auth-library'
+import { BARD_KEY } from '$env/static/private'
+// import { DiscussServiceClient } from '@google-ai/generativelanguage'
+// import { GoogleAuth } from 'google-auth-library'
 
-let myBard = new Bard('aAhZ-lCVXP5uk3dgberUblvnuM3wBwxPkwXkWE36puI0quS31rD3A_qOwCswExkiQeL4VA.')
+let myBard = new Bard(BARD_KEY)
 let myChat = myBard.createChat({})
 
-const MODEL_NAME = 'models/chat-bison-001'
-const API_KEY = PALM_KEY
+// const MODEL_NAME = 'models/chat-bison-001'
+// const API_KEY = PALM_KEY
 
-const client = new DiscussServiceClient({
-	authClient: new GoogleAuth().fromAPIKey(API_KEY)
-})
+// const client = new DiscussServiceClient({
+// 	authClient: new GoogleAuth().fromAPIKey(API_KEY)
+// })
 
 export const config: Config = {
 	runtime: 'edge'
