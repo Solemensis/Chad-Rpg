@@ -3,8 +3,8 @@
 </script>
 
 <div>
-	<!-- <h2>Game's Open Back Again</h2> -->
-	<h2 style="color:orangered;">Game's Closed Back Again.</h2>
+	<h2>Game's Open Back :)</h2>
+	<!-- <h2 style="color:orangered;">Game's Closed Back Again.</h2>
 	<ul>
 		<li>
 			Since the free PALM API is not as stable as the paid OpenAI models, I'm facing difficulties in
@@ -17,30 +17,22 @@
 			personality of this LLM yet. It looks worse than unf. bard api. If anyone has experience with
 			it, I would appreciate prompt suggestions/pr's.
 		</li>
-	</ul>
-	<!-- <h4 style="font-weight:400; margin-bottom:2rem; color:#ddd;">
-		But free bard API is not responding stable sometimes as it is an experiment ai. I'll try to
-		minimize bugs by game prompt and error handling but ultimate solution is a stable chat api. So
-		don't take your games so seriously for now, as it may get stuck at the most enjoyable moment.
-	</h4>
+	</ul> -->
 
 	<ul>
+		<li>Finally, game uses an official free chat api, which is the gemini-pro.</li>
 		<li>
-			Game carried from chatgpt to bard's unofficial free api, not the best chatbot solution but
-			only free solution i've found for now.
+			<span style="color:#885577">Combats and so many things will be bugged for now</span>, but
+			finding an official free chat api was the most important thing.
 		</li>
 		<li>
-			Sadly, creating a save system is not possible without a stable chat api, So only <span
-				style="color:pink">quick games</span
-			>
-			can be played for now.
+			Free plan of Google's gemini-pro chat api is generous enough for a forgotten application which
+			will have chat requests lower than 60/s, so we're safe with free gemini-pro.
 		</li>
-		<li>PR's - ideas are all welcome! (Especially in game prompt.)</li>
-		<li>You can share me the bugs u've encountered.</li>
+		<li>From now on, game will be maintained.</li>
 	</ul>
-	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button> -->
-	<!-- <span class="date">9th of august 2023</span> -->
-	<span class="date">19th of october 2023</span>
+	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
+	<span class="date">1st of march 2024</span>
 </div>
 
 <style>
@@ -69,7 +61,8 @@
 		margin-top: 0.5rem;
 		border-radius: 0.3rem;
 		padding: 0.3rem 0.8rem;
-		background-color: rgb(255, 82, 82);
+		background-color: rgb(200, 82, 82);
+		font-size: 0.9rem;
 		cursor: pointer;
 	}
 </style>

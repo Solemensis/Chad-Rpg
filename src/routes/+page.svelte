@@ -70,6 +70,8 @@
             }
         }
 
+		important: shopMode, lootMode, and inCombat must be null or false if they are not in use.
+
     
 
 Don't forget to include at least 3 unique choices for the user to choose.
@@ -257,14 +259,15 @@ Here's an example answer for you. Do not put any other thing into your answer be
 
 		if (response.ok) {
 			const responseData = await response.json() // Extract the JSON response data
-			console.log(responseData)
+
+			const gameData = JSON.parse(responseData.candidates[0].content.parts[0].text)
 
 			let hpOfEnemy = 0
 
 			if ($game.gameData.enemy.enemyHp) {
 				hpOfEnemy = $game.gameData.enemy.enemyHp
 			}
-			$game = extractAndParseJSON(responseData)
+			$game = gameData
 			if (hpOfEnemy && $game.gameData.enemy.enemyHp) {
 				$game.gameData.enemy.enemyHp = hpOfEnemy
 			}
@@ -288,6 +291,8 @@ Here's an example answer for you. Do not put any other thing into your answer be
 
 			chatMessages = [...chatMessages, { role: 'assistant', content: $game }]
 			$misc.loading = false
+		} else {
+			throw Error('error happened at server')
 		}
 	}
 

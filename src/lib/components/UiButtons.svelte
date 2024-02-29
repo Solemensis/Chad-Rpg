@@ -225,7 +225,7 @@
 					<span style="color:aqua">|</span> github/Solemensis <span style="color:aqua">|</span> patreon/Solemensis</span
 				>
 				<!-- <span class="span2">Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span> -->
-				<span class="span2">Current chatbot: free PALM API</span>
+				<span class="span2">Current chatbot: gemini-pro</span>
 			</div>
 		</div>
 	{/if}
@@ -520,7 +520,7 @@
 	}
 	.maintenance-box {
 		background-color: #252525a1;
-		border: 6px solid rgb(88, 88, 88);
+		border: 3px solid #999;
 		backdrop-filter: blur(24px);
 		position: absolute;
 		left: 50%;

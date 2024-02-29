@@ -6,7 +6,7 @@
 
 	function restartGame() {
 		$misc.death = false
-		$misc.started = false
+		$misc.started = false 
 	}
 </script>
 
