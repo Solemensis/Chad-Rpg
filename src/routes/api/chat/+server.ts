@@ -60,7 +60,6 @@ export const POST: RequestHandler = async ({ request }: any) => {
 	// const result = await model.generateContent(prompt)
 
 	const response = await result.response
-	console.log(response.text())
 	return json(response)
 	//////////////////////////////
 }

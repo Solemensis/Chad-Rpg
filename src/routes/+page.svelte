@@ -292,7 +292,7 @@ Here's an example answer for you. Do not put any other thing into your answer be
 			chatMessages = [...chatMessages, { role: 'assistant', content: $game }]
 			$misc.loading = false
 		} else {
-			throw Error('error happened at server')
+			console.error('HTTP Error:', response.status, response.statusText)
 		}
 	}
 
