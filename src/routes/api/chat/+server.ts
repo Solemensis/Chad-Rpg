@@ -23,9 +23,9 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 // 	authClient: new GoogleAuth().fromAPIKey(API_KEY)
 // })
 
-export const config: Config = {
-	runtime: 'edge'
-}
+// export const config: Config = {
+// 	runtime: 'edge'
+// }
 
 // Access your API key as an environment variable (see "Set up your API key" above)
 const genAI = new GoogleGenerativeAI(GOOGLE_AI_API_KEY)

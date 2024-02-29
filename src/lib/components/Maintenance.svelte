@@ -28,7 +28,8 @@
 		</li>
 		<li>
 			Free plan of Google's gemini-pro chat api is generous enough for a forgotten application which
-			will have chat requests lower than 60/s, so we're safe with free gemini-pro.
+			will have chat requests lower than 60 QPM (query per minute), so we're safe with free
+			gemini-pro.
 		</li>
 	</ul>
 	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
