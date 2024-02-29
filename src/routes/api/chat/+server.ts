@@ -1,7 +1,7 @@
-import type { CreateChatCompletionRequest, ChatCompletionRequestMessage } from 'openai'
+// import type { CreateChatCompletionRequest, ChatCompletionRequestMessage } from 'openai'
 
 import type { RequestHandler } from './$types'
-import { getTokens } from '$lib/tokenizer'
+// import { getTokens } from '$lib/tokenizer'
 import { json } from '@sveltejs/kit'
 import type { Config } from '@sveltejs/adapter-vercel'
 
