@@ -37,7 +37,7 @@ export const misc: any = writable({
 	place: '',
 	currentImg: '',
 	death: false,
-	interactivePoints: 10,
+	interactivePoints: 50,
 	bugWindow: false,
 	maintenanceWindow: true,
 	started: false,
