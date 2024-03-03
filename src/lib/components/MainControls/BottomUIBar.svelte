@@ -13,22 +13,15 @@
 
 		if (number <= 3) {
 			emitAnswer(
-				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, player tries to escape, but got hit while trying to escape, couldn't escape and lost 20 health. Combat goes on."
+				"Player tries to escape, but got hit while trying to escape, couldn't escape and lost 20 health. Combat goes on."
 			)
 
 			$character.stats[0].hp -= 20
 		} else {
-			emitAnswer(
-				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, player tries to escape, and escapes from the combat area successfully!"
-			)
+			emitAnswer('Player tries to escape, and escapes from the combat area successfully!')
 			$game.gameData.event.inCombat = false
 			$game.gameData.enemy = []
 		}
-	}
-
-	function extractHours(timeString: any) {
-		const hour = parseInt(timeString.split(':')[0], 10)
-		return hour
 	}
 
 	function leaveButton(leaveString: any) {
@@ -73,11 +66,20 @@
 					class="leave-button"
 					style="opacity: {$game.gameData.event.shopMode ? '1' : '0'};"
 					on:click={() => {
+						leaveButton("I won't buy anything. (shopMode must be null in the next response.)")
+						$game.gameData.event.shopMode = null
+					}}>Close Menu</button
+				>
+				<button
+					disabled={$misc.loading}
+					class="leave-button"
+					style="opacity: {$game.gameData.event.shopMode ? '1' : '0'};"
+					on:click={() => {
 						leaveButton(
-							'I will leave the shop. (shopMode must be null in the next response, and player must be leaving the shop.)'
+							"I'll leave the shop. (shopMode must be null in the next response, and player must be leaving the shop.)"
 						)
 						$game.gameData.event.shopMode = null
-					}}>Leave the Shop</button
+					}}>Leave Shop</button
 				>
 			{:else if $game.gameData.event.lootMode}
 				<button

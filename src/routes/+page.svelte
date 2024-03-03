@@ -191,52 +191,6 @@ Here's an example answer for you. Do not put any other thing into your answer be
 	// Could you please make sure not to introduce line breaks or invalid control characters in the generated content? These characters can sometimes cause issues in data formats like JSON. If you encounter a situation where a line break or control character is necessary, please use appropriate escape sequences. Thank you!
 	// Do not seperate story to more than 1 paragraphs! make it only 1 paragraph, so no line breaks. This is so important, JSON.parse getting bugged because of bad characters, if there are line breaks.
 
-	function fixJsonStringIfErrors(input) {
-		try {
-			const parsedJson = JSON.parse(input)
-			return JSON.stringify(parsedJson, null, 2)
-		} catch (error) {
-			if (error instanceof SyntaxError) {
-				// Find and fix problematic characters
-				const fixedInput = input.replace(/"/g, '\\"')
-				return fixJsonStringIfErrors(fixedInput)
-			} else {
-				return
-			}
-		}
-	}
-
-	// bard api
-	function extractAndParseJSON(inputString: any) {
-		const regex = /```json([\s\S]*?)```/gm
-		const match = regex.exec(inputString)
-		// console.log(inputString)
-		if (!match || match?.length < 2) {
-			throw new Error('JSON not found between tags')
-		}
-
-		const jsonString = fixJsonStringIfErrors(match[1].trim())
-		// console.log('jsonBamya: ', jsonString)
-		try {
-			return JSON.parse(jsonString)
-		} catch (error) {
-			// console.log('error: ', error)
-			throw new Error('Error parsing JSON')
-		}
-	}
-
-	// palm api
-	// function extractAndParseJSON(inputString) {
-	// 	const gameDataStart = inputString.indexOf('{"gameData"')
-	// 	const gameDataEnd = inputString.indexOf(']}}', gameDataStart) + 1
-	// 	if (gameDataStart === -1 || gameDataEnd === -1) {
-	// 		return null // "gameData" section not found
-	// 	}
-
-	// 	const extractedGameData = inputString.slice(gameDataStart, gameDataEnd)
-	// 	return extractedGameData
-	// }
-
 	const handleSubmit = async () => {
 		if ($misc.query === '') {
 			return
@@ -554,7 +508,10 @@ Here's an example answer for you. Do not put any other thing into your answer be
 			<!-- chatGPT answer box starts here -->
 			<div transition:fade={{ duration: 1000 }} class="game-master">
 				{#if $game.gameData.story}
-					<LetterByLetter message={$game.gameData.story} />
+					<p>
+						{$game.gameData.story}
+					</p>
+					<!-- <LetterByLetter message={$game.gameData.story} /> -->
 				{/if}
 				{#if !$game.gameData.story}
 					<ChatMessage message={dotty} />

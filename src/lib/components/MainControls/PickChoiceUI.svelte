@@ -21,7 +21,7 @@
 
 		dispatch('emittedAnswer', {
 			answer:
-				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, " +
+				// "Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, " +
 				answer
 		})
 
@@ -47,7 +47,7 @@
 
 		dispatch('emittedAnswer', {
 			answer:
-				"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, " +
+				// "Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now, " +
 				answer
 		})
 
