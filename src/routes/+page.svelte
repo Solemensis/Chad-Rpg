@@ -232,7 +232,7 @@ Here's an example answer for you. Do not put any other thing into your answer be
 			$misc.place = $game.gameData.placeAndTime?.place
 			$misc.time = $game.gameData.placeAndTime?.time
 
-			if (!$game.gameData.enemy.enemyMaxHp) {
+			if (!$game.gameData.enemy?.enemyMaxHp) {
 				if ($game.gameData.enemy?.enemyHp) {
 					$game.gameData.enemy.enemyMaxHp = $game.gameData.enemy.enemyHp
 				}

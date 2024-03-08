@@ -101,7 +101,7 @@
 
 	// enemy hp bar calculation
 	$: hpPercentage =
-		$game.gameData.enemy && $game.gameData.enemy.enemyHp
+		$game.gameData.enemy && $game.gameData.enemy?.enemyHp && $game.gameData.enemy?.enemyMaxHp
 			? ($game.gameData.enemy.enemyHp / $game.gameData.enemy.enemyMaxHp) * 100
 			: 100
 </script>
