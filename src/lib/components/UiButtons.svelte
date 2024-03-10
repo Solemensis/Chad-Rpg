@@ -201,31 +201,16 @@
 							<li>
 								Background images will be more organized, and songs will change according to places.
 							</li>
-							<li class="support">
-								If this project gets support, i want to add save game functionality and continue
-								developing it using openAI gpt-4 models, as all these improvements are so pricy for
-								me.
-							</li>
-							<li class="support">
-								You can support this project for the upper improvements from this LTC (litecoin)
-								wallet address: <p class="wallet">LQpjuAKLBCpanv4PnHekpzwxJsdWyjeBJA</p>
-							</li>
-							<li class="support">
-								Or, from my patreon account which is: <a
-									target="_blank"
-									href="https://www.patreon.com/Solemensis">patreon.com/Solemensis</a
-								>
-							</li>
 						</ul>
 					</div>
 				</div>
 				<span class="span1"
 					>©2023 Solemensis. All rights reserved. <span style="color:aqua">|</span>
 					ulassacli@outlook.com
-					<span style="color:aqua">|</span> github/Solemensis <span style="color:aqua">|</span> patreon/Solemensis</span
-				>
-				<!-- <span class="span2">Game is currently powered by the chatGPT model: gpt-3.5-turbo.</span> -->
-				<span class="span2">Current chatbot: gemini-pro</span>
+					<span style="color:aqua">|</span> github/Solemensis
+					<span style="color:aqua">|</span>
+					<span>Current chatbot: gemini-pro</span>
+				</span>
 			</div>
 		</div>
 	{/if}
@@ -242,8 +227,8 @@
 					time to time.
 				</p>
 				<div class="mail-box">
-					<a target="_blank" href="mailto:solewaits@outlook.com">Press to mail me</a>
-					<p>or do it by default: solewaits@outlook.com</p>
+					<a target="_blank" href="mailto:ulassacli@outlook.com">Press to mail me</a>
+					<p>or do it by default: ulassacli@outlook.com</p>
 				</div>
 			</div>
 		</div>
@@ -338,12 +323,7 @@
 		left: 2%;
 		color: #aaa;
 	}
-	.span2 {
-		position: absolute;
-		bottom: 0.4rem;
-		right: 2%;
-		color: #aaa;
-	}
+
 	.text-box {
 		display: flex;
 		justify-content: space-around;
