@@ -20,20 +20,10 @@
 	</ul> -->
 
 	<ul>
-		<li>Finally, game uses an official free chat api, which is the gemini-pro.</li>
-		<li>
-			<span style="color:#885577">Combats and so many things will be bugged for now</span>, but
-			finding an official free chat api was the most important thing. From now on, game will be
-			maintained.
-		</li>
-		<li>
-			Free plan of Google's gemini-pro chat api is generous enough for a forgotten application which
-			will have chat requests lower than 60 QPM (query per minute), so we're safe with free
-			gemini-pro.
-		</li>
+		<li>Current gemini model: gemini-1.5-flash</li>
 	</ul>
 	<button on:click={() => ($misc.maintenanceWindow = false)}>Okay</button>
-	<span class="date">1st of march 2024</span>
+	<span class="date">9th of september 2024</span>
 </div>
 
 <style>
