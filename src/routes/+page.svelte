@@ -213,10 +213,19 @@ Here's an example answer for you. Do not put any other thing into your answer be
 
 		if (response.ok) {
 			const responseData = await response.json() // Extract the JSON response data
+				console.log('responseData: ', responseData)
+				
+				
 
-			const gameData = JSON.parse(responseData.candidates[0].content.parts[0].text)
-
-			let hpOfEnemy = 0
+				let gameData;
+				try {
+					gameData =   JSON.parse(responseData.candidates[0].content.parts[0].text)
+				} catch (error) {
+					console.log(error)
+					const jsonString = responseData.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
+					gameData = JSON.parse(jsonString)
+				} finally {
+					let hpOfEnemy = 0
 
 			if ($game.gameData.enemy.enemyHp) {
 				hpOfEnemy = $game.gameData.enemy.enemyHp
@@ -245,6 +254,10 @@ Here's an example answer for you. Do not put any other thing into your answer be
 
 			chatMessages = [...chatMessages, { role: 'assistant', content: $game }]
 			$misc.loading = false
+				}
+			
+ 
+			
 		} else {
 			console.error('HTTP Error:', response.status, response.statusText)
 		}

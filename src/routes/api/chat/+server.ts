@@ -59,6 +59,8 @@ export const POST: RequestHandler = async ({ request }: any) => {
 	const result = await chat.sendMessage(prompt)
 	// const result = await model.generateContent(prompt)
 
+	console.log('ress: ', result)
+
 	const response = await result.response
 	return json(response)
 	//////////////////////////////
