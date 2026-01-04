@@ -208,6 +208,47 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 		}
 	}
 
+	// Image count per location folder in Supabase storage
+	// Update these values when you add/remove images from storage
+	const locationImageCounts: Record<string, number> = {
+		Academy: 2,
+		Armorsmith: 7,
+		Beach: 3,
+		Blacksmith: 7,
+		Castle: 5,
+		Cathedral: 2,
+		Cave: 4,
+		City: 4,
+		'City-night': 4,
+		Dock: 4,
+		Dungeon: 4,
+		Forest: 3,
+		'Forest-night': 3,
+		Garden: 3,
+		Graveyard: 3,
+		Harbor: 4,
+		Inn: 6,
+		Library: 4,
+		Mansion: 3,
+		Market: 7,
+		Marketplace: 7,
+		Merchant: 7,
+		Monastery: 3,
+		Mountain: 3,
+		PotionShop: 7,
+		River: 3,
+		Shop: 7,
+		Shore: 4,
+		SpellShop: 7,
+		Tavern: 6,
+		Town: 4,
+		'Town-night': 5,
+		Village: 4,
+		Weaponsmith: 7,
+		Woods: 3,
+		'Woods-night': 3
+	}
+
 	async function fetchImg() {
 		// Check if place is the same
 		if ($game.gameData.placeAndTime?.place === $misc.currentImg) return
@@ -219,8 +260,12 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 		const matchedPlace =
 			places.find((place) => currentPlace.toLowerCase().includes(place.toLowerCase())) || places[0]
 
-		// Construct image filename from place name
-		const imgPath = `${matchedPlace.toLowerCase()}.jpg`
+		// Get the number of images available for this location (default to 3 if unknown)
+		const imageCount = locationImageCounts[matchedPlace] || 3
+
+		// Pick a random image number based on available count
+		const randomImgNum = Math.floor(Math.random() * imageCount) + 1
+		const imgPath = `${matchedPlace}/${randomImgNum}.webp`
 
 		try {
 			const { data, error } = await supabase.storage.from('rpg-images').download(imgPath)
@@ -232,20 +277,22 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 			}
 
 			const url = URL.createObjectURL(data)
-
-			if ($bgImage.img1active) {
-				$bgImage.fetchedBg2 = url
-				$bgImage.img2active = true
-				$bgImage.img1active = false
-			} else {
-				$bgImage.fetchedBg1 = url
-				$bgImage.img1active = true
-				$bgImage.img2active = false
-			}
-
+			updateBackgroundImage(url)
 			$misc.currentImg = currentPlace
 		} catch (error) {
 			console.warn('Could not load background image:', error)
+		}
+	}
+
+	function updateBackgroundImage(url: string) {
+		if ($bgImage.img1active) {
+			$bgImage.fetchedBg2 = url
+			$bgImage.img2active = true
+			$bgImage.img1active = false
+		} else {
+			$bgImage.fetchedBg1 = url
+			$bgImage.img1active = true
+			$bgImage.img2active = false
 		}
 	}
 
