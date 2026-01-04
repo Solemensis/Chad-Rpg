@@ -30,6 +30,7 @@
 	let chatMessages: any[] = []
 	let enemyOnFrontend: boolean = false
 	let dotty: string = '.'
+	let quotaExceeded: boolean = false
 
 	// Animation for loading dots
 	onMount(() => {
@@ -57,6 +58,16 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ prompt })
 			})
+
+			// Check for quota exceeded error
+			if (response.status === 429) {
+				const errorData = await response.json()
+				if (errorData.error === 'quota_exceeded') {
+					quotaExceeded = true
+					$misc.loading = false
+					return
+				}
+			}
 
 			if (!response.ok) {
 				throw new Error(`HTTP Error: ${response.status}`)
@@ -393,6 +404,24 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 		<DescriptionWindow />
 		<MessageWindows />
 	{/if}
+
+	{#if quotaExceeded}
+		<div class="quota-overlay" transition:fade>
+			<div class="quota-content">
+				<div class="quota-icon">⚠️</div>
+				<h2>API Limit Reached</h2>
+				<p>
+					This game is for <strong>demonstration purposes only</strong> and uses a free API quota.
+				</p>
+				<p class="quota-detail">
+					The AI chat service has temporarily reached its limit. Please try again later or check
+					back tomorrow.
+				</p>
+				<p class="quota-sorry">Sorry for the inconvenience!</p>
+				<button class="quota-dismiss" on:click={() => (quotaExceeded = false)}> Dismiss </button>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -412,6 +441,77 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 		border-radius: var(--radius-lg);
 		text-align: center;
 		border: 1px solid var(--color-border);
+	}
+
+	/* Quota Exceeded Overlay */
+	.quota-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.85);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 2000;
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+	}
+
+	.quota-content {
+		background: var(--color-bg-glass);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		padding: var(--space-xl);
+		border-radius: var(--radius-xl);
+		text-align: center;
+		border: 1px solid var(--color-border);
+		max-width: 420px;
+		margin: var(--space-md);
+		box-shadow: var(--shadow-lg);
+	}
+
+	.quota-icon {
+		font-size: 3rem;
+		margin-bottom: var(--space-md);
+	}
+
+	.quota-content h2 {
+		color: var(--color-accent-warning, #f59e0b);
+		margin-bottom: var(--space-md);
+		font-size: 1.5rem;
+	}
+
+	.quota-content p {
+		color: var(--color-text-primary);
+		margin-bottom: var(--space-sm);
+		line-height: 1.6;
+	}
+
+	.quota-detail {
+		color: var(--color-text-secondary);
+		font-size: 0.9rem;
+	}
+
+	.quota-sorry {
+		color: var(--color-text-secondary);
+		font-style: italic;
+		margin-top: var(--space-md);
+	}
+
+	.quota-dismiss {
+		margin-top: var(--space-lg);
+		padding: var(--space-sm) var(--space-xl);
+		background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+		border: none;
+		border-radius: var(--radius-md);
+		color: white;
+		font-weight: 600;
+		cursor: pointer;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.quota-dismiss:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	.game-container {

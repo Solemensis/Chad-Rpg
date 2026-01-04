@@ -77,8 +77,20 @@ export const POST: RequestHandler = async ({ request }) => {
 				}
 			]
 		})
-	} catch (error) {
+	} catch (error: unknown) {
 		console.error('Error in chat API:', error)
+
+		// Check if it's a quota exceeded error (status 429)
+		if (error && typeof error === 'object' && 'status' in error && error.status === 429) {
+			return json(
+				{
+					error: 'quota_exceeded',
+					message: 'API quota exceeded. Please try again later.'
+				},
+				{ status: 429 }
+			)
+		}
+
 		return json({ error: 'Failed to process request' }, { status: 500 })
 	}
 }
