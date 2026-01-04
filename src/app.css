@@ -1,116 +1,151 @@
 @import url('https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300;400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+/* ========================================
+   UI DESIGN SYSTEM - RPG Theme
+   ======================================== */
+:root {
+	/* Color Palette */
+	--color-bg-dark: rgba(8, 8, 12, 0.85);
+	--color-bg-glass: rgba(12, 12, 18, 0.65);
+	--color-bg-card: rgba(18, 18, 28, 0.75);
+	--color-border: rgba(255, 255, 255, 0.08);
+	--color-border-hover: rgba(255, 255, 255, 0.15);
+
+	/* Accent Colors */
+	--color-accent-primary: #7c5ce0;
+	--color-accent-secondary: #3fcf8e;
+	--color-accent-hp: #e05c7c;
+	--color-accent-mp: #5c7ce0;
+	--color-accent-gold: #f0c040;
+
+	/* Text Colors */
+	--color-text-primary: rgba(255, 255, 255, 0.95);
+	--color-text-secondary: rgba(255, 255, 255, 0.7);
+	--color-text-muted: rgba(255, 255, 255, 0.45);
+
+	/* Spacing */
+	--space-xs: 0.25rem;
+	--space-sm: 0.5rem;
+	--space-md: 1rem;
+	--space-lg: 1.5rem;
+	--space-xl: 2rem;
+
+	/* Border Radius */
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 16px;
+	--radius-xl: 24px;
+
+	/* Shadows */
+	--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+	--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+	--shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
+	--shadow-glow: 0 0 20px rgba(124, 92, 224, 0.3);
+
+	/* Transitions */
+	--transition-fast: 0.15s ease;
+	--transition-normal: 0.25s ease;
+	--transition-slow: 0.4s ease;
+}
 
 * {
 	padding: 0;
 	margin: 0;
 	box-sizing: border-box;
-	font-family: 'Signika Negative';
-	color: #eee;
+	font-family: 'Inter', 'Signika Negative', sans-serif;
+	color: var(--color-text-primary);
 	user-select: none;
+	-webkit-font-smoothing: antialiased;
 }
+
 html,
 body {
 	overflow: hidden;
+	background: transparent;
 }
-h1 {
-	font-size: 2.3rem;
-}
-button {
-	background-color: transparent;
-	border: none;
-}
-/* html{
-    font-size:62.5%;
-} */
 
-@keyframes button-pop {
+/* Scrollbar */
+::-webkit-scrollbar {
+	width: 4px;
+	height: 4px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgba(255, 255, 255, 0.25);
+}
+
+/* Utility Classes */
+.glass {
+	background: var(--color-bg-glass);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	border: 1px solid var(--color-border);
+}
+
+.glass-dark {
+	background: var(--color-bg-dark);
+	backdrop-filter: blur(24px);
+	-webkit-backdrop-filter: blur(24px);
+	border: 1px solid var(--color-border);
+}
+
+/* Button Animations */
+@keyframes button-press {
 	0% {
-		transform: scale(0.93);
+		transform: scale(1);
 	}
-	40% {
-		transform: scale(1.02);
+	50% {
+		transform: scale(0.96);
 	}
 	100% {
 		transform: scale(1);
 	}
 }
 
-/* scrollbar */
-::-webkit-scrollbar {
-	width: 0.5rem;
-	border-radius: 0.5rem;
-	background-color: rgb(41, 37, 35);
-}
-::-webkit-scrollbar-thumb {
-	background-color: rgb(59, 59, 59);
-
-	border-radius: 0.5rem;
-}
-::-webkit-scrollbar-thumb:hover {
-	background-color: rgb(41, 37, 35);
-}
-
-.red-span {
-	color: rgb(228, 55, 55);
-	font-weight: 400;
-}
-
-/* pc responsive */
-@media (orientation: landscape) and (min-width: 1024px) and (max-width: 1180px) and (min-height: 520px) and (max-height: 759px) {
-	html {
-		font-size: 78%;
+@keyframes fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
 	}
-}
-@media (orientation: landscape) and (min-width: 1181px) and (max-width: 1449px) and (min-height: 520px) and (max-height: 759px) {
-	html {
-		font-size: 88%;
-	}
-}
-@media (orientation: landscape) and (min-width: 1450px) and (max-width: 1679px) {
-	html {
-		font-size: 100%;
-	}
-}
-@media (min-width: 1280px) and (max-width: 1679px) and (min-height: 760px) and (max-height: 1100px) {
-	html {
-		font-size: 106%;
-	}
-}
-@media (min-width: 1680px) and (max-width: 1919px) {
-	html {
-		font-size: 120%;
-	}
-}
-@media (min-width: 1920px) and (max-width: 2199px) {
-	html {
-		font-size: 130%;
-	}
-}
-@media (min-width: 2200px) and (max-width: 2649px) {
-	html {
-		font-size: 190%;
-	}
-}
-@media (min-width: 2650px) {
-	html {
-		font-size: 280%;
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
 
-/* mobile responsive */
-@media (orientation: portrait) {
-	html {
-		font-size: 71%;
+@keyframes pulse-glow {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 rgba(124, 92, 224, 0.4);
+	}
+	50% {
+		box-shadow: 0 0 20px 4px rgba(124, 92, 224, 0.2);
 	}
 }
-@media (orientation: portrait) and (min-width: 650px) {
-	html {
-		font-size: 120%;
+
+/* Responsive */
+@media (max-width: 768px) {
+	:root {
+		--space-md: 0.75rem;
+		--space-lg: 1rem;
+		--space-xl: 1.25rem;
 	}
 }
-@media (orientation: portrait) and (max-width: 320px) {
-	html {
-		font-size: 60%;
+
+@media (max-width: 480px) {
+	:root {
+		--space-md: 0.5rem;
+		--space-lg: 0.75rem;
 	}
 }

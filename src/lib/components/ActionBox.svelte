@@ -3,20 +3,19 @@
 	import { ui } from '../../stores'
 	import { selectedItem } from '../../stores'
 	import { character } from '../../stores'
-
 	import { misc } from '../../stores'
 	import { descWindow } from '../../stores'
 	import { coolDowns } from '../../stores'
 
 	import { createEventDispatcher } from 'svelte'
-	import { fade } from 'svelte/transition'
+	import { fade, fly } from 'svelte/transition'
+
+	import { DICE_SIDES, COMBAT_TIERS, COMBAT_PROMPTS } from '$lib/config/constants'
 
 	const dispatch = createEventDispatcher()
 
 	function emitAnswer(answer: any) {
-		dispatch('emittedAnswer', {
-			answer: answer
-		})
+		dispatch('emittedAnswer', { answer })
 	}
 
 	export let title: any
@@ -29,10 +28,9 @@
 	function handleSell(prompt: any, item: any) {
 		if ($game.gameData.event?.shopMode) {
 			$selectedItem = {}
-
 			$selectedItem = item
 			$ui.sellWarnMsg = prompt
-		} else return
+		}
 	}
 
 	$: hpPercentage = ($character.stats[0].hp / $character.stats[0].maxHp) * 100
@@ -43,29 +41,25 @@
 		$misc.x = event.clientX + 10
 		$misc.y = event.clientY - 40
 
-		// for (let key in $descWindow) {
-		//     $descWindow[key] = undefined
-		// 					}
-
-		$descWindow.name = item && item.name ? item.name : undefined
-		$descWindow.damage = item && item.damage ? item.damage : undefined
-		$descWindow.type = item && item.type ? item.type : undefined
-		$descWindow.healing = item && item.healing ? item.healing : undefined
-		$descWindow.mana = item && item.mana ? item.mana : undefined
-		$descWindow.point = item && item.point ? item.point : undefined
-		$descWindow.armor = item && item.armor ? item.armor : undefined
-		$descWindow.element = item && item.element ? item.element : undefined
-		$descWindow.weaponClass = item && item.weaponClass ? item.weaponClass : undefined
-		$descWindow.manaCost = item && item.manaCost ? item.manaCost : undefined
-		$descWindow.price = item && item.price ? item.price : undefined
-		$descWindow.amount = item && item.amount ? item.amount : undefined
+		$descWindow.name = item?.name
+		$descWindow.damage = item?.damage
+		$descWindow.type = item?.type
+		$descWindow.healing = item?.healing
+		$descWindow.mana = item?.mana
+		$descWindow.point = item?.point
+		$descWindow.armor = item?.armor
+		$descWindow.element = item?.element
+		$descWindow.weaponClass = item?.weaponClass
+		$descWindow.manaCost = item?.manaCost
+		$descWindow.price = item?.price
+		$descWindow.amount = item?.amount
 	}
 
 	function useItem(item: any) {
 		$selectedItem = {}
 		const { type, name, damage, manaCost, healing, mana, cooldown, point } = item
 		const { mp, maxMp, hp, maxHp } = $character.stats[0]
-		const { inCombat, shopMode } = $game.gameData.event
+		const { inCombat, shopMode } = $game.gameData.event || {}
 
 		if (type === 'weapon') {
 			if (shopMode) return
@@ -73,63 +67,33 @@
 			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
+			const isVictory =
+				$game.gameData.enemy?.enemyHp && $game.gameData.enemy.enemyHp <= $selectedItem.combatScore
 
-			let takenDamage: any
-			if ($game?.enemy && $game.gameData.enemy?.enemyHp) {
-				if ($misc.diceNumber == 1) {
-					takenDamage = Math.floor($game.gameData.enemy.enemyHp / 2)
-				} else {
-					takenDamage = Math.floor($game.gameData.enemy.enemyHp / $misc.diceNumber)
-				}
-			} else {
-				takenDamage = 5
-			}
-
-			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-				if (
-					$game.gameData.enemy &&
-					$game.gameData.enemy.enemyHp &&
-					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
-				) {
-					$selectedItem.prompt = `Attack with ${name}! (give hard times to player in gameData.story, where player lands the worst possible attack, which leads to player receiving damage but giving a little damage back at least. Combat goes on.)`
-				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
-				}
-			}
-			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-				if (
-					$game.gameData.enemy &&
-					$game.gameData.enemy.enemyHp &&
-					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
-				) {
-					$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre gameData.story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
-				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
-				}
-			}
-
-			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-				if (
-					$game.gameData.enemy &&
-					$game.gameData.enemy.enemyHp &&
-					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
-				) {
-					$selectedItem.prompt = `Attack with ${name}! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
-				} else {
-					$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
-				}
-			}
-
-			if ($selectedItem.combatScore >= 85) {
-				$selectedItem.prompt = `Attack with ${name}! (Create an epic gameData.story where player unleashes a devastating attack, wiping out the enemy end winning the combat. )`
+			if (
+				$selectedItem.combatScore >= COMBAT_TIERS.POOR.min &&
+				$selectedItem.combatScore < COMBAT_TIERS.POOR.max
+			) {
+				$selectedItem.prompt = isVictory ? COMBAT_PROMPTS.VICTORY(name) : COMBAT_PROMPTS.POOR(name)
+			} else if (
+				$selectedItem.combatScore >= COMBAT_TIERS.DECENT.min &&
+				$selectedItem.combatScore < COMBAT_TIERS.DECENT.max
+			) {
+				$selectedItem.prompt = isVictory
+					? COMBAT_PROMPTS.VICTORY(name)
+					: COMBAT_PROMPTS.DECENT(name)
+			} else if (
+				$selectedItem.combatScore >= COMBAT_TIERS.GREAT.min &&
+				$selectedItem.combatScore < COMBAT_TIERS.GREAT.max
+			) {
+				$selectedItem.prompt = isVictory ? COMBAT_PROMPTS.VICTORY(name) : COMBAT_PROMPTS.GREAT(name)
+			} else if ($selectedItem.combatScore >= COMBAT_TIERS.EPIC.min) {
+				$selectedItem.prompt = COMBAT_PROMPTS.EPIC(name)
 			}
 
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
-			// console.log($misc.diceNumber)
-			// console.log($selectedItem.prompt)
-
 			return
 		}
 
@@ -144,77 +108,52 @@
 			$coolDowns[name] = cooldown
 
 			$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
+			const isVictorySpell =
+				$game.gameData.enemy?.enemyHp && $game.gameData.enemy.enemyHp <= $selectedItem.combatScore
 
-			let takenDamage: any
-			if ($game.gameData.enemy && $game.gameData.enemy.enemyHp) {
-				if ($misc.diceNumber == 1) {
-					takenDamage = Math.floor($game.gameData.enemy.enemyHp / 2)
-				} else {
-					takenDamage = Math.floor($game.gameData.enemy.enemyHp / $misc.diceNumber)
-				}
-			} else {
-				takenDamage = 5
-			}
-
-			if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-				if (
-					$game.gameData.enemy &&
-					$game.gameData.enemy.enemyHp &&
-					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
-				) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give hard times to player in gameData.story, where player lands the worst possible attack, which leads to player receiving damage but giving a little damage back at least. Combat goes on.)`
-				} else {
-					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
-				}
-			}
-			if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-				if (
-					$game.gameData.enemy &&
-					$game.gameData.enemy.enemyHp &&
-					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
-				) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give a medi-ocre gameData.story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
-				} else {
-					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
-				}
-			}
-
-			if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-				if (
-					$game.gameData.enemy &&
-					$game.gameData.enemy.enemyHp &&
-					$game.gameData.enemy.enemyHp > $selectedItem.combatScore
-				) {
-					$selectedItem.prompt = `Attack with ${name} spell! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
-				} else {
-					$selectedItem.prompt = `Attack with ${name} spell! (this blow destroys the enemy and ends the combat successfully!)`
-				}
-			}
-
-			if ($selectedItem.combatScore >= 85) {
-				$selectedItem.prompt = `Attack with ${name} spell! (Create an epic gameData.story where player unleashes a devastating attack, wiping out the enemy end winning the combat.)`
+			if (
+				$selectedItem.combatScore >= COMBAT_TIERS.POOR.min &&
+				$selectedItem.combatScore < COMBAT_TIERS.POOR.max
+			) {
+				$selectedItem.prompt = isVictorySpell
+					? `Attack with ${name} spell! (this blow destroys the enemy!)`
+					: `Attack with ${name} spell! (player lands a weak attack)`
+			} else if (
+				$selectedItem.combatScore >= COMBAT_TIERS.DECENT.min &&
+				$selectedItem.combatScore < COMBAT_TIERS.DECENT.max
+			) {
+				$selectedItem.prompt = isVictorySpell
+					? `Attack with ${name} spell! (this blow destroys the enemy!)`
+					: `Attack with ${name} spell! (gives some damage)`
+			} else if (
+				$selectedItem.combatScore >= COMBAT_TIERS.GREAT.min &&
+				$selectedItem.combatScore < COMBAT_TIERS.GREAT.max
+			) {
+				$selectedItem.prompt = isVictorySpell
+					? `Attack with ${name} spell! (this blow destroys the enemy!)`
+					: `Attack with ${name} spell! (great damage!)`
+			} else if ($selectedItem.combatScore >= COMBAT_TIERS.EPIC.min) {
+				$selectedItem.prompt = `Attack with ${name} spell! (devastating attack!)`
 			}
 
 			$selectedItem.name = name
 			$selectedItem.damage = damage
 			$selectedItem.healing = undefined
 			$selectedItem.manaCost = manaCost
-			// console.log($misc.diceNumber)
-			console.log($selectedItem.prompt)
 			return
 		}
 
 		if (type === 'healing spell') {
 			if (shopMode) return
-
 			if (hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
 			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
 			if ($coolDowns[name] && $coolDowns[name] < cooldown)
 				return ($ui.errorWarnMsg =
 					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
+
 			if (!inCombat) {
 				emitAnswer(
-					`Heal myself with ${name} spell by ${calculateCombatScore(healing, type)} amount.)`
+					`Heal myself with ${name} spell by ${calculateCombatScore(healing, type)} amount.`
 				)
 				$character.stats[0].hp += calculateCombatScore(healing, type)
 				if ($character.stats[0].hp > $character.stats[0].maxHp) {
@@ -225,153 +164,45 @@
 
 			$coolDowns[name] = cooldown
 			$selectedItem.combatScore = calculateCombatScore(healing, type)
-
 			$selectedItem.prompt = `Heal myself with ${name} spell by ${$selectedItem.combatScore} amount.`
 			$selectedItem.name = name
 			$selectedItem.healing = healing
 			$selectedItem.damage = undefined
 			$selectedItem.manaCost = manaCost
-
-			return
-		}
-		if (type === 'unique spell') {
-			if (shopMode) return
-
-			if (!inCombat) return ($ui.errorWarnMsg = 'You are not in a combat.')
-			if (mp < manaCost) return ($ui.errorWarnMsg = 'You have not enough mana.')
-			if ($coolDowns[name] && $coolDowns[name] < cooldown)
-				return ($ui.errorWarnMsg =
-					'This spell is on cooldown. ' + $coolDowns[name] + '/' + cooldown)
-			$coolDowns[name] = cooldown
-			$selectedItem.combatScore = calculateCombatScore(1, type)
-
-			if (name == 'Summon') {
-				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 5) {
-					$selectedItem.prompt = `Use my Summon spell and summon a little bird to help me in this combat.`
-				}
-				if ($selectedItem.combatScore >= 5 && $selectedItem.combatScore < 10) {
-					$selectedItem.prompt = `Use my Summon spell and summon a powerful tiger to help me in this combat.`
-				}
-				if ($selectedItem.combatScore >= 10 && $selectedItem.combatScore < 15) {
-					$selectedItem.prompt = `Use my Summon spell and summon a storm spirit (which is a magician) to help me in this combat.`
-				}
-				if ($selectedItem.combatScore >= 15 && $selectedItem.combatScore <= 20) {
-					$selectedItem.prompt = `Use my Summon spell and summon an ultimate demon to help me in this combat. (combat immedietaly ends with the power of the demon)`
-				}
-			}
-			if (name == 'Teleportation') {
-				// if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore <= 20) {
-				$selectedItem.prompt = `Use my Teleportation spell and teleport myself to a secure place away from combat.`
-				// }
-			}
-
-			$selectedItem.name = name
-			$selectedItem.damage = 0
-			$selectedItem.healing = undefined
-			$selectedItem.manaCost = manaCost
-
 			return
 		}
 
 		if (type === 'potion') {
 			if (shopMode) return
-
 			if (healing && hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
 			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 
 			if (healing && hp < maxHp) {
-				// emitAnswer(`Drink a ${name} from your inventory to heal by ${healing}.`)
-
 				$character.stats[0].hp += parseInt(healing)
 				if ($character.stats[0].hp > $character.stats[0].maxHp) {
 					$character.stats[0].hp = $character.stats[0].maxHp
 				}
-
-				//delete the potion from inventory
 				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
 				$character.inventory = newArray
 				hideWindow()
 				return
 			}
 			if (mana && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
-			if (inCombat) return ($ui.errorWarnMsg = "You can't drink in combat.")
 			if (mana && mp < maxMp) {
-				// emitAnswer(`Drink a ${name} from your inventory to fill up mana by ${mana}.`)
 				$character.stats[0].mp += parseInt(mana)
 				if ($character.stats[0].mp > $character.stats[0].maxMp) {
 					$character.stats[0].mp = $character.stats[0].maxMp
 				}
-
-				//delete the potion from inventory
 				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
 				$character.inventory = newArray
 				hideWindow()
-
 				return
 			}
 			if (point) {
 				$misc.interactivePoints += parseInt(point)
-
-				//delete the chat point from inventory
 				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
 				$character.inventory = newArray
 				hideWindow()
-			}
-		}
-
-		//for the items which are not implemented (like consumable foods or magic scrolls etc)
-		if (
-			type !== 'potion' &&
-			type !== 'weapon' &&
-			type !== 'destruction spell' &&
-			type !== 'healing spell' &&
-			type !== 'unique spell'
-		) {
-			if (shopMode) return
-			if (healing && hp >= maxHp) return ($ui.errorWarnMsg = "You're at full health.")
-			if (mana && mp >= maxMp) return ($ui.errorWarnMsg = "You're at full mana.")
-			if (healing || (mana && inCombat)) return ($ui.errorWarnMsg = "You can't consume in combat.")
-			if (damage) {
-				$selectedItem.combatScore = Math.floor(calculateCombatScore(damage, type))
-
-				if ($selectedItem.combatScore >= 1 && $selectedItem.combatScore < 20) {
-					if ($game.gameData.enemy.enemyHp > $selectedItem.combatScore) {
-						$selectedItem.prompt = `Attack with ${name}! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
-					} else {
-						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
-					}
-				}
-				if ($selectedItem.combatScore >= 20 && $selectedItem.combatScore < 50) {
-					if ($game.gameData.enemy.enemyHp > $selectedItem.combatScore) {
-						$selectedItem.prompt = `Attack with ${name}! (give a medi-ocre gameData.story, where player lands a decent attack, which leads to player giving some damage to enemy but taking some damage back. Combat goes on.)`
-					} else {
-						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
-					}
-				}
-
-				if ($selectedItem.combatScore >= 50 && $selectedItem.combatScore < 85) {
-					if ($game.gameData.enemy.enemyHp > $selectedItem.combatScore) {
-						$selectedItem.prompt = `Attack with ${name}! (give a great gameData.story where player lands a powerful attack, giving great damage but receiving some little damage back. Combat goes on.)`
-					} else {
-						$selectedItem.prompt = `Attack with ${name}! (this blow destroys the enemy and ends the combat successfully!)`
-					}
-				}
-
-				if ($selectedItem.combatScore >= 85) {
-					$selectedItem.prompt = `Attack with ${name}! (Create an epic gameData.story where player unleashes a devastating attack, wiping out the enemy end winning the combat.)`
-				}
-
-				$selectedItem.name = name
-				$selectedItem.damage = damage
-				$selectedItem.other = true
-				$selectedItem.healing = undefined
-
-				let newArray: any = $character.inventory.filter((obj: any) => obj.name !== name)
-				$character.inventory = newArray
-				hideWindow()
-				return
-			} else {
-				return ($ui.errorWarnMsg = 'You can only sell this item.')
 			}
 		}
 	}
@@ -379,74 +210,59 @@
 	function calculateCombatScore(damage: any, type: any) {
 		let dice
 		if (type == 'weapon') {
-			//if type is weapon, max dice number is 20.
-			dice = Math.floor(Math.random() * 20) + 1
+			dice = Math.floor(Math.random() * DICE_SIDES.WEAPON) + 1
 		} else {
-			//if type is spell, max dice number is 23.
-			dice = Math.floor(Math.random() * 23) + 1
+			dice = Math.floor(Math.random() * DICE_SIDES.SPELL) + 1
 		}
-
 		$misc.diceNumber = dice
 		return damage * dice
 	}
 </script>
 
-<!-- style="opacity:{$game.gameData.choices?.length ? '1' : '0'}; transition:opacity 1.5s;" -->
-<div class="container-box">
-	{#if title == 'Inventory'}
-		<div
-			class="hp-bar"
-			style="background-image: linear-gradient(to right, #b02863aa {hpPercentage}%, #1f1f1fc8 {hpPercentage}%);"
-		>
-			{$character.stats[0].hp}/{$character.stats[0].maxHp}
-		</div>
-	{:else if title == 'Spells'}
-		<div
-			class="mp-bar"
-			style="background-image: linear-gradient(to right, #76399caa {mpPercentage}%, #1f1f1fc8 {mpPercentage}%);"
-		>
-			{$character.stats[0].mp}/{$character.stats[0].maxMp}
-		</div>
-	{/if}
-	<div in:fade={{ delay: 200, duration: 1500 }} class="box">
-		<h3>{title}</h3>
-		{#each actions as action}
+<div class="action-panel" in:fly={{ y: 30, duration: 400, delay: 100 }}>
+	<!-- Header with stats -->
+	<div class="panel-header">
+		{#if title === 'Inventory'}
+			<div class="stat-bar hp">
+				<div class="stat-fill" style="width: {hpPercentage}%" />
+				<span class="stat-text">{$character.stats[0].hp}/{$character.stats[0].maxHp}</span>
+			</div>
+		{:else if title === 'Spells'}
+			<div class="stat-bar mp">
+				<div class="stat-fill" style="width: {mpPercentage}%" />
+				<span class="stat-text">{$character.stats[0].mp}/{$character.stats[0].maxMp}</span>
+			</div>
+		{:else}
+			<div class="stat-bar neutral">
+				<div class="stat-fill" style="width: 100%" />
+			</div>
+		{/if}
+		<h3 class="panel-title">{title}</h3>
+	</div>
+
+	<!-- Items Grid -->
+	<div class="items-grid">
+		{#each actions as action, i}
 			<button
+				class="item-btn"
 				disabled={$misc.loading || $misc.death}
 				on:click={() => {
 					useItem(action)
-					handleSell(`You sure to sell ${action.name}?`, action)
+					handleSell(`Sell ${action.name}?`, action)
 				}}
-				in:fade={{ duration: 600 }}
+				on:mouseenter={(e) => handleMouseMove(e, action)}
+				on:mousemove={(e) => handleMouseMove(e, action)}
+				on:mouseleave={hideWindow}
+				in:fade={{ duration: 200, delay: i * 50 }}
 			>
-				{#if action.type == 'weapon'}
-					<img
-						on:mousemove={(event) => handleMouseMove(event, action)}
-						on:mouseleave={hideWindow}
-						src="/images/{action.weaponClass}.svg"
-						alt="a weapon"
-					/>
-				{:else if action.type == 'potion'}
-					<img
-						on:mousemove={(event) => handleMouseMove(event, action)}
-						on:mouseleave={hideWindow}
-						src="/images/{action.type}.svg"
-						alt="a potion"
-					/>
+				{#if action.type === 'weapon'}
+					<img class="item-icon" src="/images/{action.weaponClass}.svg" alt={action.name} />
+				{:else if action.type === 'potion'}
+					<img class="item-icon" src="/images/potion.svg" alt={action.name} />
 				{:else if action.element}
-					<img
-						on:mousemove={(event) => handleMouseMove(event, action)}
-						on:mouseleave={hideWindow}
-						src="/images/{action.element}.svg"
-						alt="a spell"
-					/>
+					<img class="item-icon" src="/images/{action.element}.svg" alt={action.name} />
 				{:else}
-					<img
-						on:mousemove={(event) => handleMouseMove(event, action)}
-						on:mouseleave={hideWindow}
-						src="/images/item.svg"
-						alt="an item"
-					/>
+					<img class="item-icon" src="/images/item.svg" alt={action.name} />
 				{/if}
 			</button>
 		{/each}
@@ -454,96 +270,175 @@
 </div>
 
 <style>
-	.container-box {
-		width: 25%;
+	.action-panel {
+		min-width: 200px;
+		max-width: 320px;
+		background: var(--color-bg-card);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		overflow: hidden;
+		box-shadow: var(--shadow-md);
+	}
+
+	.panel-header {
+		padding: var(--space-sm) var(--space-md);
 		display: flex;
 		flex-direction: column;
+		gap: var(--space-xs);
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.stat-bar {
+		height: 24px;
+		border-radius: 12px;
+		background: rgba(0, 0, 0, 0.3);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.stat-bar.hp .stat-fill {
+		background: linear-gradient(90deg, var(--color-accent-hp), #ff7eb3);
+	}
+
+	.stat-bar.mp .stat-fill {
+		background: linear-gradient(90deg, var(--color-accent-mp), var(--color-accent-primary));
+	}
+
+	.stat-bar.neutral .stat-fill {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.stat-fill {
 		height: 100%;
-		backdrop-filter: blur(2px);
+		border-radius: 12px;
+		transition: width var(--transition-normal);
 	}
 
-	.hp-bar,
-	.mp-bar {
+	.stat-text {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+	}
+
+	.panel-title {
+		margin: 0;
 		text-align: center;
-		font-size: 1.2rem;
-		border-radius: 0.2rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-bottom-left-radius: 0;
-		border-bottom-right-radius: 0;
-		padding: 0.2rem 0;
-	}
-	.box {
-		display: grid;
-		align-items: center;
-		justify-items: center;
-		grid-template-columns: 1fr 1fr 1fr;
-		grid-template-rows: 1fr 1fr 1fr 1fr;
-		/* background-color: #362525bc; */
-		background-color: #242323bc;
-
-		border-radius: 0.2rem;
-		min-height: 25vh;
-		border-top-left-radius: 0;
-		border-top-right-radius: 0;
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--color-accent-secondary);
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
 	}
 
-	.box h3 {
-		grid-column-start: 1;
-		grid-column-end: 4;
-		justify-self: center;
-		font-weight: 400;
-		font-size: 1.4rem;
-		color: #3fcf8e;
-	}
-	.box img {
-		width: 85%;
-		margin-inline: auto;
-		padding: 0.2rem;
+	.items-grid {
 		display: flex;
-		align-items: center;
-		justify-content: center;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+		padding: var(--space-md);
+		max-height: 180px;
+		overflow-y: auto;
+		justify-content: flex-start;
 	}
-	.box img:active {
-		animation: button-pop 0.3s ease-out;
-	}
-	.box button {
-		background-color: rgb(128 128 128 / 29%);
-		border: none;
-		border-radius: 0.4rem;
-		width: 85%;
-		height: 85%;
+
+	.item-btn {
+		width: 48px;
+		height: 48px;
+		border-radius: var(--radius-md);
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--color-border);
 		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all var(--transition-fast);
+		flex-shrink: 0;
 	}
 
-	@media (orientation: portrait) {
-		.box {
-			min-height: 1rem;
-			height: 15vh;
-			width: 100%;
+	.item-btn:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-border-hover);
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.item-btn:active:not(:disabled) {
+		transform: translateY(0);
+	}
+
+	.item-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.item-icon {
+		width: 60%;
+		height: 60%;
+		object-fit: contain;
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+		pointer-events: none;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.action-panel {
+			min-width: 160px;
+			max-width: 280px;
 		}
-		.box h3 {
-			/* font-size: 1.1rem; */
-			padding: 0.3rem 0 0.6rem 0;
+
+		.item-btn {
+			width: 42px;
+			height: 42px;
 		}
-		.box img {
-			padding: 0.4rem;
-			width: 80%;
-		}
-		.container-box {
-			width: 100%;
-		}
-		.hp-bar,
-		.mp-bar {
-			padding: 0;
-			/* font-size: 1.1rem; */
+
+		.items-grid {
+			max-height: 140px;
 		}
 	}
 
-	@media (orientation: portrait) and (min-width: 500px) {
-		.box img {
-			width: 60%;
+	@media (max-width: 480px) {
+		.action-panel {
+			min-width: 130px;
+			padding: var(--space-xs);
+		}
+
+		.panel-header {
+			padding: var(--space-xs);
+		}
+
+		/* Thinner HP/MP bars on mobile */
+		.stat-bar {
+			height: 14px;
+			border-radius: 7px;
+		}
+
+		.stat-fill {
+			border-radius: 7px;
+		}
+
+		.stat-text {
+			font-size: 0.6rem;
+		}
+
+		.panel-title {
+			font-size: 0.6rem;
+		}
+
+		.item-btn {
+			width: 32px;
+			height: 32px;
+		}
+
+		.items-grid {
+			max-height: 70px;
+			gap: 2px;
+			padding: var(--space-xs);
 		}
 	}
 </style>

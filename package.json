@@ -38,14 +38,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@google/generative-ai": "^0.2.1",
-		"@supabase/supabase-js": "^2.11.0",
-		"bard-ai": "^2.0.3",
-		"chatgpt": "^5.2.5",
-		"gpt3-tokenizer": "^1.1.5",
-		"openai": "^3.2.1",
-		"openai-authenticator": "^0.0.3",
-		"openai-token": "^1.0.0",
-		"sse.js": "^0.6.1"
+		"@google/genai": "^1.34.0",
+		"@google/generative-ai": "^0.24.1",
+		"@supabase/supabase-js": "^2.11.0"
 	}
 }

@@ -237,278 +237,373 @@
 </div>
 
 <style>
+	/* Modal close buttons */
 	.close-bug-window {
 		position: absolute;
-		right: 2rem;
-		top: 1.5rem;
+		right: var(--space-lg);
+		top: var(--space-md);
 		cursor: pointer;
+		opacity: 0.7;
+		transition: opacity var(--transition-fast);
+	}
+	.close-bug-window:hover {
+		opacity: 1;
 	}
 	.close-bug-window img {
-		width: 2rem;
+		width: 1.5rem;
 	}
+
+	/* Bug report modal */
 	.bug-window {
-		height: 70%;
-		width: 70%;
-		/* width: 90%; */
-		background-color: #2e2e2ecc;
-		backdrop-filter: blur(8px);
-		border-radius: 0.8rem;
-		z-index: 1001;
-		position: absolute;
+		position: fixed;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
+		width: min(90%, 500px);
+		max-height: 80vh;
+		background: var(--color-bg-dark);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
+		z-index: 1001;
 		overflow: auto;
+		padding: var(--space-xl);
 	}
+
 	.bug-container {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		height: 90%;
-		width: 75%;
-		margin-top: 2rem;
-		margin-inline: auto;
+		align-items: center;
 		text-align: center;
+		gap: var(--space-md);
 	}
+
 	.bug-container h2 {
 		font-weight: 500;
-		font-size: 2rem;
-		color: #d6d631;
+		font-size: 1.25rem;
+		color: var(--color-accent-gold);
 	}
+
+	.bug-container p {
+		font-size: 0.9rem;
+		color: var(--color-text-secondary);
+	}
+
 	.mail-box {
 		display: flex;
 		flex-direction: column;
-		margin-top: 2rem;
-	}
-	.mail-box a {
-		color: burlywood;
-		text-decoration: none;
-		font-size: 1.5rem;
-	}
-	.mail-box p {
-		user-select: text;
-	}
-	.bug-container p {
-		font-size: 1.2rem;
-		margin-top: 1rem;
-		margin-bottom: 2rem;
+		gap: var(--space-sm);
+		margin-top: var(--space-md);
 	}
 
+	.mail-box a {
+		color: var(--color-accent-secondary);
+		text-decoration: none;
+		font-size: 1rem;
+		padding: var(--space-sm) var(--space-lg);
+		background: rgba(63, 207, 142, 0.1);
+		border-radius: var(--radius-md);
+		transition: background var(--transition-fast);
+	}
+	.mail-box a:hover {
+		background: rgba(63, 207, 142, 0.2);
+	}
+
+	.mail-box p {
+		user-select: text;
+		font-size: 0.8rem;
+		color: var(--color-text-muted);
+	}
+
+	/* Info window modal */
 	.info-window {
-		height: 80%;
-		width: 80%;
-		background-color: #2e2e2ecc;
-		backdrop-filter: blur(8px);
-		border-radius: 1rem;
-		z-index: 1000;
-		position: absolute;
+		position: fixed;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
+		width: min(95%, 800px);
+		max-height: 85vh;
+		background: var(--color-bg-dark);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
+		z-index: 1000;
 		overflow: auto;
+		padding: var(--space-xl);
 	}
-	.info-window button {
+
+	.info-window > button {
 		position: absolute;
-		right: 2rem;
-		top: 1.5rem;
+		right: var(--space-lg);
+		top: var(--space-md);
 		cursor: pointer;
+		opacity: 0.7;
+		transition: opacity var(--transition-fast);
 	}
-	.info-window button img {
-		width: 2rem;
+	.info-window > button:hover {
+		opacity: 1;
+	}
+	.info-window > button img {
+		width: 1.5rem;
 	}
 
 	.span1 {
-		position: absolute;
-		bottom: 0.4rem;
-		left: 2%;
-		color: #aaa;
+		display: block;
+		text-align: center;
+		margin-top: var(--space-lg);
+		padding-top: var(--space-md);
+		border-top: 1px solid var(--color-border);
+		color: var(--color-text-muted);
+		font-size: 0.75rem;
 	}
 
 	.text-box {
-		display: flex;
-		justify-content: space-around;
-		margin-top: 2.2rem;
-		/* padding: 0 5rem; */
-		padding: 0 8rem;
-		gap: 5rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: var(--space-xl);
+		margin-top: var(--space-lg);
 	}
-	.text-box div {
-		width: 100%;
-	}
+
 	.text-box h3 {
-		font-weight: 400;
-		font-size: 1.8rem;
-		text-align: center;
-		margin-bottom: 1.8rem;
+		font-weight: 500;
+		font-size: 1.1rem;
+		margin-bottom: var(--space-md);
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
 	}
-	.text-box h3::before {
-		padding-right: 0.2rem;
-		margin-left: -5rem;
-	}
+
 	.rules {
-		color: #d6d631;
+		color: var(--color-accent-gold);
 	}
 	.rules::before {
 		content: '⚔️';
 	}
+
 	.updates {
-		color: #4bca73;
+		color: var(--color-accent-secondary);
 	}
 	.updates::before {
 		content: '🔮';
 	}
+
 	.text-box ul {
-		list-style: circle;
-	}
-	.text-box li {
-		margin-bottom: 0.9rem;
-		font-size: 1.1rem;
-		color: #ccc;
+		list-style: none;
+		padding: 0;
 	}
 
-	/* map and places */
-	.map-and-places {
+	.text-box li {
+		margin-bottom: var(--space-sm);
+		font-size: 0.85rem;
+		color: var(--color-text-secondary);
+		padding-left: var(--space-md);
+		position: relative;
+	}
+
+	.text-box li::before {
+		content: '•';
 		position: absolute;
-		left: 1.5rem;
-		top: 1.5rem;
+		left: 0;
+		color: var(--color-accent-primary);
+	}
+
+	/* Map and places - Top left UI */
+	.map-and-places {
+		position: fixed;
+		left: var(--space-md);
+		top: var(--space-md);
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		width: 5rem;
-	}
-	.map-and-places img {
-		transition: 0.2s;
+		gap: var(--space-sm);
+		z-index: 50;
 	}
 
-	.song-icon {
-		position: absolute;
-		right: 1.5rem;
-		top: 1.5rem;
-		opacity: 0.5;
-		transition: 0.1s;
+	.map-and-places > button {
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--color-bg-glass);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
 		cursor: pointer;
+		transition: all var(--transition-fast);
 	}
-	.song-icon:hover {
-		opacity: 0.8;
+
+	.map-and-places > button:hover {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-border-hover);
 	}
-	.song-icon img {
-		width: 4rem;
-	}
-	.fullscreen-icon {
-		position: absolute;
-		right: 2.2rem;
-		top: 6rem;
-		opacity: 0.5;
-		transition: 0.1s;
-		cursor: pointer;
-	}
-	.fullscreen-icon:hover {
-		opacity: 0.8;
-	}
-	.fullscreen-icon img {
-		width: 2.5rem;
-	}
-	.map-and-places button {
-		cursor: pointer;
-	}
+
 	.map-and-places img {
-		width: 3.5rem;
-	}
-	.map-and-places button:active {
-		animation: button-pop 0.3s ease-out;
+		width: 24px;
+		height: 24px;
+		opacity: 0.8;
 	}
 
 	.places-to-go {
-		display: grid;
-		grid-template-columns: 1fr;
-		align-items: center;
-		gap: 0.7rem;
-	}
-	.places-to-go button p {
-		font-size: 0.8rem;
-	}
-
-	/* game info button */
-	.bottom-right-buttons {
-		position: absolute;
-		right: 1.5rem;
-		bottom: 1.5rem;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: var(--space-xs);
+		margin-top: var(--space-xs);
 	}
-	.bug-button {
-		transition: 0.2s;
-	}
-	.bug-button img {
-		width: 2.5rem;
+
+	.places-to-go button {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		padding: var(--space-xs) var(--space-sm);
+		background: var(--color-bg-glass);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
 		cursor: pointer;
+		transition: all var(--transition-fast);
 	}
-	.bug-button:hover {
-		filter: brightness(1.2);
+
+	.places-to-go button:hover:not(:disabled) {
+		background: rgba(124, 92, 224, 0.15);
+		transform: translateX(4px);
 	}
+
+	.places-to-go button:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.places-to-go button img {
+		width: 20px;
+		height: 20px;
+	}
+
+	.places-to-go button p {
+		font-size: 0.75rem;
+		color: var(--color-text-primary);
+		margin: 0;
+	}
+
+	/* Music / Fullscreen - Top right */
+	.song-icon,
+	.fullscreen-icon {
+		position: fixed;
+		right: var(--space-md);
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--color-bg-glass);
+		backdrop-filter: blur(16px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		cursor: pointer;
+		opacity: 0.6;
+		transition: all var(--transition-fast);
+		z-index: 50;
+	}
+
+	.song-icon {
+		top: var(--space-md);
+	}
+	.fullscreen-icon {
+		top: calc(var(--space-md) + 48px);
+	}
+
+	.song-icon:hover,
+	.fullscreen-icon:hover {
+		opacity: 1;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.song-icon img,
+	.fullscreen-icon img {
+		width: 20px;
+		height: 20px;
+	}
+
+	/* Bottom right buttons */
+	.bottom-right-buttons {
+		position: fixed;
+		right: var(--space-md);
+		bottom: var(--space-md);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		z-index: 50;
+	}
+
+	.bug-button,
+	.game-info-button {
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--color-bg-glass);
+		backdrop-filter: blur(16px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		cursor: pointer;
+		opacity: 0.5;
+		transition: all var(--transition-fast);
+	}
+
+	.bug-button:hover,
+	.game-info-button:hover {
+		opacity: 1;
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.bug-button img,
 	.game-info-button img {
-		width: 3.5rem;
-		cursor: pointer;
+		width: 18px;
+		height: 18px;
 	}
+
 	.wallet {
-		margin-top: 0.5rem;
-		color: palevioletred !important;
-
+		margin-top: var(--space-sm);
+		color: var(--color-accent-hp) !important;
 		user-select: all !important;
+		font-size: 0.7rem;
 	}
+
 	.support {
-		color: #d6d631 !important;
+		color: var(--color-accent-gold) !important;
 	}
 
-	/* responsive */
-	@media screen and (min-aspect-ratio: 4/3) {
-		.info-window {
-			width: 90%;
-		}
-		.text-box {
-			padding: 0 5rem;
-		}
-	}
-
-	@media (orientation: portrait) {
-		.map-and-places p {
-			color: #eee;
-		}
-		.places-to-go button {
-			background-color: rgba(57, 57, 57, 0.91);
-			padding: 0.7rem 0.2rem 0.2rem 0.2rem;
-			border-radius: 1rem;
-			border-top-left-radius: 5rem;
-			border-top-right-radius: 5rem;
-		}
-		.places-to-go button p {
-			font-size: 0.8rem;
-		}
-		.bottom-right-buttons {
-			display: none;
-			padding: 0 0.1rem;
-		}
-
-		.fullscreen-icon {
-			right: 6.5rem;
-			top: 2.2rem;
-		}
-		.maintenance-box {
-			width: 90vw;
-		}
-	}
+	/* Maintenance */
 	.maintenance-box {
-		background-color: #252525a1;
-		border: 3px solid #999;
-		backdrop-filter: blur(24px);
-		position: absolute;
+		position: fixed;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
-		z-index: 1000;
-		border-radius: 0.3rem;
-		padding: 1.5rem 4rem;
+		background: var(--color-bg-dark);
+		backdrop-filter: blur(24px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		padding: var(--space-xl);
 		text-align: center;
+		z-index: 1000;
+		max-width: 90vw;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		/* Hide map, music, and fullscreen buttons on mobile */
+		.map-and-places > button,
+		.song-icon,
+		.fullscreen-icon {
+			display: none !important;
+		}
+
+		.bottom-right-buttons {
+			display: none;
+		}
 	}
 </style>

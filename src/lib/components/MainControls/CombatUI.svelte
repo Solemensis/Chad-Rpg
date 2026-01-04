@@ -108,246 +108,287 @@
 
 <!-- combat ui -->
 {#if !$misc.loading}
-	<div transition:fade={{ duration: 1000 }} class="combat">
-		<div class="combat-box">
-			<div class="heading-and-enemy">
-				<h3>You are now in a <span class="red-span">Combat</span> against:</h3>
-				{#if $game.gameData.enemy}
-					<div>
-						<!-- <h5>{capitalizeFirstLetter($game.gameData.enemy.enemyName)}</h5> -->
-						{#if $game.gameData.enemy.enemyName}
-							<h5>{$game.gameData.enemy.enemyName}</h5>
-						{/if}
-						{#if $game.gameData.enemy.name}
-							<h5>{$game.gameData.enemy.name}</h5>
-						{/if}
-						<div
-							style="background-image: linear-gradient(to right, #E1683Caa {hpPercentage}%, #1f1f1fc8 {hpPercentage}%);"
-							class="enemy"
-						>
-							<p>
-								{$game.gameData.enemy.enemyHp} <span class="hp-mp-text">HP</span>
-							</p>
-						</div>
+	<div class="combat-panel" transition:fade={{ duration: 400 }}>
+		<!-- Combat Header -->
+		<div class="combat-header">
+			<h3>You are now in a <span class="combat-accent">Combat</span> against:</h3>
+			{#if $game.gameData.enemy}
+				<div class="enemy-info">
+					{#if $game.gameData.enemy.enemyName}
+						<span class="enemy-name">{$game.gameData.enemy.enemyName}</span>
+					{/if}
+					{#if $game.gameData.enemy.name}
+						<span class="enemy-name">{$game.gameData.enemy.name}</span>
+					{/if}
+					<div class="enemy-hp-bar">
+						<div class="enemy-hp-fill" style="width: {hpPercentage}%" />
+						<span class="enemy-hp-text">
+							{$game.gameData.enemy.enemyHp} HP
+						</span>
 					</div>
-				{/if}
-			</div>
-			<div class="combat-but-and-info">
-				<ul>
-					{#if !$selectedItem.name}
-						<li>
-							Choose a <span class="g-span">weapon</span> or a
-							<span class="g-span">spell.</span>
-						</li>
-					{:else if $selectedItem.damage}
-						<li>
-							You chose <span class="g-span">{$selectedItem.name}</span> with
-							<span class="g-span">x{$selectedItem.damage}</span> damage!
-						</li>
-					{:else if $selectedItem.healing}
-						<li>
-							You chose <span class="g-span">{$selectedItem.name}</span> with
-							<span class="g-span">x{$selectedItem.healing}</span> heal power!
-						</li>
-					{:else}
-						<li>
-							You chose <span class="g-span">{$selectedItem.name}</span> with
-							<span class="g-span">unique</span> power!
-						</li>
-					{/if}
+				</div>
+			{/if}
+		</div>
 
+		<!-- Combat Info -->
+		<div class="combat-content">
+			<ul class="combat-instructions">
+				{#if !$selectedItem.name}
 					<li>
-						Then, press the <span class="g-span">dice</span> to learn your fate!
+						<span class="icon">⚔️</span>
+						Choose a <span class="highlight">weapon</span> or a
+						<span class="highlight">spell.</span>
 					</li>
+				{:else if $selectedItem.damage}
 					<li>
-						<!-- Or, just try to <span class="red-span">Retreat!</span> -->
-						Success is related to <span class="g-span">damage</span> and the
-						<span class="g-span">dice number.</span>
+						<span class="icon">⚔️</span>
+						You chose <span class="highlight">{$selectedItem.name}</span> with
+						<span class="highlight">x{$selectedItem.damage}</span> damage!
 					</li>
-				</ul>
-				<button
-					transition:fade={{ duration: 200 }}
-					on:click={() => throwDice($selectedItem)}
-					class="combat-button"
-				>
-					{#if !diceThrown}
-						<img
-							transition:fade={{ duration: 300 }}
-							src="images/dice.webp"
-							alt="throw dice button"
-						/>
-					{:else}
-						<p transition:fade={{ duration: 300 }} class="diceNumber">
-							{$misc.diceNumber}<span>/23</span>
-						</p>
-					{/if}
-				</button>
-			</div>
+				{:else if $selectedItem.healing}
+					<li>
+						<span class="icon">⚔️</span>
+						You chose <span class="highlight">{$selectedItem.name}</span> with
+						<span class="highlight">x{$selectedItem.healing}</span> heal power!
+					</li>
+				{:else}
+					<li>
+						<span class="icon">⚔️</span>
+						You chose <span class="highlight">{$selectedItem.name}</span> with
+						<span class="highlight">unique</span> power!
+					</li>
+				{/if}
+
+				<li>
+					<span class="icon">🎲</span>
+					Then, press the <span class="highlight">dice</span> to learn your fate!
+				</li>
+				<li class="tip">
+					<span class="icon">🔮</span>
+					Success is related to <span class="highlight">damage</span> and the
+					<span class="highlight">dice number.</span>
+				</li>
+			</ul>
+
+			<button
+				class="dice-btn"
+				on:click={() => throwDice($selectedItem)}
+				transition:fade={{ duration: 200 }}
+			>
+				{#if !diceThrown}
+					<img src="images/dice.webp" alt="throw dice" transition:fade={{ duration: 300 }} />
+				{:else}
+					<p class="dice-number" transition:fade={{ duration: 300 }}>
+						{$misc.diceNumber}<span>/23</span>
+					</p>
+				{/if}
+			</button>
 		</div>
 	</div>
 {/if}
 
 <!-- combat ui ends here-->
 <style>
-	.combat {
-		min-height: 36.9%;
+	.combat-panel {
+		background: var(--color-bg-card);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		padding: var(--space-lg);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-lg);
+		width: 100%;
+	}
+
+	.combat-header {
 		display: flex;
 		justify-content: space-between;
-		flex-direction: column;
-		width: 100%;
-		height: 100%;
-		margin-inline: auto;
-		gap: 1rem;
-		backdrop-filter: blur(2px);
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--space-md);
 	}
 
-	.combat-box {
-		background-color: rgba(31, 31, 31, 0.841);
-		border-radius: 0.5rem;
+	.combat-header h3 {
+		margin: 0;
+		font-size: 1.1rem;
+		font-weight: 400;
+		color: var(--color-text-primary);
+	}
+
+	.combat-accent {
+		color: var(--color-accent-hp);
+		font-weight: 500;
+	}
+
+	.enemy-info {
 		display: flex;
 		flex-direction: column;
+		align-items: flex-end;
+		gap: var(--space-xs);
+	}
+
+	.enemy-name {
+		font-size: 0.9rem;
+		color: var(--color-text-secondary);
+	}
+
+	.enemy-hp-bar {
+		width: 120px;
+		height: 24px;
+		background: rgba(0, 0, 0, 0.3);
+		border-radius: 12px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.enemy-hp-fill {
 		height: 100%;
-		padding: 0 0.5rem;
-		gap: 2rem;
-		padding-top: 0.75rem;
+		background: linear-gradient(90deg, var(--color-accent-hp), #ff7eb3);
+		border-radius: 12px;
+		transition: width var(--transition-normal);
 	}
 
-	.combat-box h3 {
-		font-weight: 300;
-		font-size: 1.3rem;
+	.enemy-hp-text {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: white;
+		text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 	}
 
-	.combat-box img:active {
-		animation: button-pop 0.3s ease-out;
-	}
-
-	.combat-box ul {
-		font-size: 1rem;
+	.combat-content {
 		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		gap: 0.4rem;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-lg);
 	}
 
-	.combat-box ul {
-		width: 60%;
+	.combat-instructions {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		flex: 1;
 	}
-	.combat-button {
-		border: none;
-		background-color: rgba(19, 19, 19, 0.525);
-		padding: 0.5rem 0.5rem 0.1rem 0.5rem;
-		width: 4.5rem;
-		height: 4.5rem;
+
+	.combat-instructions li {
+		color: var(--color-text-secondary);
+		font-size: 0.9rem;
+		line-height: 1.4;
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-xs);
+	}
+
+	.combat-instructions li .icon {
+		flex-shrink: 0;
+	}
+
+	.combat-instructions li.tip {
+		font-size: 0.85rem;
+		color: var(--color-text-muted);
+	}
+
+	.highlight {
+		color: var(--color-accent-secondary);
+		font-weight: 500;
+	}
+
+	.dice-btn {
+		width: 72px;
+		height: 72px;
+		border-radius: var(--radius-md);
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--color-border);
 		cursor: pointer;
-		transition: 0.2s;
-		border-radius: 0.6rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all var(--transition-fast);
+		flex-shrink: 0;
 		position: relative;
 	}
-	.combat-button:hover {
+
+	.dice-btn:hover {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-accent-secondary);
 		transform: scale(1.05);
+		box-shadow: 0 4px 16px rgba(63, 207, 142, 0.2);
 	}
-	/* .combat-button:active {
-		animation: button-pop 0.3s ease-out;
-	} */
 
-	.combat-button img {
-		width: 3.5rem;
+	.dice-btn:active {
+		transform: scale(0.98);
 	}
-	.diceNumber {
-		font-size: 2rem;
-		position: absolute;
-		left: 0;
-		top: 0;
-		width: 4.3rem;
-		height: 4.3rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #3fcf8e;
+
+	.dice-btn img {
+		width: 56px;
+		height: 56px;
+		object-fit: contain;
 	}
-	.diceNumber span {
-		color: #999;
+
+	.dice-number {
+		font-size: 1.8rem;
+		font-weight: 600;
+		color: var(--color-accent-secondary);
+		margin: 0;
+	}
+
+	.dice-number span {
 		font-size: 0.8rem;
-	}
-	.combat-but-and-info {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 2rem;
-	}
-
-	.combat-box ul li {
-		color: #bbb;
-		padding-left: 0.4rem;
-		text-align: start;
-		transition: 0.2s;
-		line-height: 1.2;
-	}
-
-	.combat-box ul li:nth-child(1) {
-		list-style-type: '⚔️';
-	}
-	.combat-box ul li:nth-child(2) {
-		list-style-type: '🎲';
-	}
-	.combat-box ul li:nth-child(3) {
-		list-style-type: '🔮';
-		font-size: 0.9rem;
-		padding-left: 0.5rem;
-		margin-left: -0.08rem;
-
-		color: #aaa;
-	}
-
-	.heading-and-enemy {
-		display: flex;
-		justify-content: space-evenly;
-		align-items: center;
-	}
-
-	.enemy {
-		display: flex;
-
-		gap: 0.05rem;
-		align-items: center;
-		justify-content: space-around;
-		width: 8rem;
-		height: 1rem;
-		border-radius: 0.3rem;
-
-		padding: 0.7rem 0;
-	}
-
-	h5 {
+		color: var(--color-text-muted);
 		font-weight: 400;
-		font-size: 0.9rem;
-		color: #ccc;
-		text-align: center;
-		margin-bottom: 0.1rem;
-	}
-	.enemy p {
-		font-size: 0.9rem;
-		text-align: center;
-		color: #ccc;
-	}
-	.enemy span {
-		font-size: 0.9rem;
-
-		color: #ccc;
-	}
-	.g-span {
-		color: #3fcf8e;
 	}
 
-	@media (orientation: portrait) {
-		.combat {
-			min-height: 90%;
+	@media (max-width: 768px) {
+		.combat-header {
+			flex-direction: column;
+			align-items: flex-start;
 		}
-		li {
-			font-size: 0.9rem;
+
+		.enemy-info {
+			align-items: flex-start;
+			width: 100%;
 		}
-		h3 {
-			font-size: 1.15rem !important;
+
+		.enemy-hp-bar {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.combat-panel {
+			padding: var(--space-md);
+			gap: var(--space-md);
+		}
+
+		.combat-header h3 {
+			font-size: 0.95rem;
+		}
+
+		.combat-content {
+			flex-direction: column;
+			gap: var(--space-md);
+		}
+
+		.combat-instructions li {
+			font-size: 0.85rem;
+		}
+
+		.dice-btn {
+			width: 60px;
+			height: 60px;
+		}
+
+		.dice-btn img {
+			width: 44px;
+			height: 44px;
 		}
 	}
 </style>

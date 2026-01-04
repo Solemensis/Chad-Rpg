@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte'
-	import { fade } from 'svelte/transition'
+	import { fade, fly } from 'svelte/transition'
 
 	import CharacterClasses from '$lib/components/CharacterClasses.svelte'
 
@@ -17,14 +17,10 @@
 	const dispatch = createEventDispatcher()
 
 	function emitAnswer(answer: any) {
-		// this is just to revive player, hp will be set after the prompt.
 		$character.stats[0].hp = 1
-		// console.log(answer)
-		//start the game
-		dispatch('emittedAnswer', {
-			answer: answer
-		})
+		dispatch('emittedAnswer', { answer })
 	}
+
 	let gameStarterPrompt: string = ''
 	let gameModeSelected: boolean = false
 
@@ -34,218 +30,303 @@
 	}
 </script>
 
-<div transition:fade={{ duration: 1000 }} class="starting-screen">
-	{#if gameModeSelected}
-		<div transition:fade={{ duration: 1000 }}>
-			<CharacterClasses
-				on:emittedAnswer={() => {
-					emitAnswer(gameStarterPrompt)
-				}}
-			/>
-		</div>
-	{/if}
-
-	{#if !gameModeSelected}
-		<div transition:fade={{ duration: 700 }}>
-			<div class="heading-box">
-				<h1>Welcome to <span class="g-span">Chad-Rpg!</span></h1>
-				<button on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}
-					>What is That?</button
-				>
+<div class="start-overlay" transition:fade={{ duration: 500 }}>
+	<div class="start-window" in:fly={{ y: 30, duration: 600, delay: 200 }}>
+		{#if gameModeSelected}
+			<div class="character-select" transition:fade={{ duration: 400 }}>
+				<CharacterClasses
+					on:emittedAnswer={() => {
+						emitAnswer(gameStarterPrompt)
+					}}
+				/>
 			</div>
-			<div class="game-starters">
-				<div class="game-starter">
-					<img src="images/landscape-svgs/rpg.webp" alt="game mode img" />
-					<div class="game-explanation">
-						<h3>FRPG Starter</h3>
-						<p>Start as a new adventurer in a fantasy role-playing world, entering a tavern.</p>
-						<button
-							on:click={() => {
-								handleGameMode(getRandomValueFromArray([...medievalTavernStarter]))
-							}}>Play</button
-						>
-					</div>
-				</div>
-				<div class="game-starter">
-					<img src="images/landscape-svgs/cyberpunk.webp" alt="game mode img" />
-					<div class="game-explanation">
-						<h3>Cyberpunk Starter</h3>
-						<p>Start as a capable human being at a neon city in a Cyberpunk world.</p>
-						<button>Play</button>
-					</div>
-				</div>
+		{:else}
+			<div class="start-content" transition:fade={{ duration: 400 }}>
+				<!-- Header -->
+				<header class="start-header">
+					<h1>
+						Welcome to <span class="brand">Chad-Rpg!</span>
+					</h1>
+					<button class="info-btn" on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>
+						What is That?
+					</button>
+				</header>
 
-				<div class="game-starter">
-					<img src="images/landscape-svgs/random.svg" alt="game mode img" />
-
-					<div class="game-explanation">
-						<h3>Random Starter</h3>
-						<p>Start the game at a random place, in a random world, while on a random event.</p>
-						<button>Play</button>
+				<!-- Game Mode Grid -->
+				<div class="modes-grid">
+					<!-- FRPG Starter -->
+					<div class="mode-card available">
+						<div class="mode-icon">
+							<img src="images/landscape-svgs/rpg.webp" alt="FRPG" />
+						</div>
+						<div class="mode-info">
+							<h3>FRPG Starter</h3>
+							<p>Start as a new adventurer in a fantasy role-playing world, entering a tavern.</p>
+							<button
+								class="play-btn primary"
+								on:click={() => handleGameMode(getRandomValueFromArray([...medievalTavernStarter]))}
+							>
+								Play
+							</button>
+						</div>
 					</div>
-				</div>
-				<div class="game-starter">
-					<img src="images/landscape-svgs/custom.svg" alt="game mode img" />
 
-					<div class="game-explanation">
-						<h3>Custom Starter</h3>
-						<p>Start your own unique adventure in your own world!</p>
-						<button>Configure game settings</button>
+					<!-- Cyberpunk Starter -->
+					<div class="mode-card disabled">
+						<div class="mode-icon">
+							<img src="images/landscape-svgs/cyberpunk.webp" alt="Cyberpunk" />
+						</div>
+						<div class="mode-info">
+							<h3>Cyberpunk Starter</h3>
+							<p>Start as a capable human being at a neon city in a Cyberpunk world.</p>
+							<button class="play-btn" disabled>Coming Soon</button>
+						</div>
+					</div>
+
+					<!-- Random Starter -->
+					<div class="mode-card disabled">
+						<div class="mode-icon">
+							<img src="images/landscape-svgs/random.svg" alt="Random" />
+						</div>
+						<div class="mode-info">
+							<h3>Random Starter</h3>
+							<p>Start the game at a random place, in a random world, while on a random event.</p>
+							<button class="play-btn" disabled>Coming Soon</button>
+						</div>
+					</div>
+
+					<!-- Custom Starter -->
+					<div class="mode-card disabled">
+						<div class="mode-icon">
+							<img src="images/landscape-svgs/custom.svg" alt="Custom" />
+						</div>
+						<div class="mode-info">
+							<h3>Custom Starter</h3>
+							<p>Start your own unique adventure in your own world!</p>
+							<button class="play-btn" disabled>Coming Soon</button>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	{/if}
+		{/if}
+	</div>
 </div>
 
 <style>
-	.starting-screen {
-		background-color: #242424cc;
-		width: 60%;
-		height: 60%;
-		border-radius: 1rem;
-		backdrop-filter: blur(4px);
-		z-index: 999;
-		position: absolute;
-		left: 50%;
-		top: 50%;
-		transform: translate(-50%, -50%);
-	}
-
-	.heading-box {
-		position: absolute;
-		top: 1.8rem;
-		left: 50%;
-		transform: translateX(-50%);
-		white-space: nowrap;
+	.start-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
 		display: flex;
-		flex-direction: column;
-	}
-	h1 {
-		font-weight: 400;
-		font-family: 'MedievalSharp', sans-serif;
-		font-size: 2.6rem;
-	}
-	.g-span {
-		font-weight: 400;
-		color: orange;
-		font-family: 'MedievalSharp', sans-serif;
+		align-items: center;
+		justify-content: center;
+		padding: var(--space-md);
 	}
 
-	.heading-box button {
-		margin-top: 0.8rem;
-		align-self: end;
-		border: none;
-		background-color: rgba(239, 102, 52, 0.111);
-		color: #eee;
-		padding: 0.2rem 0.5rem;
-		border-radius: 0.3rem;
-		transition: 0.2s;
-	}
-	.heading-box button:hover {
-		background-color: rgba(239, 102, 52, 0.15);
-		cursor: pointer;
-	}
+	.start-window {
+		width: min(90%, 800px);
+		height: min(85vh, 700px); /* Fixed height for smoother transition */
+		background: var(--color-bg-card); /* Updated to match glass theme */
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-xl);
+		overflow: hidden;
+		box-shadow: var(--shadow-lg);
 
-	.game-starters img {
-		width: 5rem;
-	}
-	.game-starters {
+		/* Grid layout to stack children */
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-column-gap: 1rem;
-		grid-row-gap: 2rem;
-		justify-items: center;
-		align-items: start;
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr;
+	}
 
-		position: absolute;
-		bottom: 3.5rem;
+	.start-content,
+	.character-select {
+		grid-area: 1 / 1; /* Both occupy the same cell */
+		width: 100%;
+		height: 100%;
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
-	.game-starter {
-		display: flex;
-		gap: 1rem;
-		width: 80%;
-		align-items: start;
-	}
-	.game-explanation {
+
+	.start-content {
+		padding: var(--space-xl);
 		display: flex;
 		flex-direction: column;
+		gap: var(--space-lg);
+		height: 100%;
 	}
-	.game-explanation h3 {
-		margin-bottom: 0.3rem;
-		color: orange;
-		font-weight: 500;
-	}
-	.game-explanation p {
-		line-height: 1.1;
-		font-size: 0.9rem;
-		color: #ddd;
-	}
-	.game-explanation button {
-		margin-top: 1rem;
-		align-self: end;
 
-		border: none;
-		background-color: rgb(180, 46, 224, 0.5);
-		color: #eee;
-		padding: 0.2rem 0.5rem;
-		border-radius: 0.3rem;
-		transition: 0.2s;
+	.character-select {
+		padding: var(--space-lg);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
-	.game-explanation button:hover {
-		background-color: rgb(180, 46, 224, 0.8);
+
+	/* Header */
+	.start-header {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-sm);
+		padding-bottom: var(--space-md);
+		border-bottom: 1px solid var(--color-border);
+		flex-shrink: 0; /* Prevent header from shrinking */
+	}
+
+	.start-header h1 {
+		font-family: 'MedievalSharp', serif;
+		font-size: clamp(1.8rem, 5vw, 2.5rem);
+		font-weight: 400;
+		margin: 0;
+		text-align: center;
+	}
+
+	.brand {
+		color: var(--color-accent-gold);
+	}
+
+	.info-btn {
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		padding: var(--space-xs) var(--space-md);
+		font-size: 0.8rem;
+		color: var(--color-text-secondary);
 		cursor: pointer;
+		transition: all var(--transition-fast);
 	}
 
-	.game-starter:nth-child(2),
-	.game-starter:nth-child(3),
-	.game-starter:nth-child(4) {
-		filter: grayscale(1);
+	.info-btn:hover {
+		background: rgba(255, 255, 255, 0.1);
+		color: var(--color-text-primary);
+	}
+
+	/* Game Modes Grid */
+	.modes-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-md);
+		flex: 1; /* Take up remaining space */
+		align-content: center; /* Center grid rows vertically */
+	}
+
+	.mode-card {
+		display: flex;
+		gap: var(--space-md);
+		padding: var(--space-md);
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		transition: all var(--transition-fast);
+	}
+
+	.mode-card.available:hover {
+		background: rgba(255, 255, 255, 0.06);
+		border-color: var(--color-border-hover);
+		transform: translateY(-2px);
+	}
+
+	.mode-card.disabled {
 		opacity: 0.5;
-	}
-	.game-starter:nth-child(2) button,
-	.game-starter:nth-child(3) button,
-	.game-starter:nth-child(4) button {
-		cursor: not-allowed;
-	}
-	.game-starter:nth-child(2) button:hover,
-	.game-starter:nth-child(3) button:hover,
-	.game-starter:nth-child(4) button:hover {
-		background-color: rgb(180, 46, 224, 0.5);
+		filter: grayscale(0.8);
 	}
 
-	@media (orientation: portrait) {
-		.starting-screen {
-			width: 85%;
-			height: 80%;
+	.mode-icon {
+		flex-shrink: 0;
+		width: 64px;
+		height: 64px;
+		border-radius: var(--radius-md);
+		overflow: hidden;
+		background: rgba(0, 0, 0, 0.2);
+	}
+
+	.mode-icon img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.mode-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+	}
+
+	.mode-info h3 {
+		margin: 0;
+		font-size: 1rem;
+		font-weight: 500;
+		color: var(--color-accent-gold);
+	}
+
+	.mode-info p {
+		margin: 0;
+		font-size: 0.8rem;
+		color: var(--color-text-secondary);
+		line-height: 1.4;
+		flex: 1;
+	}
+
+	.play-btn {
+		align-self: flex-end;
+		padding: var(--space-xs) var(--space-md);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-sm);
+		background: rgba(255, 255, 255, 0.05);
+		color: var(--color-text-secondary);
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: all var(--transition-fast);
+	}
+
+	.play-btn.primary {
+		background: linear-gradient(135deg, var(--color-accent-primary), #9b6eff);
+		border-color: transparent;
+		color: white;
+	}
+
+	.play-btn.primary:hover {
+		transform: scale(1.05);
+		box-shadow: 0 4px 15px rgba(124, 92, 224, 0.4);
+	}
+
+	.play-btn:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+
+	/* Responsive */
+	@media (max-width: 700px) {
+		.modes-grid {
+			grid-template-columns: 1fr;
 		}
-		.heading-box {
-			top: 3rem;
+
+		.start-content {
+			padding: var(--space-md);
 		}
-		.heading-box button {
-			display: none;
+
+		.mode-icon {
+			width: 56px;
+			height: 56px;
 		}
-		.game-starters {
-			top: 50%;
-			transform: translateY(-50%);
-			align-items: center;
-			bottom: 2rem;
-		}
-		.game-starter {
+	}
+
+	@media (max-width: 480px) {
+		.mode-card {
 			flex-direction: column;
 			align-items: center;
-		}
-		h1 {
-			font-size: 2.2rem;
+			text-align: center;
 		}
 
-		.game-explanation button {
-			font-size: 1rem;
+		.mode-info {
+			align-items: center;
 		}
-	}
-	@media (min-width: 2650px) {
-		button {
-			font-size: 0.9rem;
+
+		.play-btn {
+			align-self: center;
 		}
 	}
 </style>

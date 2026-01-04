@@ -4,7 +4,7 @@
 	import { character } from '../../../stores'
 
 	import { createEventDispatcher } from 'svelte'
-	import { fade } from 'svelte/transition'
+	import { fade, fly } from 'svelte/transition'
 
 	const dispatch = createEventDispatcher()
 
@@ -15,7 +15,6 @@
 			emitAnswer(
 				"Player tries to escape, but got hit while trying to escape, couldn't escape and lost 20 health. Combat goes on."
 			)
-
 			$character.stats[0].hp -= 20
 		} else {
 			emitAnswer('Player tries to escape, and escapes from the combat area successfully!')
@@ -26,146 +25,224 @@
 
 	function leaveButton(leaveString: any) {
 		emitAnswer(leaveString)
-
 		$game.gameData.event.shopMode = null
 		$game.gameData.event.lootMode = false
 		$game.gameData.lootBox = []
 	}
 
 	function emitAnswer(answer: any) {
-		dispatch('emittedAnswer', {
-			answer: answer
-		})
+		dispatch('emittedAnswer', { answer })
+	}
+
+	function extractHours(time: string): number {
+		if (!time) return 0
+		const parts = time.split(':')
+		return parseInt(parts[0]) || 0
 	}
 </script>
 
 {#if !$misc.loading}
 	{#if $game.gameData.choices?.length >= 2 || $game.gameData.event?.inCombat || $game.gameData.event?.shopMode || $game.gameData.event?.lootMode}
-		<div transition:fade={{ duration: 700 }} class="stats">
-			<div class="stat">
-				<img class="svg-images" src="images/gold.svg" alt="" />
-				<p>{$character.gold}</p>
+		<div class="bottom-bar" in:fly={{ y: 20, duration: 400, delay: 200 }}>
+			<!-- Gold Display -->
+			<div class="stat-chip gold">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+					<circle cx="12" cy="12" r="10" fill="#f0c040" />
+					<circle cx="12" cy="12" r="6" fill="#d4a832" />
+				</svg>
+				<span class="stat-value">{$character.gold}</span>
 			</div>
 
-			{#if $game.gameData.event.inCombat}
-				<button
-					style="opacity: {$game.gameData.choices?.length ? '1' : '0'};"
-					disabled={$misc.loading}
-					on:click={() => calculateRetreat()}
-					class="leave-button run-button"
-				>
-					<img src="images/run.svg" alt="retreat button" />
+			<!-- Action Buttons (contextual) -->
+			<div class="action-buttons">
+				{#if $game.gameData.event?.inCombat}
+					<button
+						class="action-btn retreat"
+						disabled={$misc.loading}
+						on:click={() => calculateRetreat()}
+						in:fade={{ duration: 200 }}
+					>
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<path d="M19 12H5M12 19l-7-7 7-7" />
+						</svg>
+						<span>Retreat</span>
+					</button>
+				{:else if $game.gameData.event?.shopMode}
+					<button
+						class="action-btn leave-shop"
+						disabled={$misc.loading}
+						on:click={() => {
+							leaveButton("I'll leave the shop.")
+							$game.gameData.event.shopMode = null
+						}}
+					>
+						🚪 Leave Shop
+					</button>
+				{:else if $game.gameData.event?.lootMode}
+					<button
+						class="action-btn"
+						disabled={$misc.loading}
+						style="opacity: {$game.gameData.lootBox?.length ? '1' : '0'};"
+						on:click={() => leaveButton('Leave the loot.')}
+					>
+						Leave it
+					</button>
+				{/if}
+			</div>
 
-					<p>
-						Try to <span class="red-span">Retreat.</span>
-					</p>
-				</button>
-			{:else if $game.gameData.event.shopMode}
-				<button
-					disabled={$misc.loading}
-					class="leave-button"
-					style="opacity: {$game.gameData.event.shopMode ? '1' : '0'};"
-					on:click={() => {
-						leaveButton("I won't buy anything. (shopMode must be null in the next response.)")
-						$game.gameData.event.shopMode = null
-					}}>Close Menu</button
+			<!-- Time Display -->
+			<div class="stat-chip time">
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
 				>
-				<button
-					disabled={$misc.loading}
-					class="leave-button"
-					style="opacity: {$game.gameData.event.shopMode ? '1' : '0'};"
-					on:click={() => {
-						leaveButton(
-							"I'll leave the shop. (shopMode must be null in the next response, and player must be leaving the shop.)"
-						)
-						$game.gameData.event.shopMode = null
-					}}>Leave Shop</button
-				>
-			{:else if $game.gameData.event.lootMode}
-				<button
-					disabled={$misc.loading}
-					class="leave-button"
-					style="opacity: {$game.gameData.lootBox?.length ? '1' : '0'};"
-					on:click={() => leaveButton('Leave the loot.')}>Leave it.</button
-				>
-				<!-- {:else if extractHours($misc.time) >= 20 && !$misc.place?.includes('Town') && !$misc.place?.includes('Tavern') && !$misc.place?.includes('Inn') && !$misc.place?.includes('City') && !$misc.place?.includes('Shop') && !$misc.place?.includes('smith') && !$misc.place?.includes('Market') && !$misc.place?.includes('Merchant')}
-				<button
-					disabled={$misc.loading}
-					class="leave-button night-time"
-					style="opacity: {extractHours($misc.time) >= 20 ? '1' : '0'}; "
-					on:click={() =>
-						emitAnswer(
-							"Don't forget that you're leading a text-based rpg game and give your responses in JSON format like in your first response! Now it's night time, i'll go back to the nearest Inn before got caught to monsters."
-						)}>It's night time, go back to inn for safety.</button
-				> -->
-			{/if}
-			<div class="stat">
-				<img class="svg-images" src="images/time.svg" alt="" />
-
-				<p>{$game.gameData.placeAndTime.time ? $game.gameData.placeAndTime.time : '00:00'}</p>
+					<circle cx="12" cy="12" r="10" />
+					<path d="M12 6v6l4 2" />
+				</svg>
+				<span class="stat-value">{$game.gameData.placeAndTime?.time || '00:00'}</span>
 			</div>
 		</div>
 	{/if}
 {/if}
 
 <style>
-	.svg-images {
-		width: 1.1rem;
-		height: 1.1rem;
-	}
-
-	.leave-button {
-		border: none;
-		background-color: rgba(49, 49, 49, 0.73);
-		padding: 0.3rem 2rem;
-		border-radius: 0.3rem;
-		font-size: 1rem;
-		transition: background-color 0.3s, opacity 1.5s;
-		backdrop-filter: blur(3px);
-		cursor: pointer;
-	}
-
-	.leave-button:hover {
-		background-color: rgba(49, 49, 49, 0.83);
-	}
-	.run-button img {
-		width: 1rem;
-	}
-	.run-button {
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-	}
-
-	.night-time {
-		background-color: rgba(42, 42, 42, 0.852);
-		color: orangered;
-	}
-
-	.stats {
-		width: 100%;
+	.bottom-bar {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: var(--space-md);
+		padding: var(--space-sm) 0;
+		width: 100%;
+		max-width: 700px;
+		margin: 0 auto;
 	}
-	.stat {
+
+	/* Stat Chips */
+	.stat-chip {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		background-color: rgba(64, 64, 64, 0.8);
-		border-radius: 0.3rem;
-		padding: 0.2rem 0.5rem;
+		gap: var(--space-sm);
+		padding: var(--space-xs) var(--space-md);
+		background: var(--color-bg-card);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border: 1px solid var(--color-border);
+		border-radius: 20px;
+		min-width: 80px;
 	}
 
-	.stat p {
-		font-size: 1.2rem;
+	.stat-chip.gold svg {
+		flex-shrink: 0;
 	}
 
-	@media (orientation: portrait) {
-		.night-time {
-			font-size: 0.9rem;
-			padding: 0.35rem 0.6rem;
+	.stat-chip.time svg {
+		color: var(--color-text-secondary);
+		flex-shrink: 0;
+	}
+
+	.stat-value {
+		font-size: 0.9rem;
+		font-weight: 500;
+		color: var(--color-text-primary);
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Action Buttons */
+	.action-buttons {
+		display: flex;
+		gap: var(--space-sm);
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.action-btn {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		padding: var(--space-xs) var(--space-md);
+		background: var(--color-bg-glass);
+		backdrop-filter: blur(12px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		color: var(--color-text-primary);
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: all var(--transition-fast);
+	}
+
+	.action-btn:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-border-hover);
+	}
+
+	.action-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.action-btn.retreat {
+		background: var(--color-bg-card);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-color: var(--color-border);
+		color: var(--color-text-primary);
+		font-weight: 500;
+	}
+
+	.action-btn.retreat:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-border-hover);
+	}
+
+	.action-btn.secondary {
+		background: transparent;
+		border-color: rgba(255, 255, 255, 0.15);
+	}
+
+	.action-btn.leave-shop {
+		background: var(--color-bg-card);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-color: var(--color-border);
+		color: var(--color-text-primary);
+		font-weight: 500;
+	}
+
+	.action-btn.leave-shop:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-border-hover);
+	}
+
+	/* Responsive */
+	@media (max-width: 600px) {
+		.bottom-bar {
+			flex-wrap: wrap;
+			gap: var(--space-sm);
+		}
+
+		.stat-chip {
+			min-width: 70px;
+			padding: var(--space-xs) var(--space-sm);
+		}
+
+		.stat-value {
+			font-size: 0.85rem;
+		}
+
+		.action-btn {
+			font-size: 0.75rem;
+			padding: var(--space-xs) var(--space-sm);
 		}
 	}
 </style>

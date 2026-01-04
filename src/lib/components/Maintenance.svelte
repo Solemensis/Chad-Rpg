@@ -3,7 +3,7 @@
 </script>
 
 <div>
-	<h2>Game's Open Back :)</h2>
+	<h2>Welcome</h2>
 	<!-- <h2 style="color:orangered;">Game's Closed Back Again.</h2>
 	<ul>
 		<li>

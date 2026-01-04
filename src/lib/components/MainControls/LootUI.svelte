@@ -104,106 +104,174 @@
 </script>
 
 <!-- loot ui-->
-<div transition:fade={{ duration: 1000 }} class="shop">
-	<div class="shop-box">
-		<h3>You're <span class="g-span">looting.</span></h3>
-
-		<div class="buyables-box">
-			{#if !$game.gameData.lootBox?.length}
-				<p>loading...</p>
-			{:else}
-				{#each $game.gameData.lootBox as item}
-					<button
-						disabled={$misc.loading}
-						class="item-button"
-						on:click={() => lootItem(item)}
-						on:mousemove={(event) => handleMouseMove(event, item)}
-						on:mouseleave={hideWindow}
-					>
-						{#if item.type == 'weapon'}
-							<img class="buyable-img" src="images/{item.weaponClass}.svg" alt="a weapon" />
-						{:else if item.element}
-							<img class="buyable-img" src="images/{item.element}.svg" alt="a spell" />
-						{:else if item.type == 'potion' || item.type == 'currency'}
-							<img class="buyable-img" src="images/{item.type}.svg" alt="a lootable item" />
-						{:else}
-							<img class="buyable-img" src="images/item.svg" alt="a lootable item" />
-						{/if}
-					</button>
-				{/each}
-				<button disabled={$misc.loading} on:click={() => lootAll()}>Loot All</button>
-			{/if}
-		</div>
+<div class="loot-panel" transition:fade={{ duration: 400 }}>
+	<!-- Loot Header -->
+	<div class="loot-header">
+		<span class="loot-icon">💰</span>
+		<h3>
+			You're <span class="loot-accent">looting</span>
+		</h3>
 	</div>
+
+	<!-- Loot Items Grid -->
+	{#if !$game.gameData.lootBox?.length}
+		<p class="empty-loot">No loot available</p>
+	{:else}
+		<div class="loot-items">
+			{#each $game.gameData.lootBox as item, i}
+				<button
+					class="loot-item-btn"
+					disabled={$misc.loading}
+					on:click={() => lootItem(item)}
+					on:mouseenter={(event) => handleMouseMove(event, item)}
+					on:mousemove={(event) => handleMouseMove(event, item)}
+					on:mouseleave={hideWindow}
+					in:fade={{ duration: 200, delay: i * 50 }}
+				>
+					{#if item.type == 'weapon'}
+						<img class="item-icon" src="images/{item.weaponClass}.svg" alt={item.name} />
+					{:else if item.element}
+						<img class="item-icon" src="images/{item.element}.svg" alt={item.name} />
+					{:else if item.type == 'potion' || item.type == 'currency'}
+						<img class="item-icon" src="images/{item.type}.svg" alt={item.name} />
+					{:else}
+						<img class="item-icon" src="images/item.svg" alt={item.name} />
+					{/if}
+				</button>
+			{/each}
+
+			<button class="loot-all-btn" disabled={$misc.loading} on:click={() => lootAll()}>
+				Loot All
+			</button>
+		</div>
+	{/if}
 </div>
 
 <!-- loot ui ends here -->
 <style>
-	/* classes are from shop ui, so class names are shop ui's classes */
-
-	.shop {
-		min-height: 36.9%;
-		display: flex;
-		justify-content: space-between;
-		flex-direction: column;
-		width: 100%;
-		height: 100%;
-		margin-inline: auto;
-		gap: 1rem;
-		backdrop-filter: blur(2px);
-	}
-
-	.shop-box h3 {
-		text-align: center;
-		font-weight: 300;
-		font-size: 1.3rem;
-	}
-
-	.shop-box {
-		background-color: rgba(31, 31, 31, 0.841);
-		border-radius: 0.5rem;
+	.loot-panel {
+		background: var(--color-bg-card);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		padding: var(--space-lg) var(--space-md);
 		display: flex;
 		flex-direction: column;
-		height: 100%;
-		justify-content: space-around;
-		padding: 0 0.5rem;
 		align-items: center;
-		padding-bottom: 1rem;
+		gap: var(--space-md);
+		width: 100%;
+		max-width: 500px;
+		margin: 0 auto;
 	}
 
-	.item-button {
-		border: none;
-		background-color: transparent;
-	}
-
-	.buyables-box {
-		display: flex;
-		gap: 1rem;
-	}
-	.shop-box button {
-		background-color: rgb(128 128 128 / 29%);
-		border: none;
-		width: 3.5rem;
-		height: 3.5rem;
-		border-radius: 0.4rem;
-		cursor: pointer;
-
+	.loot-header {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
-	.buyable-img {
-		width: 65%;
-		height: 65%;
+		gap: var(--space-sm);
 	}
 
-	.g-span {
-		color: #3fcf8e;
+	.loot-header h3 {
+		margin: 0;
+		font-size: 1.1rem;
+		font-weight: 400;
+		color: var(--color-text-primary);
 	}
 
-	@media (orientation: portrait) {
-		.shop {
-			min-height: 90%;
+	.loot-icon {
+		font-size: 1.2rem;
+	}
+
+	.loot-accent {
+		color: var(--color-accent-secondary);
+		font-weight: 500;
+	}
+
+	.loot-items {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+		justify-content: center;
+		align-items: center;
+	}
+
+	.loot-item-btn {
+		width: 60px;
+		height: 60px;
+		border-radius: var(--radius-md);
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid var(--color-border);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all var(--transition-fast);
+		position: relative;
+	}
+
+	.loot-item-btn:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-accent-secondary);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(63, 207, 142, 0.2);
+	}
+
+	.loot-item-btn:active:not(:disabled) {
+		transform: translateY(0);
+	}
+
+	.loot-item-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.item-icon {
+		width: 70%;
+		height: 70%;
+		object-fit: contain;
+	}
+
+	.loot-all-btn {
+		padding: var(--space-sm) var(--space-md);
+		background: linear-gradient(135deg, rgba(63, 207, 142, 0.2), rgba(63, 207, 142, 0.1));
+		border: 1px solid var(--color-accent-secondary);
+		border-radius: var(--radius-md);
+		color: var(--color-accent-secondary);
+		font-size: 0.85rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all var(--transition-fast);
+	}
+
+	.loot-all-btn:hover:not(:disabled) {
+		background: linear-gradient(135deg, rgba(63, 207, 142, 0.3), rgba(63, 207, 142, 0.15));
+		box-shadow: 0 0 12px rgba(63, 207, 142, 0.3);
+	}
+
+	.loot-all-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.empty-loot {
+		color: var(--color-text-muted);
+		font-size: 0.875rem;
+		text-align: center;
+	}
+
+	@media (max-width: 480px) {
+		.loot-panel {
+			padding: var(--space-md);
+		}
+
+		.loot-item-btn {
+			width: 50px;
+			height: 50px;
+		}
+
+		.loot-header h3 {
+			font-size: 0.95rem;
 		}
 	}
 </style>

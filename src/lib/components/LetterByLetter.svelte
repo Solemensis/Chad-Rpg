@@ -1,28 +1,31 @@
 <script lang="ts">
-	export let message: any
-	import { fade, blur } from 'svelte/transition'
-	import { onMount } from 'svelte'
+	import { blur } from 'svelte/transition'
+
+	// Preferred prop name (used by `Game.svelte`).
+	export let text: string | string[] | null | undefined = undefined
+	// Backwards-compatible alias.
+	export let message: string | string[] | null | undefined = undefined
 
 	let isVisible = false
-	// console.log('letterbyletter: ', message)
-	// Function to split the text into individual letters
-	function splitText() {
-		message = message.split(' ').map((letter: any) => letter)
-		// console.log(message)
-	}
+	let tokens: string[] = []
 
-	onMount(() => {
-		splitText()
+	$: {
+		const value = text ?? message
+		if (Array.isArray(value)) {
+			tokens = value.map((v) => String(v))
+		} else if (typeof value === 'string') {
+			tokens = value.split(' ')
+		} else {
+			tokens = []
+		}
 		isVisible = true
-
-		// console.log(message)
-	})
+	}
 </script>
 
 {#if isVisible}
 	<p>
-		{#each message as letter, index}
-			<span transition:blur={{ duration: index * 100 < 2000 ? index + '00' : 2000 }}>
+		{#each tokens as letter, index}
+			<span transition:blur={{ duration: Math.min(index * 100, 2000) }}>
 				{letter + ' '}
 			</span>
 		{/each}

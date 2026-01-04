@@ -27,17 +27,28 @@
 
 {#if $misc.started}
 	<div class="ui-mid">
-		{#if $game.gameData.event && !$game.gameData.event.shopMode && !$game.gameData.event.inCombat && !$game.gameData.event.lootMode && !$misc.death}
-			<PickChoice on:emittedAnswer={handleEmittedAnswer} />
-		{:else if $game.gameData.event && $game.gameData.event.inCombat && $game.gameData.enemy && !$misc.death}
-			<Combat on:emittedAnswer={handleEmittedAnswer} />
-		{:else if $game.gameData.event && $game.gameData.event.shopMode && !$misc.death}
-			<Shop />
-		{:else if $game.gameData.event && $game.gameData.event.lootMode && !$misc.death}
-			<Loot on:emittedAnswer={handleEmittedAnswer} />
-		{:else if $misc.death}
+		<!-- Death Screen -->
+		{#if $misc.death}
 			<Death />
+			<!-- Combat Screen -->
+		{:else if $game.gameData.event?.inCombat && $game.gameData.enemy}
+			<Combat on:emittedAnswer={handleEmittedAnswer} />
+			<!-- Loot Screen -->
+		{:else if $game.gameData.event?.lootMode}
+			<Loot on:emittedAnswer={handleEmittedAnswer} />
+			<!-- Shop Mode - Show BOTH choices and shop -->
+		{:else if $game.gameData.event?.shopMode}
+			<div class="shop-layout">
+				<!-- Choices on top -->
+				<PickChoice on:emittedAnswer={handleEmittedAnswer} />
+				<!-- Shop items below -->
+				<Shop />
+			</div>
+			<!-- Normal Mode - Just choices -->
+		{:else if $game.gameData.event}
+			<PickChoice on:emittedAnswer={handleEmittedAnswer} />
 		{/if}
+
 		<GoldTime on:emittedAnswer={handleEmittedAnswer} />
 	</div>
 {/if}
@@ -50,7 +61,21 @@
 		flex-direction: column;
 		justify-content: space-between;
 		align-items: flex-start;
-		gap: 0.8rem;
+		gap: var(--space-md);
+	}
+
+	.shop-layout {
+		display: grid;
+		grid-template-columns: 60% 1fr;
+		gap: var(--space-md);
+		width: 100%;
+	}
+
+	/* Responsive: Stack on smaller screens */
+	@media (max-width: 768px) {
+		.shop-layout {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	::placeholder {

@@ -107,66 +107,98 @@
 <!-- asksell window -->
 <style>
 	.notification-window {
-		background-color: rgba(48, 41, 50, 0.75);
-		backdrop-filter: blur(4px);
-		padding: 3rem 6rem;
-		border-radius: 0.7rem;
-		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+		background: var(--color-bg-card);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		padding: var(--space-xl) var(--space-xxl, 3rem);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-border);
+		box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.5);
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
 		text-align: center;
-		border: rgb(73, 75, 76) 2px solid;
-
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		gap: 1rem;
-		font-size: 1.2rem;
+		align-items: center;
+		gap: var(--space-lg);
 		z-index: 999;
+		min-width: 280px;
+		max-width: 90vw;
 	}
+
 	.notification-window p {
-		color: #ddd;
+		color: var(--color-text-primary);
+		font-size: 1.1rem;
+		font-weight: 400;
+		margin: 0;
+		line-height: 1.5;
 	}
+
 	.notification-window button {
-		border: 2px solid rgb(65, 107, 65);
-		background-color: transparent;
-		border-radius: 2px;
-		border-radius: 0.5rem;
-		padding: 0.4rem 1rem;
-		transition: 0.2s;
+		background: var(--color-bg-card);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		padding: var(--space-sm) var(--space-xl);
+		color: var(--color-text-primary);
+		font-size: 0.9rem;
+		font-weight: 500;
 		cursor: pointer;
-		display: flex;
-		justify-content: center;
+		transition: all var(--transition-fast);
+		min-width: 100px;
 	}
+
 	.notification-window button:hover {
-		transform: translateY(-3%);
-		border: 2px solid rgb(65, 124, 65);
+		background: rgba(255, 255, 255, 0.1);
+		border-color: var(--color-border-hover);
+		transform: translateY(-2px);
 	}
 
 	.dual-button {
 		display: flex;
 		justify-content: center;
-		gap: 1rem;
-	}
-	.dual-button button:nth-child(1) {
-		border: 2px solid rgb(65, 124, 65);
-	}
-	.dual-button button:nth-child(1):hover {
-		border: 2px solid rgb(75, 147, 75);
-	}
-	.dual-button button:nth-child(2) {
-		border: 2px solid rgb(111, 30, 0);
-	}
-	.dual-button button:nth-child(2):hover {
-		border: 2px solid rgb(129, 48, 18);
+		gap: var(--space-md);
 	}
 
-	@media (orientation: portrait) {
+	.dual-button button:nth-child(1) {
+		background: linear-gradient(135deg, rgba(63, 207, 142, 0.2), rgba(63, 207, 142, 0.1));
+		border-color: var(--color-accent-secondary);
+		color: var(--color-accent-secondary);
+	}
+
+	.dual-button button:nth-child(1):hover {
+		background: linear-gradient(135deg, rgba(63, 207, 142, 0.3), rgba(63, 207, 142, 0.15));
+		box-shadow: 0 0 12px rgba(63, 207, 142, 0.3);
+	}
+
+	.dual-button button:nth-child(2) {
+		background: linear-gradient(135deg, rgba(224, 92, 124, 0.2), rgba(224, 92, 124, 0.1));
+		border-color: var(--color-accent-hp);
+		color: var(--color-accent-hp);
+	}
+
+	.dual-button button:nth-child(2):hover {
+		background: linear-gradient(135deg, rgba(224, 92, 124, 0.3), rgba(224, 92, 124, 0.15));
+		box-shadow: 0 0 12px rgba(224, 92, 124, 0.3);
+	}
+
+	@media (max-width: 480px) {
 		.notification-window {
-			padding: 1.5rem 1.5rem;
-			border-radius: 0.5rem;
+			padding: var(--space-lg) var(--space-md);
+			min-width: 240px;
+		}
+
+		.notification-window p {
+			font-size: 0.95rem;
+		}
+
+		.notification-window button {
+			padding: var(--space-sm) var(--space-md);
+			font-size: 0.85rem;
 		}
 	}
 </style>

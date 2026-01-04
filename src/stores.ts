@@ -1,31 +1,60 @@
-import { writable } from 'svelte/store'
+import { writable, type Writable } from 'svelte/store'
+import type {
+	GameData,
+	Character,
+	UIState,
+	MiscState,
+	BackgroundImage,
+	DescriptionWindow,
+	CoolDowns,
+	InventoryItem
+} from '$lib/types/game'
+import { STARTING_VALUES } from '$lib/config/constants'
 
-export const game: any = writable({
+// Game state store
+export const game: Writable<{ gameData: GameData }> = writable({
 	gameData: {
 		lootBox: [],
-		placeAndTime: {},
+		placeAndTime: { place: '', time: '00:00' },
 		shop: [],
 		choices: [],
 		enemy: {},
-		event: { inCombat: false, shopMode: null, lootMode: false }
+		event: { inCombat: false, shopMode: null, lootMode: false },
+		story: ''
 	}
 })
 
-export const character: any = writable({
+// Character state store
+export const character: Writable<Character> = writable({
 	stats: [{ hp: 0, maxHp: 0, mp: 0, maxMp: 0 }],
 	gold: 0,
 	spells: [],
 	inventory: []
 })
 
-export const ui: any = writable({ errorWarnMsg: '', buyWarnMsg: '', sellWarnMsg: '' })
+// UI state store
+export const ui: Writable<UIState> = writable({
+	errorWarnMsg: '',
+	buyWarnMsg: '',
+	sellWarnMsg: ''
+})
 
-//hem combat, hem sell, hem de (emin olduktan sonra) buy için kullanılabilir galiba
-export const selectedItem: any = writable({})
+// Selected item store for combat, selling, and buying
+export const selectedItem: Writable<
+	Partial<
+		InventoryItem & {
+			combatScore?: number
+			prompt?: string
+			showDescription?: string
+		}
+	>
+> = writable({})
 
-export const coolDowns: any = writable({})
+// Cooldowns store
+export const coolDowns: Writable<CoolDowns> = writable({})
 
-export const misc: any = writable({
+// Miscellaneous state store
+export const misc: Writable<MiscState> = writable({
 	showInfoWindow: false,
 	loading: false,
 	showDescription: 'none',
@@ -37,31 +66,33 @@ export const misc: any = writable({
 	place: '',
 	currentImg: '',
 	death: false,
-	interactivePoints: 50,
+	interactivePoints: STARTING_VALUES.INTERACTIVE_POINTS,
 	bugWindow: false,
-	maintenanceWindow: true,
+	maintenanceWindow: false,
 	started: false,
 	heroClass: ''
 })
 
-export const bgImage: any = writable({
+// Background image store
+export const bgImage: Writable<BackgroundImage> = writable({
 	fetchedBg1: '',
 	fetchedBg2: '',
 	img1active: false,
 	img2active: false
 })
 
-export const descWindow: any = writable({
-	name: undefined,
-	damage: undefined,
-	type: undefined,
-	healing: undefined,
-	mana: undefined,
-	armor: undefined,
-	element: undefined,
-	weaponClass: undefined,
-	manaCost: undefined,
-	price: undefined,
-	amount: undefined,
-	point: undefined
+// Description window store
+export const descWindow: Writable<DescriptionWindow> = writable({
+	name: '',
+	damage: 0,
+	type: '',
+	healing: 0,
+	mana: 0,
+	point: 0,
+	armor: 0,
+	element: '',
+	weaponClass: '',
+	manaCost: 0,
+	price: 0,
+	amount: 0
 })
