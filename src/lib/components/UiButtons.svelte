@@ -509,10 +509,10 @@
 	}
 
 	.song-icon {
-		top: var(--space-md);
+		top: calc(var(--space-md) + 48px);
 	}
 	.fullscreen-icon {
-		top: calc(var(--space-md) + 48px);
+		top: calc(var(--space-md) + 96px);
 	}
 
 	.song-icon:hover,

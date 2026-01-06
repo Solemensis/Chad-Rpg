@@ -118,14 +118,15 @@
 
 <style>
 	.bottom-bar {
+		position: fixed;
+		top: var(--space-md);
+		right: var(--space-md);
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		gap: var(--space-md);
-		padding: var(--space-sm) 0;
-		width: 100%;
-		max-width: 700px;
-		margin: 0 auto;
+		justify-content: flex-end;
+		gap: var(--space-sm);
+		padding: var(--space-xs);
+		z-index: 200;
 	}
 
 	/* Stat Chips */

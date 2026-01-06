@@ -268,7 +268,7 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 		const imgPath = `${matchedPlace}/${randomImgNum}.webp`
 
 		try {
-			const { data, error } = await supabase.storage.from('rpg-images').download(imgPath)
+			const { data, error } = await supabase.storage.from('imgs').download(imgPath)
 
 			if (error) {
 				// Gracefully handle missing bucket or image - just warn, don't error
@@ -285,15 +285,25 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 	}
 
 	function updateBackgroundImage(url: string) {
-		if ($bgImage.img1active) {
-			$bgImage.fetchedBg2 = url
-			$bgImage.img2active = true
-			$bgImage.img1active = false
-		} else {
-			$bgImage.fetchedBg1 = url
-			$bgImage.img1active = true
-			$bgImage.img2active = false
+		// Preload the new image before triggering the crossfade
+		const img = new Image()
+		img.onload = () => {
+			if ($bgImage.img1active) {
+				$bgImage.fetchedBg2 = url
+				// Small delay to ensure the new image is rendered before fading
+				setTimeout(() => {
+					$bgImage.img2active = true
+					$bgImage.img1active = false
+				}, 50)
+			} else {
+				$bgImage.fetchedBg1 = url
+				setTimeout(() => {
+					$bgImage.img1active = true
+					$bgImage.img2active = false
+				}, 50)
+			}
 		}
+		img.src = url
 	}
 
 	function mixBuyables(category: string) {
