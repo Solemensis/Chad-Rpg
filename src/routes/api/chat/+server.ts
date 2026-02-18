@@ -48,27 +48,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			parts: [{ text: requestBody.prompt }]
 		})
 
-		// Use Promise.race to implement a 9-second timeout
-		// This prevents Vercel (10s limit) from killing the function with a 504
-		const timeoutPromise = new Promise((_, reject) => {
-			setTimeout(() => {
-				const timeoutError = new Error('Server-side timeout')
-				;(timeoutError as any).status = 503
-				reject(timeoutError)
-			}, 9800)
+		const response = await ai.models.generateContent({
+			model: 'gemini-3-flash-preview',
+			contents: chatHistory,
+			config: {
+				systemInstruction: systemInstruction,
+				responseMimeType: 'application/json'
+			}
 		})
-
-		const response = (await Promise.race([
-			ai.models.generateContent({
-				model: 'gemini-3-flash-preview',
-				contents: chatHistory,
-				config: {
-					systemInstruction: systemInstruction,
-					responseMimeType: 'application/json'
-				}
-			}),
-			timeoutPromise
-		])) as any
 
 		const responseText = response.text || ''
 

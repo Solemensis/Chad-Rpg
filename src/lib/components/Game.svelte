@@ -57,8 +57,9 @@
 		const timeoutId = setTimeout(() => {
 			if ($misc.loading) {
 				requestTimeout = true
+				$misc.loading = false // Stop the loading spinner
 			}
-		}, 8000)
+		}, 9000)
 
 		try {
 			const response = await fetch('/api/chat', {
@@ -85,6 +86,7 @@
 				const errorData = await response.json()
 				if (errorData.error === 'high_demand') {
 					highDemand = true
+					requestTimeout = false
 					$misc.loading = false
 					return
 				}
@@ -93,6 +95,7 @@
 			// Check for gateway timeout (Vercel/Prod)
 			if (response.status === 504) {
 				highDemand = true
+				requestTimeout = false
 				$misc.loading = false
 				return
 			}
@@ -530,15 +533,15 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 		<div class="quota-overlay" transition:fade>
 			<div class="quota-content timeout">
 				<div class="quota-icon">🤖</div>
-				<h2>Gemini is overloaded</h2>
+				<h2>Request Cancelled</h2>
 				<p>
-					The AI model is taking <strong>unusually long</strong> to generate your story.
+					The Gemini API is <strong>currently full</strong> and couldn't respond in time.
 				</p>
 				<p class="quota-detail">
-					Google Gemini is currently processing a high volume of requests. We are still waiting for your narrative to arrive.
+					To keep the game responsive, we've stopped the current request. Please try your action again.
 				</p>
 				<p class="quota-sorry">Thank you for your patience!</p>
-				<button class="quota-dismiss" on:click={() => (requestTimeout = false)}> Got it </button>
+				<button class="quota-dismiss" on:click={() => (requestTimeout = false)}> Try Again </button>
 			</div>
 		</div>
 	{/if}
