@@ -1,0 +1,11 @@
+{
+	"runtime": "nodejs22.x",
+	"maxDuration": 60,
+	"handler": "..\\..\\..\\..\\..\\..\\Users\\Ulaş Saçlı\\Documents\\web-projects\\Chad-Rpg\\.svelte-kit\\vercel-tmp\\index.js",
+	"launcherType": "Nodejs",
+	"experimentalResponseStreaming": true,
+	"framework": {
+		"slug": "sveltekit",
+		"version": "2.49.2"
+	}
+}

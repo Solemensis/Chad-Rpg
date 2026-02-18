@@ -90,6 +90,13 @@
 				}
 			}
 
+			// Check for gateway timeout (Vercel/Prod)
+			if (response.status === 504) {
+				highDemand = true
+				$misc.loading = false
+				return
+			}
+
 			if (!response.ok) {
 				throw new Error(`HTTP Error: ${response.status}`)
 			}
@@ -508,10 +515,10 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 				<div class="quota-icon">🚀</div>
 				<h2>High Traffic</h2>
 				<p>
-					The AI model is currently experiencing <strong>very high demand</strong>.
+					The AI service is currently <strong>heavily overloaded</strong> or timed out.
 				</p>
 				<p class="quota-detail">
-					Spikes in demand are usually temporary and last only a few minutes. Please wait a moment and try again.
+					Google Gemini is taking too long to respond, and the server had to stop waiting. Please try your action again in a moment.
 				</p>
 				<p class="quota-sorry">Thank you for your patience!</p>
 				<button class="quota-dismiss" on:click={() => (highDemand = false)}> Dismiss </button>
