@@ -535,7 +535,7 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 					The AI service is currently <strong>heavily overloaded</strong> or timed out.
 				</p>
 				<p class="quota-detail">
-					Google Gemini is taking too long to respond, and the server had to stop waiting. Please try your action again in a moment.
+					Google Gemini is taking too long to respond, and the server had to stop waiting. Please try your action later again.
 				</p>
 				<p class="quota-sorry">Thank you for your patience!</p>
 				<button class="quota-dismiss" on:click={() => (highDemand = false)}> Dismiss </button>
@@ -552,7 +552,7 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 					The Gemini API is <strong>currently full</strong> and couldn't respond in time.
 				</p>
 				<p class="quota-detail">
-					To keep the game responsive, we've stopped the current request. Please try your action again.
+					To keep the game responsive, we've stopped the current request. Please try your action later again.
 				</p>
 				<p class="quota-sorry">Thank you for your patience!</p>
 				<button class="quota-dismiss" on:click={() => { 
