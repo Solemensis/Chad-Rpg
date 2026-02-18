@@ -47,9 +47,9 @@
 					<h1>
 						Welcome to <span class="brand">Chad-Rpg!</span>
 					</h1>
-					<button class="info-btn" on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>
+					<!-- <button class="info-btn" on:click={() => ($misc.showInfoWindow = !$misc.showInfoWindow)}>
 						What is That?
-					</button>
+					</button> -->
 				</header>
 
 				<!-- Game Mode Grid -->

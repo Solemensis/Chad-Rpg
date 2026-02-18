@@ -31,6 +31,8 @@
 	let enemyOnFrontend: boolean = false
 	let dotty: string = '.'
 	let quotaExceeded: boolean = false
+	let highDemand: boolean = false
+	let requestTimeout: boolean = false
 
 	// Animation for loading dots
 	onMount(() => {
@@ -52,6 +54,12 @@
 		const prompt = chatMessages.length > 0 ? $misc.query : getGamePrompt()
 		console.log('Sending prompt:', prompt)
 
+		const timeoutId = setTimeout(() => {
+			if ($misc.loading) {
+				requestTimeout = true
+			}
+		}, 8000)
+
 		try {
 			const response = await fetch('/api/chat', {
 				method: 'POST',
@@ -59,11 +67,24 @@
 				body: JSON.stringify({ prompt })
 			})
 
+			clearTimeout(timeoutId)
+			requestTimeout = false
+
 			// Check for quota exceeded error
 			if (response.status === 429) {
 				const errorData = await response.json()
 				if (errorData.error === 'quota_exceeded') {
 					quotaExceeded = true
+					$misc.loading = false
+					return
+				}
+			}
+
+			// Check for high demand error
+			if (response.status === 503) {
+				const errorData = await response.json()
+				if (errorData.error === 'high_demand') {
+					highDemand = true
 					$misc.loading = false
 					return
 				}
@@ -140,11 +161,12 @@
 			$misc.time = $game.gameData.placeAndTime?.time || '00:00'
 
 			chatMessages = [...chatMessages, { role: 'assistant', content: gameData }]
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Error in handleSubmit:', error)
 			handleError(error)
 		} finally {
 			$misc.loading = false
+			requestTimeout = false
 		}
 	}
 
@@ -479,6 +501,40 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 			</div>
 		</div>
 	{/if}
+
+	{#if highDemand}
+		<div class="quota-overlay" transition:fade>
+			<div class="quota-content high-demand">
+				<div class="quota-icon">🚀</div>
+				<h2>High Traffic</h2>
+				<p>
+					The AI model is currently experiencing <strong>very high demand</strong>.
+				</p>
+				<p class="quota-detail">
+					Spikes in demand are usually temporary and last only a few minutes. Please wait a moment and try again.
+				</p>
+				<p class="quota-sorry">Thank you for your patience!</p>
+				<button class="quota-dismiss" on:click={() => (highDemand = false)}> Dismiss </button>
+			</div>
+		</div>
+	{/if}
+
+	{#if requestTimeout}
+		<div class="quota-overlay" transition:fade>
+			<div class="quota-content timeout">
+				<div class="quota-icon">🤖</div>
+				<h2>Gemini is overloaded</h2>
+				<p>
+					The AI model is taking <strong>unusually long</strong> to generate your story.
+				</p>
+				<p class="quota-detail">
+					Google Gemini is currently processing a high volume of requests. We are still waiting for your narrative to arrive.
+				</p>
+				<p class="quota-sorry">Thank you for your patience!</p>
+				<button class="quota-dismiss" on:click={() => (requestTimeout = false)}> Got it </button>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -524,6 +580,25 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 		max-width: 420px;
 		margin: var(--space-md);
 		box-shadow: var(--shadow-lg);
+		transition: all 0.3s ease;
+	}
+
+	.quota-content.high-demand {
+		border-color: var(--color-accent-primary, #3b82f6);
+		box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+	}
+
+	.quota-content.high-demand h2 {
+		color: var(--color-accent-primary, #3b82f6);
+	}
+
+	.quota-content.timeout {
+		border-color: var(--color-accent-gold, #facc15);
+		box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
+	}
+
+	.quota-content.timeout h2 {
+		color: var(--color-accent-gold, #facc15);
 	}
 
 	.quota-icon {

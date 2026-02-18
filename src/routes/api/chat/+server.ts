@@ -80,15 +80,27 @@ export const POST: RequestHandler = async ({ request }) => {
 	} catch (error: unknown) {
 		console.error('Error in chat API:', error)
 
-		// Check if it's a quota exceeded error (status 429)
-		if (error && typeof error === 'object' && 'status' in error && error.status === 429) {
-			return json(
-				{
-					error: 'quota_exceeded',
-					message: 'API quota exceeded. Please try again later.'
-				},
-				{ status: 429 }
-			)
+		// Check if it's an API error with a status code
+		if (error && typeof error === 'object' && 'status' in error) {
+			const status = (error as { status: number }).status
+			if (status === 429) {
+				return json(
+					{
+						error: 'quota_exceeded',
+						message: 'API quota exceeded. Please try again later.'
+					},
+					{ status: 429 }
+				)
+			}
+			if (status === 503) {
+				return json(
+					{
+						error: 'high_demand',
+						message: 'The AI model is currently experiencing high demand. Please try again in a few moments.'
+					},
+					{ status: 503 }
+				)
+			}
 		}
 
 		return json({ error: 'Failed to process request' }, { status: 500 })
