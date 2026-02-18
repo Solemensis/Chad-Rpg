@@ -54,10 +54,12 @@
 		const prompt = chatMessages.length > 0 ? $misc.query : getGamePrompt()
 		console.log('Sending prompt:', prompt)
 
+		const controller = new AbortController()
 		const timeoutId = setTimeout(() => {
 			if ($misc.loading) {
 				requestTimeout = true
-				$misc.loading = false // Stop the loading spinner
+				$misc.loading = false
+				controller.abort() // Actually stop the network request
 			}
 		}, 9000)
 
@@ -65,7 +67,8 @@
 			const response = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ prompt })
+				body: JSON.stringify({ prompt }),
+				signal: controller.signal // Link the abort signal
 			})
 
 			clearTimeout(timeoutId)
@@ -172,11 +175,19 @@
 
 			chatMessages = [...chatMessages, { role: 'assistant', content: gameData }]
 		} catch (error: any) {
-			console.error('Error in handleSubmit:', error)
-			handleError(error)
+			if (error.name === 'AbortError') {
+				console.log('Request was aborted at 9s mark to prevent 504')
+				// Do not call handleError or any other logic, modal is already shown
+			} else {
+				console.error('Error in handleSubmit:', error)
+				handleError(error)
+			}
 		} finally {
-			$misc.loading = false
-			requestTimeout = false
+			// Do not reset $misc.loading here if it was a timeout, 
+			// because the timeout block already set it to false
+			if (!requestTimeout) {
+				$misc.loading = false
+			}
 		}
 	}
 
@@ -541,7 +552,10 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 					To keep the game responsive, we've stopped the current request. Please try your action again.
 				</p>
 				<p class="quota-sorry">Thank you for your patience!</p>
-				<button class="quota-dismiss" on:click={() => (requestTimeout = false)}> Try Again </button>
+				<button class="quota-dismiss" on:click={() => { 
+					requestTimeout = false; 
+					$misc.loading = false;
+				}}> Try Again </button>
 			</div>
 		</div>
 	{/if}
