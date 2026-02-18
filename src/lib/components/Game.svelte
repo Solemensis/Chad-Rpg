@@ -97,6 +97,9 @@
 
 			// Check for gateway timeout (Vercel/Prod)
 			if (response.status === 504) {
+				// If we already showed the 9s timeout modal, don't override it with the "High Traffic" one
+				if (requestTimeout) return
+
 				highDemand = true
 				requestTimeout = false
 				$misc.loading = false
@@ -175,9 +178,9 @@
 
 			chatMessages = [...chatMessages, { role: 'assistant', content: gameData }]
 		} catch (error: any) {
-			if (error.name === 'AbortError') {
-				console.log('Request was aborted at 9s mark to prevent 504')
-				// Do not call handleError or any other logic, modal is already shown
+			if (error.name === 'AbortError' || requestTimeout) {
+				console.log('Request was aborted or timed out at 9s mark')
+				return // Keep the timeout modal visible and don't trigger handleError
 			} else {
 				console.error('Error in handleSubmit:', error)
 				handleError(error)
