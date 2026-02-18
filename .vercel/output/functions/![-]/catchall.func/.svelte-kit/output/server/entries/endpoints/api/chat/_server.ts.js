@@ -33,24 +33,14 @@ const POST = async ({ request }) => {
       role: "user",
       parts: [{ text: requestBody.prompt }]
     });
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => {
-        const timeoutError = new Error("Server-side timeout");
-        timeoutError.status = 503;
-        reject(timeoutError);
-      }, 9800);
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: chatHistory,
+      config: {
+        systemInstruction,
+        responseMimeType: "application/json"
+      }
     });
-    const response = await Promise.race([
-      ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: chatHistory,
-        config: {
-          systemInstruction,
-          responseMimeType: "application/json"
-        }
-      }),
-      timeoutPromise
-    ]);
     const responseText = response.text || "";
     chatHistory.push({
       role: "model",
