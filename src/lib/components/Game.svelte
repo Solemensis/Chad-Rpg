@@ -558,7 +558,7 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 				<button class="quota-dismiss" on:click={() => { 
 					requestTimeout = false; 
 					$misc.loading = false;
-				}}> Try Again </button>
+				}}> Sadge, later then </button>
 			</div>
 		</div>
 	{/if}
