@@ -36,7 +36,8 @@ export const character: Writable<Character> = writable({
 export const ui: Writable<UIState> = writable({
 	errorWarnMsg: '',
 	buyWarnMsg: '',
-	sellWarnMsg: ''
+	sellWarnMsg: '',
+	toastMsg: ''
 })
 
 // Selected item store for combat, selling, and buying

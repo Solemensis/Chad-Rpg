@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte'
+	import { createEventDispatcher, tick } from 'svelte'
 	import { fade, fly } from 'svelte/transition'
 
 	import CharacterClasses from '$lib/components/CharacterClasses.svelte'
@@ -24,14 +24,54 @@
 	let gameStarterPrompt: string = ''
 	let gameModeSelected: boolean = false
 
-	function handleGameMode(answer: any) {
+	async function handleGameMode(answer: any) {
+		const el = document.getElementById('game-start-window')
+		let oldHeight = 'auto'
+
+		if (el) {
+			oldHeight = `${el.clientHeight}px`
+			el.style.height = oldHeight // Lock height temporarily
+		}
+
 		gameModeSelected = true
 		gameStarterPrompt = answer
+
+		await tick() // Wait for DOM update and svelte transitions
+
+		if (el) {
+			// Find the old fading element to temporarily hide it so we can measure ONLY the new content
+			const oldContent = el.querySelector('.start-content') as HTMLElement | null
+			let oldDisplay = ''
+			if (oldContent) {
+				oldDisplay = oldContent.style.display
+				oldContent.style.display = 'none'
+			}
+
+			// Release lock to get new natural height
+			el.style.height = 'auto'
+			const newHeight = `${el.clientHeight}px`
+
+			// Restore old element for the fade transition
+			if (oldContent) {
+				oldContent.style.display = oldDisplay
+			}
+
+			// Animate smoothly between old and new heights
+			el.style.height = oldHeight
+			const animation = el.animate([{ height: oldHeight }, { height: newHeight }], {
+				duration: 400,
+				easing: 'cubic-bezier(0.25, 1, 0.5, 1)'
+			})
+
+			animation.onfinish = () => {
+				el.style.height = 'auto' // Set to auto after animation so it remains responsive
+			}
+		}
 	}
 </script>
 
 <div class="start-overlay" transition:fade={{ duration: 500 }}>
-	<div class="start-window" in:fly={{ y: 30, duration: 600, delay: 200 }}>
+	<div class="start-window" id="game-start-window" in:fly={{ y: 30, duration: 600, delay: 200 }}>
 		{#if gameModeSelected}
 			<div class="character-select" transition:fade={{ duration: 400 }}>
 				<CharacterClasses
@@ -125,14 +165,14 @@
 
 	.start-window {
 		width: min(90%, 800px);
-		height: min(85vh, 700px); /* Fixed height for smoother transition */
-		background: var(--color-bg-card); /* Updated to match glass theme */
-		backdrop-filter: blur(24px);
-		-webkit-backdrop-filter: blur(24px);
-		border: 1px solid var(--color-border);
+		max-height: 90vh; /* Replaced fixed height for responsiveness */
+		background: rgba(10, 10, 15, 0.75); /* Darker ethereal glass for better contrast */
+		backdrop-filter: blur(30px) saturate(120%);
+		-webkit-backdrop-filter: blur(30px) saturate(120%);
+		border: 1px solid rgba(255, 255, 255, 0.15);
 		border-radius: var(--radius-xl);
 		overflow: hidden;
-		box-shadow: var(--shadow-lg);
+		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
 
 		/* Grid layout to stack children */
 		display: grid;
@@ -154,7 +194,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-lg);
-		height: 100%;
+		height: auto;
+		max-height: 100%;
 	}
 
 	.character-select {
@@ -216,16 +257,19 @@
 		display: flex;
 		gap: var(--space-md);
 		padding: var(--space-md);
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid var(--color-border);
+		background: rgba(255, 255, 255, 0.05); /* slightly lighter glass for cards */
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: var(--radius-lg);
 		transition: all var(--transition-fast);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 	}
 
 	.mode-card.available:hover {
-		background: rgba(255, 255, 255, 0.06);
-		border-color: var(--color-border-hover);
-		transform: translateY(-2px);
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.25);
+		transform: translateY(-3px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.05);
 	}
 
 	.mode-card.disabled {
@@ -283,14 +327,17 @@
 	}
 
 	.play-btn.primary {
-		background: linear-gradient(135deg, var(--color-accent-primary), #9b6eff);
-		border-color: transparent;
+		background: linear-gradient(135deg, rgba(124, 92, 224, 0.8), rgba(155, 110, 255, 0.8));
+		backdrop-filter: blur(5px);
+		border: 1px solid rgba(255, 255, 255, 0.3);
 		color: white;
+		box-shadow: 0 0 10px rgba(124, 92, 224, 0.5);
 	}
 
 	.play-btn.primary:hover {
 		transform: scale(1.05);
-		box-shadow: 0 4px 15px rgba(124, 92, 224, 0.4);
+		box-shadow: 0 0 20px rgba(155, 110, 255, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5);
+		border-color: rgba(255, 255, 255, 0.6);
 	}
 
 	.play-btn:disabled {

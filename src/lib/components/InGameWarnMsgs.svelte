@@ -54,6 +54,12 @@
 		//hide the description window after selling item
 		$selectedItem.showDescription = 'none'
 	}
+
+	$: if ($ui.toastMsg) {
+		setTimeout(() => {
+			$ui.toastMsg = ''
+		}, 3000)
+	}
 </script>
 
 <!-- ingame notification window (out of ui) -->
@@ -105,6 +111,14 @@
 {/if}
 
 <!-- asksell window -->
+
+<!-- Toast Message Window -->
+{#if $ui.toastMsg}
+	<div transition:fade={{ duration: 200 }} class="toast-window">
+		<p>{$ui.toastMsg}</p>
+	</div>
+{/if}
+
 <style>
 	.notification-window {
 		background: var(--color-bg-card);
@@ -186,6 +200,30 @@
 		box-shadow: 0 0 12px rgba(224, 92, 124, 0.3);
 	}
 
+	.toast-window {
+		background: var(--color-bg-card);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		padding: var(--space-md) var(--space-xl);
+		border-radius: var(--radius-lg);
+		border: 1px solid var(--color-accent-gold);
+		box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+		position: absolute;
+		bottom: 20px;
+		left: 50%;
+		transform: translateX(-50%);
+		text-align: center;
+		z-index: 9999;
+		pointer-events: none;
+	}
+
+	.toast-window p {
+		color: var(--color-text-primary);
+		font-size: 1rem;
+		font-weight: 500;
+		margin: 0;
+	}
+
 	@media (max-width: 480px) {
 		.notification-window {
 			padding: var(--space-lg) var(--space-md);
@@ -198,6 +236,15 @@
 
 		.notification-window button {
 			padding: var(--space-sm) var(--space-md);
+			font-size: 0.85rem;
+		}
+
+		.toast-window {
+			bottom: 15px;
+			padding: var(--space-sm) var(--space-md);
+		}
+
+		.toast-window p {
 			font-size: 0.85rem;
 		}
 	}

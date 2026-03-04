@@ -4,7 +4,8 @@
 	import { ui } from '../../../stores'
 
 	import { createEventDispatcher } from 'svelte'
-	import { fade, fly } from 'svelte/transition'
+	import { fade, fly, scale } from 'svelte/transition'
+	import { backOut } from 'svelte/easing'
 
 	const dispatch = createEventDispatcher()
 
@@ -39,14 +40,19 @@
 	}
 </script>
 
-<div class="choices-panel choices-container">
+<div
+	class="choices-panel choices-container"
+	in:fade={{ duration: 400 }}
+	out:scale={{ duration: 300, start: 0.95 }}
+>
 	<!-- Choice Buttons -->
 	<div class="choices-list">
 		{#each $game.gameData.choices as choice, i}
 			<button
 				class="choice-btn"
 				disabled={$misc.loading}
-				in:fly={{ y: 15, duration: 300, delay: i * 80 }}
+				in:fly={{ y: 20, duration: 500, delay: i * 100, easing: backOut }}
+				out:fly={{ x: -20, duration: 300, delay: i * 60 }}
 				on:click={() => emitAnswer(choice)}
 			>
 				<span class="choice-indicator">{i + 1}</span>
@@ -57,7 +63,11 @@
 
 	<!-- Custom Input -->
 	{#if $game.gameData.choices?.length >= 1}
-		<div class="custom-input" in:fade={{ duration: 300, delay: 300 }}>
+		<div
+			class="custom-input"
+			in:fly={{ y: 20, duration: 500, delay: $game.gameData.choices.length * 100, easing: backOut }}
+			out:fade={{ duration: 300 }}
+		>
 			<div class="input-wrapper">
 				<input
 					type="text"

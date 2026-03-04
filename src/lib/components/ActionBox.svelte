@@ -8,7 +8,8 @@
 	import { coolDowns } from '../../stores'
 
 	import { createEventDispatcher } from 'svelte'
-	import { fade, fly } from 'svelte/transition'
+	import { fade, scale } from 'svelte/transition'
+	import { backOut } from 'svelte/easing'
 
 	import { DICE_SIDES, COMBAT_TIERS, COMBAT_PROMPTS } from '$lib/config/constants'
 
@@ -20,6 +21,7 @@
 
 	export let title: any
 	export let actions: any
+	export let introDelay: number = 100
 
 	function hideWindow() {
 		$misc.showDescription = 'none'
@@ -60,6 +62,69 @@
 		const { type, name, damage, manaCost, healing, mana, cooldown, point } = item
 		const { mp, maxMp, hp, maxHp } = $character.stats[0]
 		const { inCombat, shopMode } = $game.gameData.event || {}
+
+		if (!type || type === 'undefined' || name === 'undefined' || name === 'chest') {
+			if (shopMode) return ($ui.errorWarnMsg = "You can't open boxes in the shop.")
+
+			// Generate random loot
+			const randomNum = Math.random()
+			let generatedItem: any = {}
+			let targetArray = $character.inventory
+
+			if (randomNum < 0.3) {
+				generatedItem = {
+					name: 'Mystery Health Potion',
+					type: 'potion',
+					healing: Math.floor(Math.random() * 25) + 15,
+					price: 15
+				}
+			} else if (randomNum < 0.6) {
+				generatedItem = {
+					name: 'Mystery Mana Potion',
+					type: 'potion',
+					mana: Math.floor(Math.random() * 25) + 15,
+					price: 15
+				}
+			} else if (randomNum < 0.8) {
+				generatedItem = {
+					name: 'Scroll of Minor Flames',
+					type: 'destruction spell',
+					damage: 8,
+					manaCost: 10,
+					element: 'fire',
+					cooldown: 0,
+					price: 25
+				}
+				targetArray = $character.spells
+			} else {
+				generatedItem = {
+					name: 'Hidden Dagger',
+					type: 'weapon',
+					damage: 6,
+					weaponClass: 'dagger',
+					price: 25
+				}
+			}
+
+			// Remove exactly this box from inventory
+			let index = $character.inventory.indexOf(item)
+			if (index > -1) {
+				$character.inventory.splice(index, 1)
+				$character.inventory = $character.inventory // Trigger reactivity
+			}
+
+			// Add new item to appropriate array
+			targetArray.push(generatedItem)
+			if (targetArray === $character.spells) {
+				$character.spells = $character.spells
+			}
+
+			hideWindow()
+
+			// Show Toast
+			$ui.toastMsg = `You got a ${generatedItem.name} from the wooden box!`
+			return
+		}
 
 		if (type === 'weapon') {
 			if (shopMode) return
@@ -219,7 +284,10 @@
 	}
 </script>
 
-<div class="action-panel" in:fly={{ y: 30, duration: 400, delay: 100 }}>
+<div
+	class="action-panel"
+	in:scale={{ duration: 600, start: 0.9, delay: introDelay, easing: backOut }}
+>
 	<!-- Header with stats -->
 	<div class="panel-header">
 		{#if title === 'Inventory'}

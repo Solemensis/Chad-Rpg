@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
-	import { fade } from 'svelte/transition'
+	import { fade, scale } from 'svelte/transition'
+	import { backOut } from 'svelte/easing'
 
 	import LetterByLetter from './LetterByLetter.svelte'
 	import UiButtons from './UiButtons.svelte'
@@ -186,7 +187,7 @@
 				handleError(error)
 			}
 		} finally {
-			// Do not reset $misc.loading here if it was a timeout, 
+			// Do not reset $misc.loading here if it was a timeout,
 			// because the timeout block already set it to false
 			if (!requestTimeout) {
 				$misc.loading = false
@@ -453,7 +454,10 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 				<GameStartWindow on:emittedAnswer={handleMedievalGameStart} />
 			{:else}
 				<div class="game-content">
-					<div class="story-section">
+					<div
+						class="story-section"
+						in:scale={{ duration: 600, start: 0.9, delay: 100, easing: backOut }}
+					>
 						{#if $misc.loading}
 							<div class="loading-message">
 								<LetterByLetter text={dotty} />
@@ -467,11 +471,20 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 
 					<div class="choices-section">
 						{#if $game.gameData.choices && $game.gameData.choices.length > 0}
-							<Choices on:emittedAnswer={handleEmittedAnswer} />
+							<div
+								in:scale={{ duration: 600, start: 0.9, delay: 100, easing: backOut }}
+								out:scale={{ duration: 300, start: 0.95, easing: backOut }}
+								style="width: 100%; height: 100%;"
+							>
+								<Choices on:emittedAnswer={handleEmittedAnswer} />
+							</div>
 						{/if}
 					</div>
 
-					<div class="ui-section">
+					<div
+						class="ui-section"
+						in:scale={{ duration: 600, start: 0.9, delay: 400, easing: backOut }}
+					>
 						<UiButtons on:emittedAnswer={handleEmittedAnswer} />
 					</div>
 
@@ -479,6 +492,7 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 						{#if $character.inventory && $character.inventory.length > 0}
 							<ActionBox
 								title="Inventory"
+								introDelay={550}
 								actions={$character.inventory}
 								on:emittedAnswer={handleEmittedAnswer}
 							/>
@@ -487,6 +501,7 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 						{#if $character.spells && $character.spells.length > 0}
 							<ActionBox
 								title="Spells"
+								introDelay={700}
 								actions={$character.spells}
 								on:emittedAnswer={handleEmittedAnswer}
 							/>
@@ -495,6 +510,7 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 						{#if $game.gameData.lootBox && $game.gameData.lootBox.length > 0}
 							<ActionBox
 								title="Loot"
+								introDelay={850}
 								actions={$game.gameData.lootBox}
 								on:emittedAnswer={handleEmittedAnswer}
 							/>
@@ -535,7 +551,8 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 					The AI service is currently <strong>heavily overloaded</strong> or timed out.
 				</p>
 				<p class="quota-detail">
-					Google Gemini is taking too long to respond, and the server had to stop waiting. Please try your action later again.
+					Google Gemini is taking too long to respond, and the server had to stop waiting. Please
+					try your action later again.
 				</p>
 				<p class="quota-sorry">Thank you for your patience!</p>
 				<button class="quota-dismiss" on:click={() => (highDemand = false)}> Dismiss </button>
@@ -552,13 +569,19 @@ Don't forget to include at least 3 unique choices for the user to choose.`
 					The Gemini API is <strong>currently full</strong> and couldn't respond in time.
 				</p>
 				<p class="quota-detail">
-					To keep the game responsive, we've stopped the current request. Please try your action later again.
+					To keep the game responsive, we've stopped the current request. Please try your action
+					later again.
 				</p>
 				<p class="quota-sorry">Thank you for your patience!</p>
-				<button class="quota-dismiss" on:click={() => { 
-					requestTimeout = false; 
-					$misc.loading = false;
-				}}> Sadge, later then </button>
+				<button
+					class="quota-dismiss"
+					on:click={() => {
+						requestTimeout = false
+						$misc.loading = false
+					}}
+				>
+					Sadge, later then
+				</button>
 			</div>
 		</div>
 	{/if}

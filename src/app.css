@@ -6,24 +6,24 @@
    UI DESIGN SYSTEM - RPG Theme
    ======================================== */
 :root {
-	/* Color Palette */
-	--color-bg-dark: rgba(8, 8, 12, 0.85);
-	--color-bg-glass: rgba(12, 12, 18, 0.65);
-	--color-bg-card: rgba(18, 18, 28, 0.75);
-	--color-border: rgba(255, 255, 255, 0.08);
-	--color-border-hover: rgba(255, 255, 255, 0.15);
+	/* Color Palette - Fantasy Medieval Glass */
+	--color-bg-dark: rgba(18, 14, 12, 0.85); /* Deep warm tavern dark */
+	--color-bg-glass: rgba(24, 18, 14, 0.7);
+	--color-bg-card: rgba(32, 24, 18, 0.75);
+	--color-border: rgba(220, 185, 120, 0.15); /* Faint gold/bronze border */
+	--color-border-hover: rgba(220, 185, 120, 0.35);
 
 	/* Accent Colors */
-	--color-accent-primary: #7c5ce0;
-	--color-accent-secondary: #3fcf8e;
-	--color-accent-hp: #e05c7c;
-	--color-accent-mp: #5c7ce0;
-	--color-accent-gold: #f0c040;
+	--color-accent-primary: #d4af37; /* Metallic Gold */
+	--color-accent-secondary: #8c2a2a; /* Deep Crimson */
+	--color-accent-hp: #b33939; /* Blood Red */
+	--color-accent-mp: #3482a8; /* Mystic Mana Blue */
+	--color-accent-gold: #fbdc65; /* Bright Coin Gold */
 
 	/* Text Colors */
-	--color-text-primary: rgba(255, 255, 255, 0.95);
-	--color-text-secondary: rgba(255, 255, 255, 0.7);
-	--color-text-muted: rgba(255, 255, 255, 0.45);
+	--color-text-primary: rgba(255, 248, 235, 0.95); /* Warm parchment white */
+	--color-text-secondary: rgba(255, 248, 235, 0.7);
+	--color-text-muted: rgba(255, 248, 235, 0.45);
 
 	/* Spacing */
 	--space-xs: 0.25rem;
@@ -42,7 +42,7 @@
 	--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
 	--shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
 	--shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.4);
-	--shadow-glow: 0 0 20px rgba(124, 92, 224, 0.3);
+	--shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
 
 	/* Transitions */
 	--transition-fast: 0.15s ease;
@@ -88,16 +88,18 @@ body {
 /* Utility Classes */
 .glass {
 	background: var(--color-bg-glass);
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
+	backdrop-filter: blur(24px) saturate(110%);
+	-webkit-backdrop-filter: blur(24px) saturate(110%);
 	border: 1px solid var(--color-border);
+	box-shadow: inset 0 0 16px rgba(220, 185, 120, 0.03);
 }
 
 .glass-dark {
 	background: var(--color-bg-dark);
-	backdrop-filter: blur(24px);
-	-webkit-backdrop-filter: blur(24px);
+	backdrop-filter: blur(32px) saturate(110%);
+	-webkit-backdrop-filter: blur(32px) saturate(110%);
 	border: 1px solid var(--color-border);
+	box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.5);
 }
 
 /* Button Animations */
@@ -127,10 +129,10 @@ body {
 @keyframes pulse-glow {
 	0%,
 	100% {
-		box-shadow: 0 0 0 0 rgba(124, 92, 224, 0.4);
+		box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
 	}
 	50% {
-		box-shadow: 0 0 20px 4px rgba(124, 92, 224, 0.2);
+		box-shadow: 0 0 20px 4px rgba(212, 175, 55, 0.2);
 	}
 }
 
